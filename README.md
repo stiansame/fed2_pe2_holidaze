@@ -40,7 +40,7 @@ Components, features, API utilities and hooks will be added when needed. Keep co
 
 ## 🎨 Design and API
 
-- [Figma design, prototype and style guide](https://www.figma.com/design/Ul6uak83ouRbde2yOVWPHe/Holidaze)
+- **Link to Figma files**
 - [Noroff Holidaze API](https://docs.noroff.dev/docs/v2/holidaze/venues)
 
 The interface uses English. Inter is loaded from Google Fonts with a sans-serif fallback. Colours, typography and spacing follow the Figma guide and Tailwind’s spacing scale.
