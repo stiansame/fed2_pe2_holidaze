@@ -4,7 +4,7 @@ Accommodation booking frontend for the Noroff FED2 Project Exam, using the exist
 
 ## 🚧 Status
 
-M2 project foundation: React, Vite, Tailwind CSS, routing, design tokens and a shared API client. The home page is a temporary starting point. Login, venue screens and booking flows are not implemented yet.
+M2 project foundation: React, Vite, Tailwind CSS, shared layout, routing, design tokens and a shared API client. Header, footer, mobile navigation and 404 are implemented. The home page is a temporary starting point; `/venues`, `/login` and `/register` have temporary pages until their features are implemented.
 
 ## 🚀 Run locally
 
@@ -34,7 +34,8 @@ For authenticated requests, copy `.env.example` to `.env.local`, set `VITE_NOROF
 ```text
 src/
   main.jsx          Application entry point
-  App.jsx           Routes and shared page container
+  App.jsx           Routes
+  components/layout/ Shared layout, header, footer and navigation
   pages/            Home and 404 pages
   api/client.js     Shared API requests and errors
   styles/index.css  Tailwind and Figma design tokens
@@ -69,7 +70,9 @@ Venue content will come from the API. Files in `ai-genererte_bilder/` are design
 
 ## ✅ Manual checks
 
-Open `/` and an unknown path such as `/missing`. The latter should show the 404 page; “Back to home” should return to `/`. Check both pages at mobile and desktop widths and verify keyboard focus on the link.
+Open `/` and check the header links to `/venues`, `/login` and `/register`. These currently show temporary pages. Open an unknown path such as `/missing`: the 404 page should retain the shared header/footer, and “Back to home” should return to `/`.
+
+At mobile widths, open Menu and verify that focus moves to the first link. Close with Escape or “Close menu”: focus should return to the Menu button and the current route should remain unchanged. Selecting a menu link should navigate and close the menu. Use Tab and Enter to check navigation and “Skip to content”. Check at 320px, 390px and desktop widths for overflow, logo proportions and readable footer text.
 
 ## 📦 Delivery
 
