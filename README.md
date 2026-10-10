@@ -4,7 +4,7 @@ Accommodation booking frontend for the Noroff FED2 Project Exam, using the exist
 
 ## 🚧 Status
 
-M2 project foundation: React, Vite, Tailwind CSS, routing and design tokens. The home page is a temporary starting point. Authentication, venue data and booking flows are not implemented yet.
+M2 project foundation: React, Vite, Tailwind CSS, routing, design tokens and a shared API client. The home page is a temporary starting point. Login, venue screens and booking flows are not implemented yet.
 
 ## 🚀 Run locally
 
@@ -15,7 +15,9 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. No API credentials are required at this stage.
+Open the local URL printed by Vite. Public venue requests require no credentials.
+
+For authenticated requests, copy `.env.example` to `.env.local`, set `VITE_NOROFF_API_KEY` to your Noroff API key and restart Vite. Vite exposes this value in the browser bundle; it is not a server secret. Never put passwords or access tokens in environment files. Login and session management will be added in #9.
 
 ## 🛠️ Commands
 
@@ -24,6 +26,7 @@ Open the local URL printed by Vite. No API credentials are required at this stag
 | `npm run dev` | Start the development server |
 | `npm run build` | Build the application into `dist/` |
 | `npm run lint` | Check JavaScript and React code |
+| `npm test` | Test the API client using Node's built-in test runner |
 | `npm run preview` | Preview the production build locally |
 
 ## 📁 Structure
@@ -33,10 +36,25 @@ src/
   main.jsx          Application entry point
   App.jsx           Routes and shared page container
   pages/            Home and 404 pages
+  api/client.js     Shared API requests and errors
   styles/index.css  Tailwind and Figma design tokens
 ```
 
-Components, features, API utilities and hooks will be added when needed. Keep components focused, share repeated logic and avoid unnecessary dependencies.
+Components, features and hooks will be added when needed. Keep components focused, share repeated logic and avoid unnecessary dependencies.
+
+## 🔌 API client
+
+`apiRequest` accepts a relative API path and optional `method`, `query`, JSON `body`, `token`, `apiKey` and abort `signal`. It returns the full `{ data, meta }` response, or `null` for a successful empty deletion response. Use `meta.nextPage` to request the next page while retaining the same search and filter parameters.
+
+```js
+import { apiRequest } from './api/client.js';
+
+const { data, meta } = await apiRequest('holidaze/venues', {
+  query: { page: 1, limit: 12 },
+});
+```
+
+`ApiError` exposes `message`, HTTP `status` and Noroff's field-level `errors`. Network failures use status `0`; cancellation is rethrown unchanged. The client does not change form input, clear sessions or retry writes automatically. Callers retain their state and decide how to display errors.
 
 ## 🎨 Design and API
 
