@@ -42,6 +42,8 @@ src/
 
 Components, features and hooks will be added when needed. Keep components focused, share repeated logic and avoid unnecessary dependencies.
 
+Test files live in `tests/`, mirroring the source structure (for example, `tests/api/client.test.js` tests `src/api/client.js`).
+
 ## 🔌 API client
 
 `apiRequest` accepts a relative API path and optional `method`, `query`, JSON `body`, `token`, `apiKey` and abort `signal`. It returns the full `{ data, meta }` response, or `null` for a successful empty deletion response. Use `meta.nextPage` to request the next page while retaining the same search and filter parameters.

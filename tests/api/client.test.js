@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ApiError, apiRequest } from './client.js';
+import { ApiError, apiRequest } from '../../src/api/client.js';
 
 test('keeps pagination metadata and encodes query parameters', async t => {
   const result = { data: [{ id: 'venue-1' }], meta: { nextPage: 2 } };

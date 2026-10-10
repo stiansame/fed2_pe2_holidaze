@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --max-warnings 0",
-    "test": "node --test src/api/client.test.js",
+    "test": "node --test \"tests/**/*.test.js\"",
     "preview": "vite preview"
   },
   "engines": {
