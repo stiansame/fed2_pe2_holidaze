@@ -76,6 +76,17 @@ At mobile widths, open Menu and verify that focus moves to the first link. Close
 
 ## 📦 Delivery
 
+Local documentation drafts (not included in Git yet): [Notes on AI](documentation/Notes%20on%20AI.md) and [Sources](documentation/Sources.md).
+
 Planned hosting: Netlify. Configure an SPA fallback to `index.html` when deploying so direct links work. Deployment is not configured yet.
 
-Repository: [stiansame/fed2_pe2_holidaze](https://github.com/stiansame/fed2_pe2_holidaze). Planning board, Gantt chart and hosted demo links will be added before delivery. Final changes must be merged into `main`.
+- Repository: [stiansame/fed2_pe2_holidaze](https://github.com/stiansame/fed2_pe2_holidaze).
+- Project planning: [Holidaze GitHub Project](https://github.com/users/stiansame/projects/6).
+
+| Planning view | Purpose |
+| --- | --- |
+| [Task List](https://github.com/users/stiansame/projects/6/views/1) | Tasks, priorities, estimates and milestones |
+| [KanBan](https://github.com/users/stiansame/projects/6/views/2) | Progress by task status |
+| [Timeline](https://github.com/users/stiansame/projects/6/views/3) | Project schedule and task dates |
+
+The hosted demo link will be added before delivery. Final changes must be merged into `main`.
