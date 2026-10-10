@@ -1,14 +1,19 @@
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import NotFound from './pages/NotFound.jsx';
+import ComingSoon from './pages/ComingSoon.jsx';
+import Layout from './components/layout/Layout.jsx';
 
 export default function App() {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12 sm:px-8 sm:py-16">
-      <Routes>
+    <Routes>
+      <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/venues" element={<ComingSoon title="Explore venues" />} />
+        <Route path="/login" element={<ComingSoon title="Log in" />} />
+        <Route path="/register" element={<ComingSoon title="Create your account" />} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
-    </main>
+      </Route>
+    </Routes>
   );
 }
