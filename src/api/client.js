@@ -9,7 +9,19 @@ export class ApiError extends Error {
   }
 }
 
-// Returns the full { data, meta } response so callers can use pagination.
+/**
+ * Sends a JSON request to Noroff and preserves pagination metadata.
+ * @param {string} path API path, e.g. 'holidaze/venues'.
+ * @param {object} [options] Request settings.
+ * @param {string} [options.method='GET'] HTTP method.
+ * @param {object} [options.query={}] URL parameters, e.g. page, limit or q.
+ * @param {object} [options.body] Data to serialize as JSON.
+ * @param {string} [options.token] Access token from login.
+ * @param {string} [options.apiKey] Defaults to VITE_NOROFF_API_KEY.
+ * @param {AbortSignal} [options.signal] Allows the caller to cancel the request.
+ * @returns {Promise<object|null>} Full { data, meta } response, or null for 204.
+ * @throws {ApiError} API, network or unreadable-response errors; status 0 means a network failure.
+ */
 export async function apiRequest(path, {
   method = 'GET',
   query = {},
@@ -40,10 +52,12 @@ export async function apiRequest(path, {
       signal,
     });
   } catch (error) {
+    // Cancellation is intentional; callers can ignore it instead of showing an API error.
     if (signal?.aborted || error.name === 'AbortError') throw error;
     throw new ApiError('Unable to connect. Please try again.');
   }
 
+  // Successful deletions have no JSON body to parse.
   if (response.status === 204) return null;
   let result;
   try {
@@ -52,6 +66,7 @@ export async function apiRequest(path, {
     if (signal?.aborted || error.name === 'AbortError') throw error;
     throw new ApiError('The server returned an unreadable response.', response.status);
   }
+  // fetch resolves even for HTTP errors such as 400 or 401.
   if (!response.ok) {
     const errors = result?.errors ?? [];
     throw new ApiError(
