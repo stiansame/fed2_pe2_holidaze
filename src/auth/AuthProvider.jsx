@@ -37,6 +37,17 @@ export default function AuthProvider({ children }) {
     }
   }
 
+  async function becomeManager() {
+    const { data } = await request(`holidaze/profiles/${encodeURIComponent(user.name)}`, {
+      method: 'PUT', body: { venueManager: true },
+    });
+    // Do not restore a session that was logged out while the request was pending.
+    if (readSession(localStorage)?.accessToken !== user.accessToken) return;
+    const session = { ...user, venueManager: data.venueManager === true };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    setUser(session);
+  }
+
   useEffect(() => {
     if (!user) return;
     const timer = setInterval(() => {
@@ -48,5 +59,5 @@ export default function AuthProvider({ children }) {
     return () => clearInterval(timer);
   }, [user]);
 
-  return <AuthContext.Provider value={{ user, notice, login, logout, request }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, notice, login, logout, request, becomeManager }}>{children}</AuthContext.Provider>;
 }
