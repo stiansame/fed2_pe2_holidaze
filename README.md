@@ -4,7 +4,7 @@ Accommodation booking frontend for the Noroff FED2 Project Exam, using the exist
 
 ## 🚧 Status
 
-React, Vite and Tailwind CSS foundation with shared layout, routing and an API client. Registration, login, logout and role-aware navigation are implemented. The profile supports becoming a venue manager. `/venues` displays the first 12 API results with reusable cards and loading, error and empty states. Search, pagination and venue details follow in later work packages. The home, booking and manager pages remain temporary.
+React, Vite and Tailwind CSS foundation with shared layout, routing and an API client. Registration, login, logout and role-aware navigation are implemented. The profile supports becoming a venue manager. `/venues` supports API search by name/description and loads 12 results at a time, with reusable cards and loading, error and empty states. Searches persist in the URL; Load more appends results. Filters and venue details follow in later work packages. The home, booking and manager pages remain temporary.
 
 ## 🚀 Run locally
 
