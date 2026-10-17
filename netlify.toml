@@ -1,0 +1,12 @@
+[build]
+  command = "npm test && npm run lint && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Serve React routes on direct visits and page refreshes.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
