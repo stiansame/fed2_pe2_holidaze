@@ -47,6 +47,14 @@ Components, features and hooks will be added when needed. Keep components focuse
 
 Test files live in `tests/`, mirroring the source structure (for example, `tests/api/client.test.js` tests `src/api/client.js`).
 
+## 🌐 Netlify deployment
+
+Import `stiansame/fed2_pe2_holidaze` from GitHub in Netlify and select `main` as the production branch. The root `netlify.toml` sets Node.js 24, runs tests, lint and build, and publishes `dist`. A failed check stops the deployment. The SPA rewrite serves React routes on direct visits and refreshes; unknown routes display the application's 404 page.
+
+Set `VITE_NOROFF_API_KEY` in Netlify's environment variables with the Builds scope before deploying. Use your own key; `.env.local` is ignored by Git and is not uploaded. Vite includes this value in the browser bundle. Redeploy after changing it.
+
+After deployment, open and refresh `/venues`, `/login` and `/register` directly. Check that `/profile` and `/manager` redirect guests to login, and that an unknown address shows the app's 404 page. Then verify customer/manager login, session persistence and logout on the deployed site. Localhost sessions do not carry over to the Netlify domain.
+
 ## 🔌 API client
 
 `apiRequest` accepts a relative API path and optional `method`, `query`, JSON `body`, `token`, `apiKey` and abort `signal`. It returns the full `{ data, meta }` response, or `null` for a successful empty deletion response. Use `meta.nextPage` to request the next page while retaining the same search and filter parameters.
