@@ -6,13 +6,14 @@ import Layout from './components/layout/Layout.jsx';
 import AuthForm from './pages/AuthForm.jsx';
 import RequireAuth from './auth/RequireAuth.jsx';
 import Profile from './pages/Profile.jsx';
+import Venues from './pages/Venues.jsx';
 
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/venues" element={<ComingSoon title="Explore venues" />} />
+        <Route path="/venues" element={<Venues />} />
         <Route path="/login" element={<AuthForm key="login" />} />
         <Route path="/register" element={<AuthForm key="register" register />} />
         <Route element={<RequireAuth />}>
