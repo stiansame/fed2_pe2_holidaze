@@ -1,13 +1,22 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext.js';
 
 export default function NavigationLinks({ mobile = false, onNavigate }) {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const links = [
     { to: '/venues', label: mobile ? 'Explore venues' : 'Explore' },
-    { to: '/login', label: 'Log in' },
-    { to: '/register', label: mobile ? 'Create account' : 'Get started', primary: !mobile },
+    ...(user ? [
+      { to: '/bookings', label: 'My bookings' },
+      { to: '/profile', label: 'My profile' },
+      ...(user.venueManager ? [{ to: '/manager', label: 'Manager' }] : []),
+    ] : [
+      { to: '/login', label: 'Log in' },
+      { to: '/register', label: mobile ? 'Create account' : 'Get started', primary: !mobile },
+    ]),
   ];
 
-  return links.map(({ to, label, primary }) => (
+  return <>{links.map(({ to, label, primary }) => (
     <NavLink
       key={to}
       to={to}
@@ -16,5 +25,9 @@ export default function NavigationLinks({ mobile = false, onNavigate }) {
     >
       {label}
     </NavLink>
-  ));
+  ))}{user && <button type="button" className={`min-h-12 rounded-lg border border-border px-4 text-small font-semibold text-primary hover:bg-tint ${mobile ? 'w-full' : ''}`} onClick={() => {
+    logout();
+    onNavigate?.();
+    navigate('/', { replace: true });
+  }}>Log out</button>}</>;
 }

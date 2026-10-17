@@ -4,7 +4,7 @@ Accommodation booking frontend for the Noroff FED2 Project Exam, using the exist
 
 ## 🚧 Status
 
-M2 project foundation: React, Vite, Tailwind CSS, shared layout, routing, design tokens and a shared API client. Header, footer, mobile navigation and 404 are implemented. The home page is a temporary starting point; `/venues`, `/login` and `/register` have temporary pages until their features are implemented.
+M2 project foundation: React, Vite, Tailwind CSS, shared layout, routing, design tokens and a shared API client. Registration, login, logout and role-aware navigation are implemented. The home and venue pages remain temporary. Profile, booking and manager routes are protected placeholders until their features are implemented.
 
 ## 🚀 Run locally
 
@@ -17,7 +17,9 @@ npm run dev
 
 Open the local URL printed by Vite. Public venue requests require no credentials.
 
-For authenticated requests, copy `.env.example` to `.env.local`, set `VITE_NOROFF_API_KEY` to your Noroff API key and restart Vite. Vite exposes this value in the browser bundle; it is not a server secret. Never put passwords or access tokens in environment files. Login and session management will be added in #9.
+For authenticated requests, copy `.env.example` to `.env.local`, set `VITE_NOROFF_API_KEY` to your Noroff API key and restart Vite. Vite exposes this value in the browser bundle; it is not a server secret. Never put passwords or access tokens in environment files.
+
+Login persists the access token and minimal profile data in localStorage; passwords are never stored there. Logout removes the session. Expired tokens and authenticated API responses with status 401 end the session. Protected feature requests should use `request` from `useAuth`. Route guards control navigation; the Noroff API enforces permissions.
 
 ## 🛠️ Commands
 
@@ -26,7 +28,7 @@ For authenticated requests, copy `.env.example` to `.env.local`, set `VITE_NOROF
 | `npm run dev` | Start the development server |
 | `npm run build` | Build the application into `dist/` |
 | `npm run lint` | Check JavaScript and React code |
-| `npm test` | Test the API client using Node's built-in test runner |
+| `npm test` | Test the API client and session handling using Node's built-in test runner |
 | `npm run preview` | Preview the production build locally |
 
 ## 📁 Structure
