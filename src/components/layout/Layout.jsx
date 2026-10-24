@@ -19,7 +19,7 @@ export default function Layout() {
   const isVenueDetails = !!matchPath('/venues/:id', pathname);
   const title = titles[pathname.replace(/\/+$/, '') || '/'] || 'Page not found';
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col bg-linear-to-br from-accent/10 via-background to-tint/40">
       {!isVenueDetails && <title>{`Holidaze | ${title}`}</title>}
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:rounded-lg focus:bg-surface focus:p-4">
         Skip to content

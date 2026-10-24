@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import mark from '../../assets/holidaze-mark.svg';
+import Logo from '../Logo.jsx';
 import MobileMenu from './MobileMenu.jsx';
 import NavigationLinks from './NavigationLinks.jsx';
 
@@ -14,11 +14,10 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-surface">
+    <header className="border-b-4 border-accent bg-surface">
       <div className="mx-auto flex max-w-360 items-center justify-between gap-4 p-4 md:p-8">
         <Link to="/" aria-label="Holidaze home" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-          <img src={mark} alt="" width="40" height="32" />
-          <span className="text-h3 font-semibold">Holidaze</span>
+          <Logo />
         </Link>
         <nav aria-label="Main navigation" className="hidden gap-4 md:flex">
           <NavigationLinks />
