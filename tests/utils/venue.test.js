@@ -1,6 +1,20 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { formatVenuePrice, venueMapLinks } from '../../src/utils/venue.js';
+import { formatVenuePrice, shuffleVenuesWithPhotos, venueMapLinks } from '../../src/utils/venue.js';
+
+test('shuffles a separate pool with usable photo URLs and preserves venue data', () => {
+  const venues = [
+    { id: 'a', media: [{ url: 'https://example.com/a.jpg' }] },
+    { id: 'missing' },
+    { id: 'unsafe', media: [{ url: 'javascript:alert(1)' }] },
+    { id: 'b', media: [{ url: 'https://example.com/b.jpg' }] },
+    { id: 'c', media: [{ url: 'https://example.com/c.jpg' }] },
+  ];
+  const original = structuredClone(venues);
+  assert.deepEqual(shuffleVenuesWithPhotos(venues, () => 0).map(venue => venue.id), ['b', 'c', 'a']);
+  assert.deepEqual(venues, original);
+  assert.deepEqual(shuffleVenuesWithPhotos([]), []);
+});
 
 test('formats NOK prices including zero and handles missing prices', () => {
   assert.equal(formatVenuePrice(1490), 'NOK 1,490 / night');

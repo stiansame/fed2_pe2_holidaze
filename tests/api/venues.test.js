@@ -1,6 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { appendVenuePage, filterVenues, getAllVenues, getVenue, getVenues, sortVenues, venueSorts } from '../../src/api/venues.js';
+import { appendVenuePage, filterVenues, getAllVenues, getHighlyRatedVenues, getVenue, getVenues, sortVenues, venueSorts } from '../../src/api/venues.js';
+
+test('requests a bounded highest-rating pool and forwards cancellation', async t => {
+  const controller = new AbortController();
+  t.mock.method(globalThis, 'fetch', async (url, options) => {
+    assert.equal(url.searchParams.get('sort'), 'rating');
+    assert.equal(url.searchParams.get('sortOrder'), 'desc');
+    assert.equal(url.searchParams.get('limit'), '100');
+    assert.equal(options.signal, controller.signal);
+    return Response.json({ data: [{ id: 'rated', rating: 5 }], meta: {} });
+  });
+  assert.equal((await getHighlyRatedVenues({ signal: controller.signal })).data[0].rating, 5);
+});
 
 test('uses listing or search with encoded query and requested page', async t => {
   const calls = [];

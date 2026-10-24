@@ -4,6 +4,9 @@ const paths = {
   left: <path d="m15 18-6-6 6-6" />,
   right: <path d="m9 18 6-6-6-6" />,
   close: <path d="m6 6 12 12M6 18 18 6" />,
+  pause: <path d="M9 5v14M15 5v14" />,
+  play: <path d="m8 5 11 7-11 7V5Z" />,
+  search: <><circle cx="10" cy="10" r="7" /><path d="m15 15 6 6" /></>,
 };
 
 export default function Icon({ name, className = 'size-5 shrink-0' }) {

@@ -25,7 +25,7 @@ export default function Layout() {
         Skip to content
       </a>
       <Header />
-      <main id="main-content" tabIndex={-1} className={`mx-auto w-full max-w-360 flex-1 ${isVenueDetails ? 'p-4 md:p-8' : 'p-6 md:p-16'}`}>
+      <main id="main-content" tabIndex={-1} className={`mx-auto w-full max-w-360 flex-1 ${isVenueDetails || pathname === '/' ? 'p-4 md:p-8' : 'p-6 md:p-16'}`}>
         <Outlet />
       </main>
       <Footer />

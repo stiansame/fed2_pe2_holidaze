@@ -6,6 +6,12 @@ export function getVenue(id, { signal } = {}) {
   });
 }
 
+export function getHighlyRatedVenues({ signal } = {}) {
+  return apiRequest('holidaze/venues', {
+    query: { sort: 'rating', sortOrder: 'desc', limit: 100 }, signal,
+  });
+}
+
 export const venueSorts = {
   newest: { label: 'Newest first', sort: 'created', sortOrder: 'desc' },
   'price-asc': { label: 'Price: low to high', sort: 'price', sortOrder: 'asc' },
