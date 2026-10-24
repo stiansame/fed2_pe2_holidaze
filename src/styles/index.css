@@ -29,7 +29,7 @@
 
 @layer base {
   body {
-    @apply min-w-80 bg-background font-sans text-body text-text;
+    @apply bg-background font-sans text-body text-text;
   }
 
   :focus-visible {
