@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getHighlyRatedVenues, getVenues } from '../api/venues.js';
-import { selectHighlyRatedVenues, shuffleVenuesWithPhotos } from '../utils/venue.js';
+import { getHighlyRatedVenues } from '../api/venues.js';
+import { selectHighlyRatedVenues } from '../utils/venue.js';
 import HomeHero from '../components/venues/HomeHero.jsx';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import Icon from '../components/Icon.jsx';
 
 export default function Home() {
-  const [venues, setVenues] = useState([]);
   const [highlyRated, setHighlyRated] = useState([]);
+  const [heroImage, setHeroImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
@@ -16,26 +16,24 @@ export default function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
-    // Sample a random page so the whole catalogue can feature without loading it all.
-    const heroRequest = getVenues({ limit: 1, signal: controller.signal }).then(result => getVenues({
-      limit: 100,
-      page: Math.floor(Math.random() * Math.max(1, Math.ceil(result.meta.totalCount / 100))) + 1,
-      signal: controller.signal,
-    }));
-    Promise.allSettled([heroRequest, getHighlyRatedVenues({ signal: controller.signal })]).then(([hero, rated]) => {
+    getHighlyRatedVenues({ signal: controller.signal }).then(result => {
       if (controller.signal.aborted) return;
-      if (hero.status === 'fulfilled') setVenues(shuffleVenuesWithPhotos(hero.value.data));
-      if (rated.status === 'fulfilled') setHighlyRated(selectHighlyRatedVenues(rated.value.data));
-      else setError(rated.reason.message);
-      setLoading(false);
+      const pool = selectHighlyRatedVenues(result.data);
+      setHighlyRated(pool);
+      // Keep the chosen photo independent of cards removed after image failures.
+      setHeroImage(pool[Math.floor(Math.random() * pool.length)]?.media[0]?.url ?? null);
+    }).catch(error => {
+      if (!controller.signal.aborted) setError(error.message);
+    }).finally(() => {
+      if (!controller.signal.aborted) setLoading(false);
     });
     return () => controller.abort();
   }, [attempt]);
 
   return (
     <div className="space-y-8">
-      <HomeHero venues={venues.slice(0, 6)} onImageError={id => setVenues(previous => previous.filter(venue => venue.id !== id))}>
-      <form role="search" className="flex gap-3 rounded-lg border border-border bg-surface p-3 text-text shadow-sm" onSubmit={event => {
+      <HomeHero image={heroImage}>
+      <form role="search" className="flex gap-2 rounded-lg border border-border bg-surface p-2 text-text shadow-sm sm:gap-3 sm:p-3" onSubmit={event => {
         event.preventDefault();
         const input = event.currentTarget.elements.q;
         const q = input.value.trim();
