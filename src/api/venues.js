@@ -2,7 +2,7 @@ import { apiRequest } from './client.js';
 
 export function getVenues({ q = '', page = 1, signal } = {}) {
   return apiRequest(q ? 'holidaze/venues/search' : 'holidaze/venues', {
-    query: { q: q || undefined, page, limit: 12, sort: 'created', sortOrder: 'desc' }, signal,
+    query: { q: q || undefined, page, limit: 15, sort: 'created', sortOrder: 'desc' }, signal,
   });
 }
 
