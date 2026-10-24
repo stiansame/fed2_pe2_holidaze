@@ -1,5 +1,11 @@
 import { apiRequest } from './client.js';
 
+export function getVenue(id, { signal } = {}) {
+  return apiRequest(`holidaze/venues/${encodeURIComponent(id)}`, {
+    query: { _owner: true }, signal,
+  });
+}
+
 export const venueSorts = {
   newest: { label: 'Newest first', sort: 'created', sortOrder: 'desc' },
   'price-asc': { label: 'Price: low to high', sort: 'price', sortOrder: 'asc' },

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { appendVenuePage, filterVenues, getAllVenues, getVenues, sortVenues, venueSorts } from '../../src/api/venues.js';
+import { appendVenuePage, filterVenues, getAllVenues, getVenue, getVenues, sortVenues, venueSorts } from '../../src/api/venues.js';
 
 test('uses listing or search with encoded query and requested page', async t => {
   const calls = [];
@@ -16,6 +16,20 @@ test('uses listing or search with encoded query and requested page', async t => 
   assert.equal(calls[1].searchParams.get('q'), 'cabin & sea');
   assert.equal(calls[1].searchParams.get('page'), '2');
   assert.equal(calls[1].searchParams.get('limit'), '15');
+});
+
+test('fetches venue details with host data and forwards the abort signal and API errors', async t => {
+  const controller = new AbortController();
+  const fetchMock = t.mock.method(globalThis, 'fetch', async (url, options) => {
+    assert.equal(url.pathname, '/holidaze/venues/venue-1');
+    assert.equal(url.searchParams.get('_owner'), 'true');
+    assert.equal(url.searchParams.has('_bookings'), false);
+    assert.equal(options.signal, controller.signal);
+    return Response.json({ data: { id: 'venue-1', owner: { name: 'host' } } });
+  });
+  assert.equal((await getVenue('venue-1', { signal: controller.signal })).data.owner.name, 'host');
+  fetchMock.mock.mockImplementation(async () => Response.json({ errors: [{ message: 'Not found' }] }, { status: 404 }));
+  await assert.rejects(getVenue('missing'), { name: 'ApiError', status: 404 });
 });
 
 test('loads every page before filtering, including matches beyond the first page', async t => {
