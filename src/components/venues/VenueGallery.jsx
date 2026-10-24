@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
 import VenueImage from './VenueImage.jsx';
+import Icon from '../Icon.jsx';
 
 const controlClass = 'min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-50';
+const galleryControl = 'absolute z-10 flex size-12 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-sm hover:bg-tint';
 
 export default function VenueGallery({ media = [], name }) {
   const photos = (media ?? []).filter(photo => typeof photo?.url === 'string' && photo.url.trim());
@@ -28,19 +30,17 @@ export default function VenueGallery({ media = [], name }) {
           </div>}
         </div>
         <button type="button" onClick={() => dialog.current.showModal()} className={`${controlClass} w-full sm:w-auto`}>View all photos ({photos.length})</button>
-        <dialog ref={dialog} aria-label={`Photos of ${name}`} className="m-auto max-h-[90dvh] w-[min(95vw,64rem)] overflow-y-auto rounded-lg bg-surface p-4 text-text backdrop:bg-black/70" onKeyDown={event => {
+        <dialog ref={dialog} aria-label={`Photos of ${name}`} className="m-auto max-h-[94dvh] max-w-[96vw] overflow-hidden rounded-lg bg-surface p-0 text-text backdrop:bg-black/70" onKeyDown={event => {
           if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
           if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
         }}>
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <p aria-live="polite">Photo {active + 1} of {photos.length}</p>
-            <button type="button" autoFocus onClick={() => dialog.current.close()} className={controlClass}>Close gallery</button>
-          </div>
-          <VenueImage key={photo.url} media={photo} name={name} loading="eager" className="h-[55dvh] rounded-lg" imageClass="object-contain" />
-          {photos.length > 1 && <div className="mt-4 flex justify-between gap-3">
-            <button type="button" onClick={() => move(-1)} className={controlClass}>Previous photo</button>
-            <button type="button" onClick={() => move(1)} className={controlClass}>Next photo</button>
-          </div>}
+          <button type="button" aria-label="Close gallery" autoFocus onClick={() => dialog.current.close()} className={`${galleryControl} right-2 top-2`}><Icon name="close" /></button>
+          <VenueImage key={photo.url} media={photo} name={name} loading="eager" className="min-h-16 min-w-48 rounded-lg" imageClass="!h-auto !w-auto max-h-[94dvh] max-w-[96vw] object-contain" />
+          <p aria-live="polite" className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-surface px-3 py-1 text-small text-text">{active + 1} / {photos.length}</p>
+          {photos.length > 1 && <>
+            <button type="button" aria-label="Previous photo" onClick={() => move(-1)} className={`${galleryControl} left-2 top-1/2 -translate-y-1/2`}><Icon name="left" /></button>
+            <button type="button" aria-label="Next photo" onClick={() => move(1)} className={`${galleryControl} right-2 top-1/2 -translate-y-1/2`}><Icon name="right" /></button>
+          </>}
         </dialog>
       </> : <VenueImage name={name} className="h-64 rounded-lg sm:h-90" />}
     </section>
