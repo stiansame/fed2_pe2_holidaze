@@ -15,7 +15,7 @@ test('uses listing or search with encoded query and requested page', async t => 
   assert.equal(calls[1].pathname, '/holidaze/venues/search');
   assert.equal(calls[1].searchParams.get('q'), 'cabin & sea');
   assert.equal(calls[1].searchParams.get('page'), '2');
-  assert.equal(calls[1].searchParams.get('limit'), '12');
+  assert.equal(calls[1].searchParams.get('limit'), '15');
 });
 
 test('appends pages without duplicates and retains latest metadata', () => {
