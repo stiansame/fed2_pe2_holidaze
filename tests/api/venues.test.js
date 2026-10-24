@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { appendVenuePage, filterVenues, getVenues, venueSorts } from '../../src/api/venues.js';
+import { appendVenuePage, filterVenues, getAllVenues, getVenues, sortVenues, venueSorts } from '../../src/api/venues.js';
 
 test('uses listing or search with encoded query and requested page', async t => {
   const calls = [];
@@ -16,6 +16,49 @@ test('uses listing or search with encoded query and requested page', async t => 
   assert.equal(calls[1].searchParams.get('q'), 'cabin & sea');
   assert.equal(calls[1].searchParams.get('page'), '2');
   assert.equal(calls[1].searchParams.get('limit'), '15');
+});
+
+test('loads every page before filtering, including matches beyond the first page', async t => {
+  const pages = [];
+  t.mock.method(globalThis, 'fetch', async url => {
+    const page = Number(url.searchParams.get('page'));
+    pages.push(page);
+    assert.equal(url.searchParams.get('limit'), '100');
+    assert.equal(url.searchParams.get('q'), 'cabin');
+    return Response.json({
+      data: [{ id: String(page), maxGuests: page === 1 ? 2 : 6, meta: { wifi: true } }],
+      meta: { nextPage: page === 1 ? 2 : null },
+    });
+  });
+  const venues = await getAllVenues({ q: 'cabin' });
+  assert.deepEqual(pages, [1, 2]);
+  assert.deepEqual(filterVenues(venues, { guests: 4 }).map(v => v.id), ['2']);
+});
+
+test('does not return partial results when a page fails and respects cancellation', async t => {
+  t.mock.method(globalThis, 'fetch', async url => {
+    if (url.searchParams.get('page') === '2') throw new TypeError('Offline');
+    return Response.json({ data: [{ id: 'first' }], meta: { nextPage: 2 } });
+  });
+  await assert.rejects(getAllVenues(), { name: 'ApiError' });
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(getAllVenues({ signal: controller.signal }), { name: 'AbortError' });
+});
+
+test('sorts the complete filtered list without changing input', () => {
+  const venues = [
+    { name: 'Zulu', price: 5, created: '2026-01-01' },
+    { name: 'Alpha', price: 20, created: '2026-03-01' },
+    { name: 'Beta', price: 10, created: '2026-02-01' },
+  ];
+  const snapshot = structuredClone(venues);
+  assert.deepEqual(sortVenues(venues, 'name-asc').map(v => v.name), ['Alpha', 'Beta', 'Zulu']);
+  assert.deepEqual(sortVenues(venues, 'name-desc').map(v => v.name), ['Zulu', 'Beta', 'Alpha']);
+  assert.deepEqual(sortVenues(venues, 'price-asc').map(v => v.price), [5, 10, 20]);
+  assert.deepEqual(sortVenues(venues, 'price-desc').map(v => v.price), [20, 10, 5]);
+  assert.deepEqual(sortVenues(venues).map(v => v.name), ['Alpha', 'Beta', 'Zulu']);
+  assert.deepEqual(venues, snapshot);
 });
 
 test('sends supported sorting to the API and defaults unknown options', async t => {

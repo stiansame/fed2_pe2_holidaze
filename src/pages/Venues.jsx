@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { appendVenuePage, filterVenues, getVenues, venueSorts } from '../api/venues.js';
+import { filterVenues, getAllVenues, sortVenues, venueSorts } from '../api/venues.js';
 import { amenityOptions } from '../components/venues/amenityOptions.js';
 import VenueCard from '../components/venues/VenueCard.jsx';
 
@@ -61,8 +61,7 @@ export default function Venues() {
             {Object.entries(venueSorts).map(([key, option]) => <option key={key} value={key}>{option.label}</option>)}
           </select>
         </label>
-      </div>
-      <fieldset className="mt-5">
+      <fieldset className="min-w-0">
         <legend className="mb-2 text-small font-semibold">Amenities</legend>
         <div className="flex flex-wrap gap-3">
           {amenityOptions.map(item => <label key={item.key} className="inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-4 text-small">
@@ -71,6 +70,7 @@ export default function Venues() {
           </label>)}
         </div>
       </fieldset>
+      </div>
       {(guests > 0 || amenities.length > 0 || order !== 'newest') && <button type="button" className="mt-4 min-h-12 rounded-lg border border-border px-4 text-small font-semibold text-primary hover:bg-tint" onClick={() => {
         setParams(previous => {
           const next = new URLSearchParams(previous);
@@ -78,59 +78,48 @@ export default function Venues() {
           return next;
         });
       }}>Reset filters</button>}
-      <p className="mt-4 text-small text-muted">Guest and amenity filters apply only to loaded stays. Load more to check additional stays. Sorting applies to all results.</p>
-      {!tooShort && <VenueResults key={`${q}|${order}`} q={q} order={order} filters={{ guests, amenities }} waiting={waiting} />}
+      {!tooShort && <VenueResults key={q} q={q} order={order} filters={{ guests, amenities }} waiting={waiting} />}
     </section>
   );
 }
 
 function VenueResults({ q, order, filters, waiting }) {
-  const [result, setResult] = useState(null);
+  const [venues, setVenues] = useState(null);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
-    getVenues({ q, order, page, signal: controller.signal }).then(data => {
-      if (!controller.signal.aborted) {
-        setResult(previous => appendVenuePage(previous, data));
-        setLoading(false);
-      }
+    getAllVenues({ q, signal: controller.signal }).then(data => {
+      if (!controller.signal.aborted) setVenues(data);
     }).catch(error => {
-      if (!controller.signal.aborted) {
-        setError(error.message);
-        setLoading(false);
-      }
+      if (!controller.signal.aborted) setError(error.message);
     });
     return () => controller.abort();
-  }, [q, order, page, attempt]);
+  }, [q, attempt]);
 
-  const visible = filterVenues(result?.data ?? [], filters);
-  const filtered = filters.guests > 0 || filters.amenities.length > 0;
+  if (waiting) return <p role="status" className="mt-6">Waiting for your search…</p>;
+  if (error) return <div className="mt-6 space-y-4">
+    <p role="alert" className="text-danger">{error}</p>
+    <button type="button" onClick={() => { setError(''); setAttempt(value => value + 1); }} className={buttonClass}>Try again</button>
+  </div>;
+  if (!venues) return <p role="status" className="mt-6">Loading stays…</p>;
+  const matches = sortVenues(filterVenues(venues, filters), order);
+  return <VenueMatches key={JSON.stringify([order, filters])} venues={matches} />;
+}
+
+function VenueMatches({ venues }) {
+  const [count, setCount] = useState(15);
+  const visible = venues.slice(0, count);
   return (
     <>
       <p role="status" className="mt-6 text-small text-muted">
-        {waiting ? 'Waiting for your search…' : loading ? 'Loading stays…' : result && (
-          result.data.length ? filtered
-            ? `${visible.length} matching stays among ${result.data.length} loaded (${result.meta.totalCount} results before guest and amenity filters).`
-            : `Showing ${result.data.length} of ${result.meta.totalCount} stays${q ? ` matching “${q}”` : ''}.`
-          : q ? `No stays found for “${q}”. Try another search.` : 'No stays available right now.')}
+        {venues.length ? `Showing ${visible.length} of ${venues.length} matching stays.` : 'No stays match your search and filters. Try adjusting them.'}
       </p>
-      {!waiting && !loading && filtered && result?.data.length > 0 && !visible.length && <p className="mt-3">No loaded stays match your filters. {result.meta.nextPage ? 'Load more or adjust your filters.' : 'Try adjusting your filters.'}</p>}
       {visible.length > 0 && <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map(venue => <VenueCard key={venue.id} venue={venue} />)}
       </div>}
-      {error && <div className="mt-6 space-y-4">
-        <p role="alert" className="text-danger">{error}</p>
-        <button type="button" disabled={loading || waiting} onClick={() => {
-          setError(''); setLoading(true); setAttempt(value => value + 1);
-        }} className={buttonClass}>Try again</button>
-      </div>}
-      {result?.meta.nextPage && !error && <button type="button" disabled={loading || waiting} onClick={() => {
-        setLoading(true); setPage(result.meta.nextPage);
-      }} className={`${buttonClass} mt-6`}>{loading ? 'Loading…' : 'Load more'}</button>}
+      {visible.length < venues.length && <button type="button" onClick={() => setCount(value => value + 15)} className={`${buttonClass} mt-6`}>Load more</button>}
     </>
   );
 }
