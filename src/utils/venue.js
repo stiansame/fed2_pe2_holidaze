@@ -1,7 +1,11 @@
 const priceFormat = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 2 });
 
+function isPhotoUrl(url) {
+  return /^https?:\/\/\S+$/i.test(url?.trim() ?? '');
+}
+
 export function hasVenuePhoto(venue) {
-  return /^https?:\/\/\S+$/i.test(venue.media?.[0]?.url?.trim() ?? '');
+  return isPhotoUrl(venue.media?.[0]?.url);
 }
 
 export function shuffleVenuesWithPhotos(venues, random = Math.random) {
@@ -11,6 +15,15 @@ export function shuffleVenuesWithPhotos(venues, random = Math.random) {
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
   return pool;
+}
+
+export function selectHighlyRatedVenues(venues, random = Math.random) {
+  const eligible = venues.filter(venue => venue.rating >= 4
+    && new Set((venue.media ?? []).map(photo => photo?.url?.trim()).filter(isPhotoUrl)).size >= 2);
+  const pool = shuffleVenuesWithPhotos(eligible, random);
+  // Reserve half the visible places for map data without fixing all six choices.
+  const preferred = pool.filter(venue => venueMapLinks(venue.location)).slice(0, 3);
+  return [...preferred, ...pool.filter(venue => !preferred.includes(venue))];
 }
 
 export function formatVenuePrice(price) {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getHighlyRatedVenues, getVenues } from '../api/venues.js';
-import { hasVenuePhoto, shuffleVenuesWithPhotos } from '../utils/venue.js';
+import { selectHighlyRatedVenues, shuffleVenuesWithPhotos } from '../utils/venue.js';
 import HomeHero from '../components/venues/HomeHero.jsx';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import Icon from '../components/Icon.jsx';
@@ -25,7 +25,7 @@ export default function Home() {
     Promise.allSettled([heroRequest, getHighlyRatedVenues({ signal: controller.signal })]).then(([hero, rated]) => {
       if (controller.signal.aborted) return;
       if (hero.status === 'fulfilled') setVenues(shuffleVenuesWithPhotos(hero.value.data));
-      if (rated.status === 'fulfilled') setHighlyRated(rated.value.data.filter(venue => venue.rating >= 4 && hasVenuePhoto(venue)));
+      if (rated.status === 'fulfilled') setHighlyRated(selectHighlyRatedVenues(rated.value.data));
       else setError(rated.reason.message);
       setLoading(false);
     });
@@ -53,7 +53,7 @@ export default function Home() {
         </div>
         {loading ? <p role="status">Loading stays…</p> : error ? <div role="alert" className="space-y-3"><p>Unable to load stays. {error}</p><button type="button" onClick={() => { setError(''); setLoading(true); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint">Try again</button></div>
           : highlyRated.length ? <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{highlyRated.slice(0, 6).map(venue => <VenueCard key={venue.id} venue={venue} onImageError={id => setHighlyRated(previous => previous.filter(item => item.id !== id))} />)}</div>
-          : <p>No highly rated stays with photos are available right now. Explore all venues to find your next stay.</p>}
+          : <p>No highly rated stays with multiple photos are available right now. Explore all venues to find your next stay.</p>}
       </section>
     </div>
   );
