@@ -1,5 +1,5 @@
 // Local browser fixtures: /tests/browser/venues.html?path=/venues&mode=data
-// Modes: data, empty, error (retry succeeds), network (retry succeeds).
+// Modes: data, empty, broken (all main photos fail), error/network (retry succeeds).
 // The real pages run unchanged; fixture requests never reach Noroff.
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -15,12 +15,11 @@ const venues = Array.from({ length: 18 }, (_, i) => ({
   id: `test-${i}`, name: i === 0 ? 'LongVenueName'.repeat(20) : `Test stay ${i}`,
   description: i ? 'DescriptionWithoutSpaces'.repeat(30) : ' ', price: i ? 1490 : null,
   maxGuests: i ? 6 : null, rating: i ? 5 : 0, created: `2026-10-${String(24 - i).padStart(2, '0')}`,
-  media: i === 0 ? [] : [{ url: i === 1 ? `${location.origin}/missing-photo.jpg` : photo }, { url: `${location.origin}/src/assets/holidaze-mark.svg` }],
+  media: i === 0 ? [] : [{ url: i === 1 || mode === 'broken' ? `${location.origin}/missing-photo.jpg` : photo }, { url: `${location.origin}/src/assets/holidaze-mark.svg` }],
   location: i === 0 ? null : i === 1 ? { city: ' ', country: ' ' } : { city: 'LongLocation'.repeat(15), country: 'Norway', lat: 0, lng: 0 },
   meta: i ? { wifi: true, parking: true, breakfast: true, pets: true } : null,
   owner: i === 0 ? null : { name: 'LongHostName'.repeat(15), avatar: { url: '/missing-avatar.jpg' } },
 }));
-const failingRequests = params.get('path') === '/' ? 2 : 1;
 let requests = 0;
 
 globalThis.fetch = async (input, { signal } = {}) => {
@@ -32,7 +31,7 @@ globalThis.fetch = async (input, { signal } = {}) => {
   // StrictMode cancels its first effect. Check cancellation before counting a failure.
   await new Promise(resolve => setTimeout(resolve, 100));
   signal?.throwIfAborted();
-  const fail = ++requests <= failingRequests;
+  const fail = ++requests === 1;
   if (fail && mode === 'network') throw new TypeError('Fixture network failure');
   if (fail && mode === 'error') return Response.json({ errors: [{ message: 'Fixture service unavailable.' }] }, { status: 503 });
   const id = url.pathname.split('/')[3];

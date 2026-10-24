@@ -5,7 +5,7 @@ import { amenityOptions } from '../components/venues/amenityOptions.js';
 import VenueCard from '../components/venues/VenueCard.jsx';
 
 const buttonClass = 'min-h-12 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60';
-const fieldClass = 'mt-2 min-h-12 w-full rounded-lg border border-border bg-surface px-3 font-normal';
+const fieldClass = 'mt-1 min-h-12 w-full rounded-lg border border-border bg-surface px-3 font-normal';
 
 export default function Venues() {
   const [params, setParams] = useSearchParams();
@@ -13,6 +13,8 @@ export default function Venues() {
   const order = Object.hasOwn(venueSorts, params.get('order')) ? params.get('order') : 'newest';
   const guests = Math.min(100, Math.max(0, Number.parseInt(params.get('guests'), 10) || 0));
   const amenities = amenityOptions.filter(item => params.get(item.key) === 'true').map(item => item.key);
+  const activeFilters = Number(guests > 0) + amenities.length + Number(order !== 'newest');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [search, setSearch] = useState({ value: q, url: q });
   // Synchronise the input on back/forward navigation without replacing the focused input.
   if (search.url !== q) setSearch({ value: q, url: q });
@@ -42,45 +44,53 @@ export default function Venues() {
     });
   }
 
+  function resetFilters() {
+    setParams(previous => {
+      const next = new URLSearchParams(previous);
+      ['guests', 'order', ...amenityOptions.map(item => item.key)].forEach(key => next.delete(key));
+      return next;
+    });
+  }
+
   return (
     <section aria-labelledby="venues-heading">
-      <h1 id="venues-heading" className="text-h2 font-bold">Explore venues</h1>
-      <p className="mt-3 text-muted">Find somewhere worth staying.</p>
-      <form role="search" className="mt-6" onSubmit={event => event.preventDefault()}>
+      <h1 id="venues-heading" className="text-h3 font-bold sm:text-h2">Explore venues</h1>
+      <p className="mt-2 text-small text-muted sm:text-body">Find somewhere worth staying.</p>
+      <form role="search" className="mt-4 sm:mt-6" onSubmit={event => event.preventDefault()}>
         <label className="block text-small font-semibold">Search venues
           <input name="q" type="search" value={search.value} onChange={event => setSearch({ value: event.target.value, url: q })} aria-describedby="search-hint" placeholder="Search by name or description" className={fieldClass} />
         </label>
-        <p id="search-hint" role="status" className="mt-2 text-small text-muted">{tooShort ? 'Enter at least 3 characters.' : 'Results update automatically after you stop typing.'}</p>
+        <p id="search-hint" role="status" className="mt-1 text-caption text-muted">{tooShort ? 'Enter at least 3 characters.' : 'Search updates automatically · min. 3 characters.'}</p>
       </form>
-      <div className="mt-6 flex flex-wrap items-end gap-4">
-        <label className="block text-small font-semibold">Guests
-          <input type="number" min="1" max="100" step="1" value={guests || ''} onChange={event => update('guests', event.target.value)} placeholder="Any" className={`${fieldClass} max-w-28`} />
+      <div className="mt-3 flex items-center justify-between gap-3 lg:hidden">
+        <button type="button" aria-expanded={filtersOpen} aria-controls="venue-filters" onClick={() => setFiltersOpen(value => !value)} className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-small font-semibold text-primary hover:bg-tint">
+          Filters{activeFilters > 0 && <span className="rounded-full bg-primary px-2 py-0.5 text-caption text-surface">{activeFilters}<span className="sr-only"> active</span></span>}<span aria-hidden="true">{filtersOpen ? '−' : '+'}</span>
+        </button>
+      </div>
+      <div id="venue-filters" className={`${filtersOpen ? 'grid' : 'hidden'} mt-3 grid-cols-2 items-end gap-3 rounded-lg border border-border bg-surface p-3 lg:mt-6 lg:flex lg:flex-wrap lg:gap-4 lg:border-0 lg:bg-transparent lg:p-0`}>
+        <label className="block min-w-0 text-small font-semibold">Guests
+          <input type="number" min="1" max="100" step="1" value={guests || ''} onChange={event => update('guests', event.target.value)} placeholder="Any" className={`${fieldClass} lg:max-w-28`} />
         </label>
-        <label className="block text-small font-semibold">Sort by
+        <label className="block min-w-0 text-small font-semibold">Sort by
           <select value={order} onChange={event => update('order', event.target.value === 'newest' ? '' : event.target.value)} className={fieldClass}>
             {Object.entries(venueSorts).map(([key, option]) => <option key={key} value={key}>{option.label}</option>)}
           </select>
         </label>
-      <fieldset className="min-w-0">
-        <legend className="mb-2 text-small font-semibold">Amenities</legend>
-        <div className="flex flex-wrap gap-3">
-          {amenityOptions.map(item => <label key={item.key} className="inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-4 text-small">
-            <input type="checkbox" checked={amenities.includes(item.key)} onChange={event => update(item.key, event.target.checked ? 'true' : '')} className="size-4 accent-primary" />
-            <img src={item.icon} alt="" width="18" height="18" />{item.label}
-          </label>)}
-        </div>
-      </fieldset>
+        <fieldset className="col-span-2 min-w-0">
+          <legend className="mb-1 text-small font-semibold">Amenities</legend>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            {amenityOptions.map(item => <label key={item.key} className="inline-flex min-h-12 cursor-pointer items-center gap-1.5 rounded-full border border-border bg-surface px-2 text-caption sm:px-4 sm:text-small">
+              <input type="checkbox" checked={amenities.includes(item.key)} onChange={event => update(item.key, event.target.checked ? 'true' : '')} className="size-4 accent-primary" />
+              <img src={item.icon} alt="" width="18" height="18" />{item.label}
+            </label>)}
+          </div>
+        </fieldset>
+        {activeFilters > 0 && <button type="button" className="col-span-2 min-h-12 justify-self-start px-2 text-small font-semibold text-primary underline underline-offset-4" onClick={resetFilters}>Reset filters</button>}
       </div>
-      {(guests > 0 || amenities.length > 0 || order !== 'newest') && <button type="button" className="mt-4 min-h-12 rounded-lg border border-border px-4 text-small font-semibold text-primary hover:bg-tint" onClick={() => {
-        setParams(previous => {
-          const next = new URLSearchParams(previous);
-          ['guests', 'order', ...amenityOptions.map(item => item.key)].forEach(key => next.delete(key));
-          return next;
-        });
-      }}>Reset filters</button>}
       {!tooShort && <VenueResults key={q} q={q} order={order} filters={{ guests, amenities }} waiting={waiting} />}
     </section>
   );
+
 }
 
 function VenueResults({ q, order, filters, waiting }) {
