@@ -37,3 +37,18 @@
     outline-offset: 4px;
   }
 }
+
+/* A restrained boost for listing and hero photos; text and badges stay unchanged. */
+.venue-photo {
+  filter: saturate(1.08) contrast(1.04);
+}
+
+@keyframes hero-enter {
+  from { transform: translateX(var(--slide-offset)); }
+  to { transform: translateX(0); }
+}
+
+@keyframes hero-leave {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-1 * var(--slide-offset))); }
+}

@@ -1,5 +1,18 @@
 const priceFormat = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 2 });
 
+export function hasVenuePhoto(venue) {
+  return /^https?:\/\/\S+$/i.test(venue.media?.[0]?.url?.trim() ?? '');
+}
+
+export function shuffleVenuesWithPhotos(venues, random = Math.random) {
+  const pool = venues.filter(hasVenuePhoto);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool;
+}
+
 export function formatVenuePrice(price) {
   return Number.isFinite(price) ? `NOK ${priceFormat.format(price)} / night` : 'Price not specified';
 }
