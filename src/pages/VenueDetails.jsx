@@ -33,6 +33,7 @@ function VenueContent({ id }) {
   const notFound = error && [400, 404].includes(error.status);
   const map = venueMapLinks(venue?.location);
   const location = venue?.location;
+  const place = [location?.city, location?.country].map(value => value?.trim()).filter(Boolean).join(', ');
   const address = [location?.address, location?.zip, location?.city, location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ');
   return (
@@ -52,7 +53,7 @@ function VenueContent({ id }) {
                 <h1 className="min-w-0 flex-1 text-h3 font-bold wrap-anywhere sm:text-h2">{name}</h1>
                 <span className="rounded-full bg-tint px-3 py-2 text-small font-semibold text-primary">{venue.rating > 0 ? `★ ${venue.rating}` : 'New'}</span>
               </div>
-              <p className="flex items-center gap-2 text-small text-muted wrap-anywhere"><Icon name="pin" className="size-5 shrink-0 text-success" />{[location?.city, location?.country].filter(Boolean).join(', ') || 'Location not specified'}</p>
+              <p className="flex items-center gap-2 text-small text-muted wrap-anywhere"><Icon name="pin" className="size-5 shrink-0 text-success" />{place || 'Location not specified'}</p>
             </div>
             <section className="space-y-3">
               <h2 className="text-body font-semibold text-primary">About this stay</h2>
@@ -84,8 +85,8 @@ function VenueContent({ id }) {
             </div>
             <dl className="space-y-4 p-6 text-small">
               <div><dt className="text-muted">Guests</dt><dd className="mt-1 flex items-center gap-2 font-semibold"><Icon name="user" className="size-4 shrink-0 text-success" />{venue.maxGuests > 0 ? `Up to ${venue.maxGuests}` : 'Not specified'}</dd></div>
-              <div><dt className="text-muted">Location</dt><dd className="mt-1 flex items-center gap-2 font-semibold wrap-anywhere"><Icon name="pin" className="size-4 shrink-0 text-success" />{[location?.city, location?.country].filter(Boolean).join(', ') || 'Not specified'}</dd></div>
-              <div><dt className="text-muted">Host</dt><dd className="mt-1 flex items-center gap-2 font-semibold wrap-anywhere"><HostAvatar key={venue.owner?.avatar?.url} media={venue.owner?.avatar} className="size-8" />{venue.owner?.name || 'Not specified'}</dd></div>
+              <div><dt className="text-muted">Location</dt><dd className="mt-1 flex items-center gap-2 font-semibold wrap-anywhere"><Icon name="pin" className="size-4 shrink-0 text-success" />{place || 'Not specified'}</dd></div>
+              <div><dt className="text-muted">Host</dt><dd className="mt-1 flex items-center gap-2 font-semibold wrap-anywhere"><HostAvatar key={venue.owner?.avatar?.url} media={venue.owner?.avatar} className="size-8" />{venue.owner?.name?.trim() || 'Not specified'}</dd></div>
             </dl>
           </aside>
         </div>

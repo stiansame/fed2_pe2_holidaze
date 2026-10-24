@@ -35,7 +35,7 @@ export default function VenueGallery({ media = [], name }) {
           if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
         }}>
           <button type="button" aria-label="Close gallery" autoFocus onClick={() => dialog.current.close()} className={`${galleryControl} right-2 top-2`}><Icon name="close" /></button>
-          <VenueImage key={photo.url} media={photo} name={name} loading="eager" className="min-h-16 min-w-48 rounded-lg" imageClass="!h-auto !w-auto max-h-[94dvh] max-w-[96vw] object-contain" />
+          <VenueImage key={photo.url} media={photo} name={name} loading="eager" className="min-h-48 min-w-64 rounded-lg has-[>span]:min-h-64" imageClass="!h-auto !w-auto max-h-[94dvh] max-w-[96vw] object-contain" />
           <p aria-live="polite" className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-surface px-3 py-1 text-small text-text">{active + 1} / {photos.length}</p>
           {photos.length > 1 && <>
             <button type="button" aria-label="Previous photo" onClick={() => move(-1)} className={`${galleryControl} left-2 top-1/2 -translate-y-1/2`}><Icon name="left" /></button>

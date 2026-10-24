@@ -47,6 +47,8 @@ Components, features and hooks will be added when needed. Keep components focuse
 
 Test files live in `tests/`, mirroring the source structure (for example, `tests/api/client.test.js` tests `src/api/client.js`).
 
+Repeatable venue edge-case fixtures and the #17 browser-check results are documented in [tests/browser/README.md](tests/browser/README.md).
+
 ## 🌐 Netlify deployment
 
 Import `stiansame/fed2_pe2_holidaze` from GitHub in Netlify and select `main` as the production branch. The root `netlify.toml` sets Node.js 24, runs tests, lint and build, and publishes `dist`. A failed check stops the deployment. The SPA rewrite serves React routes on direct visits and refreshes; unknown routes display the application's 404 page.

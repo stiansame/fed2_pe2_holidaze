@@ -85,7 +85,7 @@ export default function HomeHero({ venues, onImageError, children }) {
         <div aria-live={rotating ? 'off' : 'polite'} aria-atomic="true" role="group" aria-roledescription="slide" aria-label={venue ? `${index + 1} of ${venues.length}` : undefined} className="max-w-xl space-y-1">
           {venue && <>
             <h2 className="line-clamp-2 text-body font-semibold wrap-anywhere">{venue.name?.trim() || 'Unnamed stay'}</h2>
-            <p className="flex items-center gap-2 text-small"><Icon name="pin" />{[venue.location?.city, venue.location?.country].filter(Boolean).join(', ') || 'Location not specified'}</p>
+            <p className="flex items-center gap-2 text-small"><Icon name="pin" className="size-5 shrink-0" /><span className="line-clamp-2 wrap-anywhere">{[venue.location?.city, venue.location?.country].map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified'}</span></p>
           </>}
           <Link to={venue ? `/venues/${encodeURIComponent(venue.id)}` : '/venues'} className="inline-flex min-h-12 items-center gap-2 text-small font-semibold text-surface underline decoration-surface/60 underline-offset-4 hover:decoration-surface">{venue ? 'Explore this stay' : 'Explore venues'}<Icon name="right" /></Link>
         </div>
