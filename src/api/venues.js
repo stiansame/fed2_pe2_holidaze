@@ -2,7 +2,7 @@ import { apiRequest } from './client.js';
 
 export function getVenue(id, { signal } = {}) {
   return apiRequest(`holidaze/venues/${encodeURIComponent(id)}`, {
-    query: { _owner: true }, signal,
+    query: { _owner: true, _bookings: true }, signal,
   });
 }
 
