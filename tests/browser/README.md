@@ -62,7 +62,7 @@ Fixture bookings cover three nights, from today + 3 days until checkout on today
 - Check a stay ending on the existing check-in date or starting on its checkout date: it is allowed.
 - Click an earlier date while selecting checkout to replace check-in. Click a free date after completing a range to start a new selection. Repeat across a month boundary.
 - Reserve stays disabled until both dates are selected. Guest counts outside 1–6 are rejected.
-- Reserve validates the selection only in this package; no booking is created until package #19.
+- Reserve opens the protected review page; logged-out visitors must log in first. The selection is preserved in the URL.
 - Change the selection or guest count after checking: the previous result disappears.
 - Use `mode=availability-missing`: availability must not be presented as free when bookings are absent.
 - Repeat at 320, 390 and desktop widths, including keyboard navigation.
@@ -76,3 +76,24 @@ Regression check: legacy bookings with equal/reversed dates wholly in the past n
 - Home chooses one random photo from the already loaded highly rated venues and keeps it still during the visit. A fixed reserve photo handles missing/failed images. No carousel controls, timers or extra venue requests for hero content remain.
 - Mobile filters start collapsed, show the active count and retain selections while closed. Guests and sorting share a row; amenities use two columns. Desktop controls stay visible.
 - README now focuses on setup, stack, commands, deployment and project/design links.
+
+## Booking review and confirmation — package #19
+
+Open `/tests/browser/venues.html?path=%2Fvenues%2Ftest-1%2Freserve%3Ffrom%3D2090-03-25%26to%3D2090-03-28%26guests%3D2&signedIn=1`.
+The fixture uses in-memory authentication and bookings. All requests are intercepted; it never reads the real saved session or writes to Noroff. Reloading the entire fixture resets its saved bookings.
+
+1. Review: 25–28 March 2090, 2 guests, 3 nights, NOK 1,490/night and NOK 4,470 estimated total.
+2. Back to dates: dates and guest count remain selected. Reserve returns to review.
+3. Confirm (also try a double-click): the saved fixture booking opens a confirmation with reference, dates and guests. View venue returns to fresh availability.
+4. Remove `signedIn=1`: enter `fixture@stud.noroff.no` and any password. Login must return to the same review with the selection intact.
+5. Add `mode=booking-price`: the first confirmation updates the price to NOK 1,600/night, total NOK 4,800, and requires a second confirmation before saving.
+6. Add `mode=booking-conflict`: the final availability check detects overlap and stops the POST.
+7. Add `mode=booking-error`: a rejected POST shows its API message. No success screen appears.
+8. Add `mode=booking-uncertain`: a response is lost after saving; a warning appears and resubmission stays disabled.
+9. Add `mode=booking-unauthorized`: rejected authentication ends the session; login returns to the same review.
+10. Add `mode=confirmation-error`: saving succeeds but confirmation loading fails once. Reload confirmation must retrieve the saved booking without posting again.
+11. Tamper with URL dates/guests or use `test-0` (missing price/capacity): confirmation must stay disabled.
+12. Repeat review and confirmation at 320px, 390px and desktop widths and use keyboard navigation.
+
+Recorded locally: login and preserved selection, edit/return, successful save/receipt, double-click, price reconfirmation, new overlap, POST rejection, uncertain outcome, rejected session and confirmation retry passed with fixtures. Mobile review and confirmation have no horizontal overflow at 320/390px. Unit tests cover payload, UTC nights/total, final validation and uncertain POST outcomes.
+Live booking creation and persisted confirmation reload still require the user's manual test with their account; no live bookings were created by these checks.

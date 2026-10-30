@@ -84,11 +84,6 @@ function VenueContent({ id }) {
               <p className="text-small font-semibold">Your stay</p>
               <p className="mt-2 text-h3 font-semibold">{formatVenuePrice(venue.price)}</p>
             </div>
-            <dl className="space-y-4 p-6 text-small">
-              <div><dt className="text-muted">Guests</dt><dd className="mt-1 flex items-center gap-2 font-semibold"><Icon name="user" className="size-4 shrink-0 text-success" />{venue.maxGuests > 0 ? `Up to ${venue.maxGuests}` : 'Not specified'}</dd></div>
-              <div><dt className="text-muted">Location</dt><dd className="mt-1 flex items-center gap-2 font-semibold wrap-anywhere"><Icon name="pin" className="size-4 shrink-0 text-success" />{place || 'Not specified'}</dd></div>
-              <div><dt className="text-muted">Host</dt><dd className="mt-1 flex items-center gap-2 font-semibold wrap-anywhere"><HostAvatar key={venue.owner?.avatar?.url} media={venue.owner?.avatar} className="size-8" />{venue.owner?.name?.trim() || 'Not specified'}</dd></div>
-            </dl>
             <AvailabilityCalendar bookings={venue.bookings} maxGuests={venue.maxGuests} />
           </aside>
         </div>

@@ -8,6 +8,8 @@ import RequireAuth from './auth/RequireAuth.jsx';
 import Profile from './pages/Profile.jsx';
 import Venues from './pages/Venues.jsx';
 import VenueDetails from './pages/VenueDetails.jsx';
+import BookingReview from './pages/BookingReview.jsx';
+import BookingConfirmation from './pages/BookingConfirmation.jsx';
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
         <Route path="/login" element={<AuthForm key="login" />} />
         <Route path="/register" element={<AuthForm key="register" register />} />
         <Route element={<RequireAuth />}>
+          <Route path="/venues/:id/reserve" element={<BookingReview />} />
+          <Route path="/bookings/:id/confirmation" element={<BookingConfirmation />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/bookings" element={<ComingSoon title="My bookings" />} />
         </Route>
