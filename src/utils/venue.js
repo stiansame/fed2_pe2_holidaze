@@ -27,7 +27,11 @@ export function selectHighlyRatedVenues(venues, random = Math.random) {
 }
 
 export function formatVenuePrice(price) {
-  return Number.isFinite(price) ? `NOK ${priceFormat.format(price)} / night` : 'Price not specified';
+  return Number.isFinite(price) ? `${formatPrice(price)} / night` : 'Price not specified';
+}
+
+export function formatPrice(price) {
+  return `NOK ${priceFormat.format(price)}`;
 }
 
 export function venueMapLinks(location) {

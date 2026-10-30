@@ -14,6 +14,24 @@ function validDate(date) {
     && new Date(date).toISOString().slice(0, 10) === date;
 }
 
+export function stayFromSearch(search) {
+  const params = new URLSearchParams(search);
+  return {
+    from: validDate(params.get('from')) ? params.get('from') : '',
+    to: validDate(params.get('to')) ? params.get('to') : '',
+    guests: params.has('guests') ? Number(params.get('guests')) : 1,
+  };
+}
+
+export function staySummary(venue, stay) {
+  const { periods, reliable } = bookedPeriods(venue.bookings);
+  const error = validateStay({ ...stay, maxGuests: venue.maxGuests, periods: reliable ? periods : null });
+  if (error) return { error };
+  if (!Number.isFinite(venue.price) || venue.price < 0) return { error: 'A valid price is unavailable for this stay.' };
+  const nights = (Date.parse(stay.to) - Date.parse(stay.from)) / 86400000;
+  return { error: '', nights, total: Math.round(venue.price * 100) * nights / 100 };
+}
+
 export function bookedPeriods(bookings, today = dateKey()) {
   if (!Array.isArray(bookings)) return { periods: null, reliable: false };
   const periods = bookings.map(booking => [booking?.dateFrom, booking?.dateTo].map(value => typeof value === 'string' ? value.slice(0, 10) : ''));

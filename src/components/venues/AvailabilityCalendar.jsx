@@ -1,16 +1,21 @@
 import { useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Icon from '../Icon.jsx';
-import { addDays, bookedPeriods, dateKey, overlaps, validateStay } from '../../utils/availability.js';
+import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, validateStay } from '../../utils/availability.js';
 
 const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
 const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'UTC' });
 
 export default function AvailabilityCalendar({ bookings, maxGuests }) {
   const today = dateKey();
-  const [month, setMonth] = useState(today.slice(0, 7));
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
-  const [guests, setGuests] = useState(1);
+  const { id } = useParams();
+  const { search } = useLocation();
+  const navigate = useNavigate();
+  const initial = stayFromSearch(search);
+  const [month, setMonth] = useState(initial.from >= today ? initial.from.slice(0, 7) : today.slice(0, 7));
+  const [from, setFrom] = useState(initial.from);
+  const [to, setTo] = useState(initial.to);
+  const [guests, setGuests] = useState(initial.guests);
   const [checked, setChecked] = useState(false);
   const { periods, reliable } = bookedPeriods(bookings, today);
   const error = validateStay({ from, to, guests, maxGuests, periods: reliable ? periods : null, today });
@@ -65,10 +70,17 @@ export default function AvailabilityCalendar({ bookings, maxGuests }) {
       <dl className="grid grid-cols-2 gap-2 text-small" aria-live="polite">
         {[['Check-in', from], ['Check-out', to]].map(([label, date]) => <div key={label}><dt className="text-muted">{label}</dt><dd className="font-semibold">{date ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'Not selected'}</dd></div>)}
       </dl>
-      <form className="space-y-3" onChange={() => setChecked(false)} onSubmit={event => { event.preventDefault(); setChecked(true); }}>
+      <form className="space-y-3" onChange={() => setChecked(false)} onSubmit={event => {
+        event.preventDefault();
+        setChecked(true);
+        if (error) return;
+        const params = new URLSearchParams(search);
+        for (const [key, value] of Object.entries({ from, to, guests })) params.set(key, value);
+        navigate(`/venues/${encodeURIComponent(id)}/reserve?${params}`);
+      }}>
         <label className="block text-small">Guests<input type="number" required min="1" max={maxGuests > 0 ? maxGuests : undefined} step="1" value={guests} onChange={event => setGuests(Number(event.target.value))} className={inputClass} /></label>
         <button disabled={!reliable || !from || !to} className="min-h-12 w-full rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">Reserve</button>
-        {checked && <p role={error ? 'alert' : 'status'} className={`text-small ${error ? 'text-danger' : 'text-success'}`}>{error || 'Dates selected. No reservation has been made.'}</p>}
+        {checked && error && <p role="alert" className="text-small text-danger">{error}</p>}
       </form>
     </>}
   </section>;
