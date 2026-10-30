@@ -5,6 +5,7 @@ import Icon from '../components/Icon.jsx';
 import HostAvatar from '../components/HostAvatar.jsx';
 import Amenities from '../components/venues/Amenities.jsx';
 import VenueGallery from '../components/venues/VenueGallery.jsx';
+import AvailabilityCalendar from '../components/venues/AvailabilityCalendar.jsx';
 import { formatVenuePrice, venueMapLinks } from '../utils/venue.js';
 
 export default function VenueDetails() {
@@ -88,6 +89,7 @@ function VenueContent({ id }) {
               <div><dt className="text-muted">Location</dt><dd className="mt-1 flex items-center gap-2 font-semibold wrap-anywhere"><Icon name="pin" className="size-4 shrink-0 text-success" />{place || 'Not specified'}</dd></div>
               <div><dt className="text-muted">Host</dt><dd className="mt-1 flex items-center gap-2 font-semibold wrap-anywhere"><HostAvatar key={venue.owner?.avatar?.url} media={venue.owner?.avatar} className="size-8" />{venue.owner?.name?.trim() || 'Not specified'}</dd></div>
             </dl>
+            <AvailabilityCalendar bookings={venue.bookings} maxGuests={venue.maxGuests} />
           </aside>
         </div>
       </>}

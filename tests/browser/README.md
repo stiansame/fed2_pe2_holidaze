@@ -51,6 +51,26 @@ blank location/host values consisting only of whitespace.
 Scope: local Chromium viewport simulation and deterministic fixtures, supplemented with live API checks.
 This is not a physical-device or cross-browser certification. Full accessibility/regression work remains in later packages.
 
+## Availability calendar — 2026-10-30
+
+Open `/tests/browser/venues.html?path=/venues/test-1&mode=data`.
+Fixture bookings cover three nights, from today + 3 days until checkout on today + 6 days.
+
+- Browse months: past months cannot be opened; past dates are grey, crossed out and disabled. Booked nights have a pale red background.
+- Click a free date for check-in, then a later date for checkout. The selected stay has a pale green background and its dates appear below the calendar; no date inputs remain.
+- Dates that would make the stay span a booked night are disabled, even when the endpoint itself is free.
+- Check a stay ending on the existing check-in date or starting on its checkout date: it is allowed.
+- Click an earlier date while selecting checkout to replace check-in. Click a free date after completing a range to start a new selection. Repeat across a month boundary.
+- Reserve stays disabled until both dates are selected. Guest counts outside 1–6 are rejected.
+- Reserve validates the selection only in this package; no booking is created until package #19.
+- Change the selection or guest count after checking: the previous result disappears.
+- Use `mode=availability-missing`: availability must not be presented as free when bookings are absent.
+- Repeat at 320, 390 and desktop widths, including keyboard navigation.
+
+Recorded: click selection, Enter/Space, new selection, month boundary, blocked overlap, checkout boundary, capacity constraint and responsive widths passed in local Chromium. Date arithmetic, invalid dates, capacity and boundary cases are also covered by the automated availability test.
+
+Regression check: legacy bookings with equal/reversed dates wholly in the past no longer hide the calendar. Invalid upcoming bookings retain known booked nights but disable availability confirmation and show a warning. Verified against live Ice Hotel, Picnic Blanket and The Old Well data; Ice Hotel marks 1–7 November 2026 as booked and 8 November as available. 24 automated tests, lint and build pass.
+
 ## Static hero and compact filters — 2026-10-24
 
 - Home chooses one random photo from the already loaded highly rated venues and keeps it still during the visit. A fixed reserve photo handles missing/failed images. No carousel controls, timers or extra venue requests for hero content remain.

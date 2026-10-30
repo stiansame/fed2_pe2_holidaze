@@ -7,6 +7,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from '../../src/App.jsx';
 import { AuthContext } from '../../src/auth/AuthContext.js';
 import '../../src/styles/index.css';
+import { addDays, dateKey } from '../../src/utils/availability.js';
 
 const params = new URLSearchParams(location.search);
 const mode = params.get('mode') || 'data';
@@ -19,6 +20,7 @@ const venues = Array.from({ length: 18 }, (_, i) => ({
   location: i === 0 ? null : i === 1 ? { city: ' ', country: ' ' } : { city: 'LongLocation'.repeat(15), country: 'Norway', lat: 0, lng: 0 },
   meta: i ? { wifi: true, parking: true, breakfast: true, pets: true } : null,
   owner: i === 0 ? null : { name: 'LongHostName'.repeat(15), avatar: { url: '/missing-avatar.jpg' } },
+  bookings: mode === 'availability-missing' ? undefined : [{ dateFrom: `${addDays(dateKey(), 3)}T00:00:00Z`, dateTo: `${addDays(dateKey(), 6)}T00:00:00Z` }],
 }));
 let requests = 0;
 

@@ -35,7 +35,7 @@ test('fetches venue details with host data and forwards the abort signal and API
   const fetchMock = t.mock.method(globalThis, 'fetch', async (url, options) => {
     assert.equal(url.pathname, '/holidaze/venues/venue-1');
     assert.equal(url.searchParams.get('_owner'), 'true');
-    assert.equal(url.searchParams.has('_bookings'), false);
+    assert.equal(url.searchParams.get('_bookings'), 'true');
     assert.equal(options.signal, controller.signal);
     return Response.json({ data: { id: 'venue-1', owner: { name: 'host' } } });
   });
