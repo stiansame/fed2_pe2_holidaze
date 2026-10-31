@@ -9,7 +9,7 @@ export function addDays(date, days) {
   return value.toISOString().slice(0, 10);
 }
 
-function validDate(date) {
+export function validDate(date) {
   return /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(Date.parse(date))
     && new Date(date).toISOString().slice(0, 10) === date;
 }
@@ -23,8 +23,8 @@ export function stayFromSearch(search) {
   };
 }
 
-export function staySummary(venue, stay) {
-  const { periods, reliable } = bookedPeriods(venue.bookings);
+export function staySummary(venue, stay, bookingId) {
+  const { periods, reliable } = bookedPeriods(bookingId ? venue.bookings?.filter(booking => booking.id !== bookingId) : venue.bookings);
   const error = validateStay({ ...stay, maxGuests: venue.maxGuests, periods: reliable ? periods : null });
   if (error) return { error };
   if (!Number.isFinite(venue.price) || venue.price < 0) return { error: 'A valid price is unavailable for this stay.' };

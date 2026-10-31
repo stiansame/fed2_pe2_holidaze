@@ -1,11 +1,66 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createBooking } from '../../src/api/bookings.js';
+import { cancelBooking, createBooking, getOwnBooking, getOwnBookings, updateBooking } from '../../src/api/bookings.js';
 import { ApiError } from '../../src/api/client.js';
 import { stayFromSearch, staySummary } from '../../src/utils/availability.js';
 
 const stay = { from: '2090-03-25', to: '2090-03-28', guests: 2 };
 const venue = { id: 'venue-1', price: 1490.25, maxGuests: 4, bookings: [] };
+
+test('loads every page of own bookings with venue data and rejects partial results', async () => {
+  const pages = [];
+  const request = async (path, { query }) => {
+    assert.equal(path, 'holidaze/profiles/A%20B/bookings');
+    assert.equal(query._venue, true);
+    pages.push(query.page);
+    return { data: [{ id: 'a' }, { id: String(query.page) }], meta: { nextPage: query.page === 1 ? 2 : null } };
+  };
+  assert.equal((await getOwnBookings(request, 'A B')).length, 3);
+  assert.deepEqual(pages, [1, 2]);
+  await assert.rejects(getOwnBookings(async (path, options) => {
+    if (options.query.page === 2) throw new Error('Page failed');
+    return request(path, options);
+  }, 'A B'), /Page failed/);
+  await assert.rejects(getOwnBookings(request, 'A B', { signal: AbortSignal.abort() }), { name: 'AbortError' });
+});
+
+test('editing excludes only this booking and sends PUT to its original id', async t => {
+  let latestVenue = { ...venue, bookings: [{ id: 'own', dateFrom: stay.from, dateTo: stay.to }] };
+  t.mock.method(globalThis, 'fetch', async () => Response.json({ data: latestVenue }));
+  const calls = [];
+  const request = async (path, options) => {
+    calls.push(options.method || 'GET');
+    assert.equal(path, 'holidaze/bookings/own');
+    if (options.method === 'PUT') {
+      assert.deepEqual(options.body, { dateFrom: `${stay.from}T00:00:00.000Z`, dateTo: `${stay.to}T00:00:00.000Z`, guests: 2 });
+      return { data: { id: 'own' } };
+    }
+    return { data: { id: 'own', dateFrom: stay.from, dateTo: stay.to, customer: { name: 'Guest' }, venue } };
+  };
+  assert.equal((await updateBooking(request, 'own', 'guest', stay, venue.price)).booking.id, 'own');
+  assert.deepEqual(calls, ['GET', 'PUT']);
+  calls.length = 0;
+  latestVenue.bookings.push({ id: 'other', dateFrom: stay.from, dateTo: stay.to });
+  await assert.rejects(updateBooking(request, 'own', 'guest', stay, venue.price));
+  assert.deepEqual(calls, ['GET']);
+  latestVenue = { ...venue, price: 1500 };
+  assert.equal((await updateBooking(request, 'own', 'guest', stay, venue.price)).booking, null);
+  assert.deepEqual(calls, ['GET', 'GET']);
+});
+
+test('checks ownership and unstarted dates before cancellation or changes', async () => {
+  const calls = [];
+  let booking = { dateFrom: stay.from, dateTo: stay.to, customer: { name: 'Guest' } };
+  const request = async (path, options) => { calls.push(options.method || 'GET'); return { data: booking }; };
+  await cancelBooking(request, 'own', 'guest');
+  assert.deepEqual(calls, ['GET', 'DELETE']);
+  calls.length = 0;
+  await assert.rejects(getOwnBooking(request, 'own', 'someone-else'), { status: 403 });
+  booking = { ...booking, dateFrom: '2020-01-01', dateTo: '2020-01-03' };
+  await assert.rejects(cancelBooking(request, 'own', 'guest'), /not started/);
+  await assert.rejects(updateBooking(request, 'own', 'guest', stay, venue.price), /not started/);
+  assert.deepEqual(calls, ['GET', 'GET', 'GET']);
+});
 
 test('reads the URL selection and calculates nights and total using whole calendar days', () => {
   assert.deepEqual(stayFromSearch('?from=2090-03-25&to=2090-03-28&guests=2'), stay);

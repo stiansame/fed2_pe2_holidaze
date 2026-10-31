@@ -41,7 +41,17 @@ const venues = Array.from({ length: 18 }, (_, i) => ({
 let requests = 0;
 let detailRequests = 0;
 const savedBookings = new Map();
+if (params.get('ownBookings') === '1') {
+  for (let i = 0; i < 10; i++) {
+    const venue = venues[i + 2];
+    const from = addDays(dateKey(), i < 5 ? 8 + i * 5 : -30 - (i - 5) * 5);
+    const booking = { id: `own-${i}`, dateFrom: `${from}T00:00:00Z`, dateTo: `${addDays(from, 2)}T00:00:00Z`, guests: 2, customer: { name: fixtureUser.name }, venue: { ...venue, bookings: undefined } };
+    savedBookings.set(booking.id, booking);
+    venue.bookings.push({ id: booking.id, dateFrom: booking.dateFrom, dateTo: booking.dateTo, guests: booking.guests });
+  }
+}
 let confirmationRequests = 0;
+let ownReads = 0;
 
 globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
   signal?.throwIfAborted();
@@ -54,6 +64,10 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
   signal?.throwIfAborted();
   if (url.pathname === '/auth/login') return Response.json({ data: fixtureUser });
   if (url.pathname.startsWith('/holidaze/profiles/')) {
+    if (url.pathname.endsWith('/bookings')) {
+      if (mode === 'own-error' && ++ownReads === 1) return Response.json({ errors: [{ message: 'Fixture bookings unavailable.' }] }, { status: 503 });
+      return Response.json({ data: mode === 'own-empty' ? [] : [...savedBookings.values()], meta: { nextPage: null } });
+    }
     if (method === 'PUT') {
       if (mode === 'profile-save-error') return Response.json({ errors: [{ message: 'Fixture profile update rejected.' }] }, { status: 400 });
       if (mode === 'profile-unauthorized') return Response.json({ errors: [{ message: 'Session expired' }] }, { status: 401 });
@@ -77,6 +91,17 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
     }
     if (mode === 'confirmation-error' && ++confirmationRequests === 1) return Response.json({ errors: [{ message: 'Fixture confirmation unavailable.' }] }, { status: 503 });
     const booking = savedBookings.get(url.pathname.split('/')[3]);
+    if (booking && ['PUT', 'DELETE'].includes(method)) {
+      if (mode === 'own-save-error') return Response.json({ errors: [{ message: 'Fixture change rejected.' }] }, { status: 400 });
+      const venue = venues.find(item => item.id === booking.venue.id);
+      if (method === 'DELETE') {
+        savedBookings.delete(booking.id);
+        venue.bookings = venue.bookings.filter(item => item.id !== booking.id);
+        return new Response(null, { status: 204 });
+      }
+      Object.assign(booking, JSON.parse(body));
+      Object.assign(venue.bookings.find(item => item.id === booking.id), JSON.parse(body));
+    }
     return booking ? Response.json({ data: booking }) : Response.json({ errors: [{ message: 'Booking not found' }] }, { status: 404 });
   }
   const fail = ++requests === 1;

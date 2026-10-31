@@ -11,6 +11,8 @@ import VenueDetails from './pages/VenueDetails.jsx';
 import BookingReview from './pages/BookingReview.jsx';
 import BookingConfirmation from './pages/BookingConfirmation.jsx';
 import AccountLayout from './components/layout/AccountLayout.jsx';
+import MyBookings from './pages/MyBookings.jsx';
+import BookingEdit from './pages/BookingEdit.jsx';
 
 export default function App() {
   return (
@@ -26,7 +28,8 @@ export default function App() {
           <Route element={<AccountLayout />}>
             <Route path="/bookings/:id/confirmation" element={<BookingConfirmation />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/bookings" element={<ComingSoon title="My bookings" />} />
+            <Route path="/bookings" element={<MyBookings />} />
+            <Route path="/bookings/:id/edit" element={<BookingEdit />} />
             <Route element={<RequireAuth manager />}>
               <Route path="/manager" element={<ComingSoon title="Manager dashboard" />} />
               <Route path="/manager/venues" element={<ComingSoon title="My venues" />} />
