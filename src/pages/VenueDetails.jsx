@@ -40,7 +40,7 @@ function VenueContent({ id }) {
   return (
     <section className="space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
       <title>{`Holidaze | ${notFound ? 'Venue not found' : venue ? name : 'Venue details'}`}</title>
-      <Link to={`/venues${search}`} className="inline-flex min-h-12 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint">← Back to venues</Link>
+      <Link to={`/venues${search}`} className="navigation-link">← Back to venues</Link>
       {error ? <>
         <h1 className="text-h2 font-bold">{notFound ? 'Venue not found' : 'Unable to load this stay'}</h1>
         <p role="alert">{notFound ? 'This stay may have been removed or the link is incorrect.' : error.message}</p>
@@ -67,7 +67,8 @@ function VenueContent({ id }) {
             </section>
             <section className="space-y-3 rounded-lg border-l-4 border-accent bg-accent/10 p-4">
               <h2 className="text-h3 font-bold">Hosted by</h2>
-              <p className="flex items-center gap-3 font-semibold wrap-anywhere"><HostAvatar key={venue.owner?.avatar?.url} media={venue.owner?.avatar} />{venue.owner?.name?.trim() || 'Host information not available.'}</p>
+              {venue.owner?.name?.trim() ? <Link to={`/profiles/${encodeURIComponent(venue.owner.name)}`} className="inline-flex min-h-12 items-center gap-3 rounded-lg font-semibold text-primary wrap-anywhere hover:underline"><HostAvatar key={venue.owner.avatar?.url} media={venue.owner.avatar} />{venue.owner.name}</Link>
+                : <p className="text-muted">Host information not available.</p>}
               {venue.owner?.bio?.trim() && <p className="whitespace-pre-line text-muted wrap-anywhere">{venue.owner.bio}</p>}
             </section>
             <section className="space-y-3 border-t border-border pt-5">

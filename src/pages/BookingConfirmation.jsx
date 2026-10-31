@@ -32,10 +32,12 @@ export default function BookingConfirmation() {
       <dl className="space-y-3">
         {[['Booking reference', booking.id], ['Check-in', booking.dateFrom.slice(0, 10)], ['Check-out', booking.dateTo.slice(0, 10)], ['Guests', booking.guests]].map(([label, value]) => <div key={label}><dt className="text-small text-muted">{label}</dt><dd className="font-semibold wrap-anywhere">{value}</dd></div>)}
       </dl>
-      {booking.venue?.id && <Link to={`/venues/${encodeURIComponent(booking.venue.id)}`} className="inline-block py-2 text-primary underline">View venue</Link>}
     </>}
     {error && <><p role="alert" className="text-danger">Your reservation may already be saved, but its details could not be loaded: {error}</p><button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Reload confirmation</button></>}
-    <Link to="/bookings" className="block py-2 text-primary underline">My bookings</Link>
-    <Link to="/venues" className="block py-2 text-primary underline">Explore venues</Link>
+    <div className="flex flex-wrap gap-3">
+      {booking?.venue?.id && <Link to={`/venues/${encodeURIComponent(booking.venue.id)}`} className="navigation-link">View venue</Link>}
+      <Link to="/bookings" className="navigation-link">My bookings</Link>
+      <Link to="/venues" className="navigation-link">Explore venues</Link>
+    </div>
   </section>;
 }

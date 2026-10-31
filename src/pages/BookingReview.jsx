@@ -72,6 +72,6 @@ function Review({ id, search }) {
     </>}
     {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}
     {!venue && error && <button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Try again</button>}
-    {!pending && <Link to={edit} className="inline-block py-2 text-primary underline">Back to dates</Link>}
+    {!pending && <Link to={edit} className="navigation-link">Back to dates</Link>}
   </section>;
 }

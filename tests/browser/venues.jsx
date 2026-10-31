@@ -64,6 +64,20 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
   signal?.throwIfAborted();
   if (url.pathname === '/auth/login') return Response.json({ data: fixtureUser });
   if (url.pathname.startsWith('/holidaze/profiles/')) {
+    const profileName = decodeURIComponent(url.pathname.split('/')[3]);
+    if (profileName === 'missing') return Response.json({ errors: [{ message: 'Profile not found.' }] }, { status: 404 });
+    if (url.pathname.endsWith('/venues')) {
+      const all = mode === 'host-empty' ? [] : venues.filter(venue => venue.owner?.name === profileName);
+      const page = Number(url.searchParams.get('page')) || 1;
+      return Response.json({ data: all.slice((page - 1) * 5, page * 5), meta: { nextPage: page * 5 < all.length ? page + 1 : null } });
+    }
+    if (profileName !== fixtureUser.name) {
+      if (mode === 'host-error' && ++profileReads === 1) return Response.json({ errors: [{ message: 'Fixture host unavailable.' }] }, { status: 503 });
+      return Response.json({ data: { ...fixtureProfile, name: profileName, venueManager: true,
+        avatar: mode === 'host-broken' ? { url: '/missing-host.jpg' } : fixtureProfile.avatar,
+        banner: mode === 'host-broken' ? { url: '/missing-banner.jpg' } : fixtureProfile.banner,
+      } });
+    }
     if (url.pathname.endsWith('/bookings')) {
       if (mode === 'own-error' && ++ownReads === 1) return Response.json({ errors: [{ message: 'Fixture bookings unavailable.' }] }, { status: 503 });
       return Response.json({ data: mode === 'own-empty' ? [] : [...savedBookings.values()], meta: { nextPage: null } });
