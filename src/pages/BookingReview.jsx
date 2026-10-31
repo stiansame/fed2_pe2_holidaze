@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { getVenue } from '../api/venues.js';
 import { createBooking } from '../api/bookings.js';
 import { stayFromSearch, staySummary } from '../utils/availability.js';
-import { formatPrice, formatVenuePrice } from '../utils/venue.js';
+import StaySummary from '../components/bookings/StaySummary.jsx';
 
 export default function BookingReview() {
   const { id } = useParams();
@@ -64,10 +64,7 @@ function Review({ id, search }) {
     <h1 className="text-h3 font-bold">Review your booking</h1>
     {!venue && !error && <p role="status">Loading your stay…</p>}
     {venue && <>
-      <h2 className="text-h3 font-semibold wrap-anywhere">{venue.name?.trim() || 'Unnamed stay'}</h2>
-      <dl className="grid grid-cols-2 gap-4">
-        {[['Check-in', stay.from || 'Not selected'], ['Check-out', stay.to || 'Not selected'], ['Guests', stay.guests], ['Nights', summary.nights ?? '—'], ['Price per night', formatVenuePrice(venue.price)], ['Estimated total', summary.error ? '—' : formatPrice(summary.total)]].map(([label, value]) => <div key={label}><dt className="text-small text-muted">{label}</dt><dd className="font-semibold wrap-anywhere">{value}</dd></div>)}
-      </dl>
+      <StaySummary venue={venue} stay={stay} summary={summary} />
       {summary.error && <p role="alert" className="text-danger">{summary.error}</p>}
       <form onSubmit={confirm}>
         <button disabled={pending || uncertain || !!summary.error} className="min-h-12 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{pending ? 'Reserving…' : 'Confirm reservation'}</button>

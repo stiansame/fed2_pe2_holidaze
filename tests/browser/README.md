@@ -124,3 +124,25 @@ Persistent saving and publicly accessible image validation against Noroff remain
 - On mobile, Account menu is a native select above the content. Check every manager destination and return to Profile; desktop navigation must highlight only the exact active destination.
 - A regular customer's direct `/manager/bookings` visit must redirect to Profile. Upgrading to manager must immediately update the menu and badge.
 - Recorded: role-based links, all four manager destinations, active states, mobile selection, access guard and view/edit widths of 320/390px passed. Manager screens retain their existing Coming soon scope; this change adds navigation, not dashboard/venue-management functionality.
+
+## Own bookings — package #21
+
+Open `/tests/browser/venues.html?path=/bookings&signedIn=1&ownBookings=1`. This seeds five future and five past stays in memory. No real bookings or saved sessions are changed.
+
+1. Both groups show three stays. Upcoming stays are nearest first; past stays are most recent first. Show all and Show less expand/collapse each group independently.
+2. Profile shows three upcoming stays. Its Show all link opens the complete upcoming group on My bookings.
+3. Change a future booking: the original dates must be available, while other booked nights remain blocked. Change dates/guests, Review changes, Back to dates, then Save changes. The list must display the returned dates/guests and success message.
+4. Cancel booking opens confirmation. Keep booking preserves it; Confirm cancellation removes it only after a successful response. Refresh and Profile must reflect the deletion.
+5. Past stays have no change/cancel actions. Unit tests also reject other customers' bookings and stays that have already started.
+6. Add `mode=own-error`: the initial list request fails and Try again succeeds. `mode=own-empty` gives empty groups. `mode=own-save-error` rejects PUT/DELETE and preserves the booking/draft with an error.
+7. Repeat list and date editing at mobile widths. Check keyboard access to navigation, calendar and confirmation controls.
+
+Recorded 2026-10-31: three-per-group, expansion, profile navigation, guest/date saving, retained draft, confirmation/Keep booking, deletion/refetch, empty state, list retry and rejected PUT/DELETE passed in local browser fixtures. List at 320px and editor at 390px had no horizontal overflow. Automated tests cover grouping/date boundaries, pagination, ownership, self-exclusion, overlap rejection, price changes and mutation payloads.
+
+Live persistence still requires manual testing with the user's account. The API exposes DELETE without cancelled-booking history, so cancelled stays cannot be listed as a separate status.
+
+### Booking card layout and prices
+
+Cards on My bookings and Profile include address/location, current nightly rate and estimated total (UTC nights × nightly rate). Missing prices or invalid dates show an unavailable total. The API does not retain the rate at reservation time, so estimates are labelled accordingly.
+
+Recorded: desktop photos fill the card height, Change/Cancel stack on the right, and mobile cards stack photo/content/actions without horizontal overflow at 320px, including long unbroken locations. Profile prices and cancellation confirmation/Keep booking were checked with the same fixtures. Unit tests cover past stays, UTC night counts, fractional prices, zero prices and unavailable totals.

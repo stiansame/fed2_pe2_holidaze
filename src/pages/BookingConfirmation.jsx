@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
+import { getOwnBooking } from '../api/bookings.js';
 
 export default function BookingConfirmation() {
   const { id } = useParams();
@@ -12,11 +13,8 @@ export default function BookingConfirmation() {
   useEffect(() => {
     window.scrollTo(0, 0);
     const controller = new AbortController();
-    request(`holidaze/bookings/${encodeURIComponent(id)}`, {
-      query: { _venue: true, _customer: true }, signal: controller.signal,
-    }).then(({ data }) => {
+    getOwnBooking(request, id, user.name, { signal: controller.signal }).then(data => {
       if (controller.signal.aborted) return;
-      if (data.customer?.name !== user.name) throw new Error('This booking is not available for your account.');
       setBooking(data);
     }).catch(error => {
       if (!controller.signal.aborted) setError(error.message);
@@ -37,6 +35,7 @@ export default function BookingConfirmation() {
       {booking.venue?.id && <Link to={`/venues/${encodeURIComponent(booking.venue.id)}`} className="inline-block py-2 text-primary underline">View venue</Link>}
     </>}
     {error && <><p role="alert" className="text-danger">Your reservation may already be saved, but its details could not be loaded: {error}</p><button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Reload confirmation</button></>}
+    <Link to="/bookings" className="block py-2 text-primary underline">My bookings</Link>
     <Link to="/venues" className="block py-2 text-primary underline">Explore venues</Link>
   </section>;
 }

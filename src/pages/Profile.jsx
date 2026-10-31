@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import HostAvatar from '../components/HostAvatar.jsx';
 import VenueImage from '../components/venues/VenueImage.jsx';
 import { profileUpdate } from '../utils/profile.js';
+import BookingsList from '../components/bookings/BookingsList.jsx';
 
 export default function Profile() {
   const { user, request, becomeManager } = useAuth();
@@ -63,6 +64,7 @@ export default function Profile() {
                   {pending ? 'Please wait…' : 'Become a venue manager'}
                 </button>
             </div>}
+            <div className="border-t border-border pt-5"><BookingsList upcomingOnly /></div>
           </>}
         </>}
         {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}

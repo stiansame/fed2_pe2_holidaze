@@ -6,12 +6,12 @@ import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, validateStay
 const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
 const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'UTC' });
 
-export default function AvailabilityCalendar({ bookings, maxGuests }) {
+export default function AvailabilityCalendar({ bookings, maxGuests, initialStay, onReserve, actionLabel = 'Reserve' }) {
   const today = dateKey();
   const { id } = useParams();
   const { search } = useLocation();
   const navigate = useNavigate();
-  const initial = stayFromSearch(search);
+  const initial = initialStay ?? stayFromSearch(search);
   const [month, setMonth] = useState(initial.from >= today ? initial.from.slice(0, 7) : today.slice(0, 7));
   const [from, setFrom] = useState(initial.from);
   const [to, setTo] = useState(initial.to);
@@ -74,12 +74,13 @@ export default function AvailabilityCalendar({ bookings, maxGuests }) {
         event.preventDefault();
         setChecked(true);
         if (error) return;
+        if (onReserve) return onReserve({ from, to, guests });
         const params = new URLSearchParams(search);
         for (const [key, value] of Object.entries({ from, to, guests })) params.set(key, value);
         navigate(`/venues/${encodeURIComponent(id)}/reserve?${params}`);
       }}>
         <label className="block text-small">Guests<input type="number" required min="1" max={maxGuests > 0 ? maxGuests : undefined} step="1" value={guests} onChange={event => setGuests(Number(event.target.value))} className={inputClass} /></label>
-        <button disabled={!reliable || !from || !to} className="min-h-12 w-full rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">Reserve</button>
+        <button disabled={!reliable || !from || !to} className="min-h-12 w-full rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{actionLabel}</button>
         {checked && error && <p role="alert" className="text-small text-danger">{error}</p>}
       </form>
     </>}
