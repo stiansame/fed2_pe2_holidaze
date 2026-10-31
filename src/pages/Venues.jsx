@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { filterVenues, getAllVenues, sortVenues, venueSorts } from '../api/venues.js';
 import { amenityOptions } from '../components/venues/amenityOptions.js';
 import VenueCard from '../components/venues/VenueCard.jsx';
+import GuestSelect from '../components/GuestSelect.jsx';
 
 const buttonClass = 'min-h-12 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60';
 const fieldClass = 'mt-1 min-h-12 w-full rounded-lg border border-border bg-surface px-3 font-normal';
@@ -69,7 +70,7 @@ export default function Venues() {
       </div>
       <div id="venue-filters" className={`${filtersOpen ? 'grid' : 'hidden'} mt-3 grid-cols-2 items-end gap-3 rounded-lg border border-border bg-surface p-3 lg:mt-6 lg:flex lg:flex-wrap lg:gap-4 lg:border-0 lg:bg-transparent lg:p-0`}>
         <label className="block min-w-0 text-small font-semibold">Guests
-          <input type="number" min="1" max="100" step="1" value={guests || ''} onChange={event => update('guests', event.target.value)} placeholder="Any" className={`${fieldClass} lg:max-w-28`} />
+          <GuestSelect value={guests} onChange={value => update('guests', value || '')} allowAny className={`${fieldClass} lg:max-w-36`} />
         </label>
         <label className="block min-w-0 text-small font-semibold">Sort by
           <select value={order} onChange={event => update('order', event.target.value === 'newest' ? '' : event.target.value)} className={fieldClass}>

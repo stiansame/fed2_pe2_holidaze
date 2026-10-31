@@ -69,7 +69,7 @@ function VenueContent({ id }) {
               <h2 className="text-h3 font-bold">Hosted by</h2>
               {venue.owner?.name?.trim() ? <Link to={`/profiles/${encodeURIComponent(venue.owner.name)}`} className="inline-flex min-h-12 items-center gap-3 rounded-lg font-semibold text-primary wrap-anywhere hover:underline"><HostAvatar key={venue.owner.avatar?.url} media={venue.owner.avatar} />{venue.owner.name}</Link>
                 : <p className="text-muted">Host information not available.</p>}
-              {venue.owner?.bio?.trim() && <p className="whitespace-pre-line text-muted wrap-anywhere">{venue.owner.bio}</p>}
+              <p className="whitespace-pre-line text-muted wrap-anywhere">{venue.owner?.bio?.trim() || 'No host bio provided.'}</p>
             </section>
             <section className="space-y-3 border-t border-border pt-5">
               <h2 className="text-h3 font-bold">Location</h2>
