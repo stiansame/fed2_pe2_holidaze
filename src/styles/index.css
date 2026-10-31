@@ -38,6 +38,12 @@
   }
 }
 
+@layer components {
+  .navigation-link {
+    @apply inline-flex min-h-12 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint;
+  }
+}
+
 /* A restrained boost for listing and hero photos; text and badges stay unchanged. */
 .venue-photo {
   filter: saturate(1.08) contrast(1.04);

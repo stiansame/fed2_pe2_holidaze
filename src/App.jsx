@@ -13,6 +13,7 @@ import BookingConfirmation from './pages/BookingConfirmation.jsx';
 import AccountLayout from './components/layout/AccountLayout.jsx';
 import MyBookings from './pages/MyBookings.jsx';
 import BookingEdit from './pages/BookingEdit.jsx';
+import PublicProfile from './pages/PublicProfile.jsx';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/login" element={<AuthForm key="login" />} />
         <Route path="/register" element={<AuthForm key="register" register />} />
         <Route element={<RequireAuth />}>
+          <Route path="/profiles/:name" element={<PublicProfile />} />
           <Route path="/venues/:id/reserve" element={<BookingReview />} />
           <Route element={<AccountLayout />}>
             <Route path="/bookings/:id/confirmation" element={<BookingConfirmation />} />

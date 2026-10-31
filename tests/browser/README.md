@@ -146,3 +146,53 @@ Live persistence still requires manual testing with the user's account. The API 
 Cards on My bookings and Profile include address/location, current nightly rate and estimated total (UTC nights × nightly rate). Missing prices or invalid dates show an unavailable total. The API does not retain the rate at reservation time, so estimates are labelled accordingly.
 
 Recorded: desktop photos fill the card height, Change/Cancel stack on the right, and mobile cards stack photo/content/actions without horizontal overflow at 320px, including long unbroken locations. Profile prices and cancellation confirmation/Keep booking were checked with the same fixtures. Unit tests cover past stays, UTC night counts, fractional prices, zero prices and unavailable totals.
+
+## Complete customer journey — package #22
+
+### Local integration check, 2026-10-31
+
+Environment: local Vite development build, in-app Chromium browser, desktop and mobile viewport overrides of 390px and 320px. The existing fixtures render the real pages, authentication provider and request client, with simulated API responses held in memory. These results do not establish persistence against Noroff or constitute tests on physical mobile devices.
+
+| Check | Observed result |
+| --- | --- |
+| Home search → results → venue details | Query preserved; matching venue opened |
+| Calendar selection → Reserve while signed out | Login required; selected dates, guests and return path preserved |
+| Login → review → confirmation | Same selection shown; correct nights/total and booking reference returned |
+| New booking → Profile → My bookings | Same reservation appears on both pages |
+| Change new booking → review → save | Same reservation updated; new guest count shown in list |
+| Cancel → Keep booking | Reservation preserved |
+| Cancel → Confirm cancellation → Profile | Reservation removed; upcoming list empty |
+| Mobile login → reserve → profile → edit → cancel | Flow passed at 390px, with final list/cancellation at 320px and no horizontal overflow |
+| Keyboard submission | Enter activated confirmation/save cancellation controls |
+| Price changes during final preflight | Updated total shown; second confirmation required before saving |
+| Another booking takes selected dates | Overlap error shown; no confirmation |
+| Response lost after POST saved | Warning shown and repeat submission disabled; saved reservation visible on Profile |
+| Authenticated request rejected with 401 | Returned to login; new login restored original dates/guests and review |
+| Automated checks | 35 tests passed; lint and production build passed |
+
+Repeat the desktop flow from `/tests/browser/venues.html?path=/`: search for `Test stay 2`, open its result and choose a future available range. Use `fixture@stud.noroff.no` and any password meeting the login form's requirements. Login is simulated and never sends these values to Noroff. Continue through confirmation, Profile, My bookings, edit and cancellation without reloading the fixture.
+
+For mobile or failure cases, start from `/tests/browser/venues.html?path=/venues/test-2/reserve%3Ffrom=2090-03-25%26to=2090-03-28%26guests=2`. Add `signedIn=1` to bypass initial login, and a documented mode such as `booking-price`, `booking-conflict`, `booking-uncertain` or `booking-unauthorized`. Open a fresh fixture for each scenario. Existing #19–21 instructions cover individual invalid-input, empty-state and rejected-mutation checks.
+
+No application changes were necessary during this integration check. The existing fixtures reset on full reload, so the following live checks remain **unverified**, not passed:
+
+- With a real account, create a future reservation and note its reference. Reload the confirmation URL: the same booking must appear without a duplicate.
+- Reload Profile and My bookings, then log out and back in: the reservation must remain available to its owner.
+- Change the reservation's dates/guest count. Reload and verify the returned values and unchanged reference.
+- Cancel a disposable reservation created for this check. Reload both lists and verify it is absent.
+- Repeat the main journey in the deployed Netlify version, including direct protected URLs and session restoration after reload.
+
+Overall status: local integration checks passed; live persistence/deployment validation remains pending. No real bookings were created, changed or deleted by these checks.
+
+## Public host profile
+
+Open `/tests/browser/venues.html?path=/venues/test-2`. Click the host's name/avatar. Without a session this opens login; use the fixture email/password described above and verify return to `/profiles/:name`. Noroff's profile endpoints require authentication (an unauthenticated live GET returned 401), so “public” means another user's read-only profile, not anonymous API access.
+
+- The profile shows banner, overlapping avatar, name, optional manager badge and bio on the left, with Venues on the right at desktop widths. Mobile stacks these sections.
+- The venue list initially shows three compact rows. View all expands the entire list, including additional pages (the fixture returns five per API page); Show less restores three.
+- Every venue row opens the corresponding venue details. Rows show name, location and nightly price, with fallbacks for unavailable images/location/price.
+- No Edit profile, manager upgrade, account sidebar or private bookings appear in the host profile, including when viewing your own name through `/profiles/:name`.
+- Use `path=/profiles/missing&signedIn=1` for a missing profile. Use `path=/profiles/host&signedIn=1` with `mode=host-empty`, `host-broken` or `host-error` for empty venues, failed images, or a first-load failure followed by successful Try again.
+- Check direct profile links while signed in and out, and check keyboard focus on the host link, venue links and View all/Show less.
+
+Recorded 2026-10-31: venue → host → login → host return, profile data, three/all/seventeen venue rows across pages, venue detail navigation, 404, retry, empty list and image fallback passed with local fixtures. Long names/locations had no horizontal overflow at 320px; missing-image profile also checked at 390px. Automated checks verify pagination, encoded names, cancellation, failures and read-only request behavior. Live authenticated profile content still requires manual verification with a real account; no credentials or profile changes were sent to Noroff.
