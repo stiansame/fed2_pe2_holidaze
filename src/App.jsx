@@ -10,6 +10,7 @@ import Venues from './pages/Venues.jsx';
 import VenueDetails from './pages/VenueDetails.jsx';
 import BookingReview from './pages/BookingReview.jsx';
 import BookingConfirmation from './pages/BookingConfirmation.jsx';
+import AccountLayout from './components/layout/AccountLayout.jsx';
 
 export default function App() {
   return (
@@ -22,14 +23,17 @@ export default function App() {
         <Route path="/register" element={<AuthForm key="register" register />} />
         <Route element={<RequireAuth />}>
           <Route path="/venues/:id/reserve" element={<BookingReview />} />
-          <Route path="/bookings/:id/confirmation" element={<BookingConfirmation />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/bookings" element={<ComingSoon title="My bookings" />} />
-        </Route>
-        <Route element={<RequireAuth manager />}>
-          <Route path="/manager" element={<ComingSoon title="Manager dashboard" />} />
-          <Route path="/manager/venues" element={<ComingSoon title="My venues" />} />
-          <Route path="/manager/venues/new" element={<ComingSoon title="Create venue" />} />
+          <Route element={<AccountLayout />}>
+            <Route path="/bookings/:id/confirmation" element={<BookingConfirmation />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/bookings" element={<ComingSoon title="My bookings" />} />
+            <Route element={<RequireAuth manager />}>
+              <Route path="/manager" element={<ComingSoon title="Manager dashboard" />} />
+              <Route path="/manager/venues" element={<ComingSoon title="My venues" />} />
+              <Route path="/manager/venues/new" element={<ComingSoon title="Create venue" />} />
+              <Route path="/manager/bookings" element={<ComingSoon title="Venue bookings" />} />
+            </Route>
+          </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
       </Route>
