@@ -196,3 +196,20 @@ Open `/tests/browser/venues.html?path=/venues/test-2`. Click the host's name/ava
 - Check direct profile links while signed in and out, and check keyboard focus on the host link, venue links and View all/Show less.
 
 Recorded 2026-10-31: venue → host → login → host return, profile data, three/all/seventeen venue rows across pages, venue detail navigation, 404, retry, empty list and image fallback passed with local fixtures. Long names/locations had no horizontal overflow at 320px; missing-image profile also checked at 390px. Automated checks verify pagination, encoded names, cancellation, failures and read-only request behavior. Live authenticated profile content still requires manual verification with a real account; no credentials or profile changes were sent to Noroff.
+
+## Follow-up validation of #19–22 — 2026-10-31
+
+This follow-up resolves the live persistence checks marked pending in the earlier customer-journey record above. Application commit: `37a79f6`. Tests ran against the Netlify deployment and Noroff using an account signed in by the user, supplemented by the local fixtures and automated suite.
+
+- Live profile: Cancel discarded a draft; an unsafe avatar URL was rejected before submission; blank media URLs preserved both existing images; a temporary bio survived a full reload; manager status stayed unchanged. The original empty bio was restored afterwards.
+- Live booking: home search → venue → dates → review → confirmation succeeded. A two-night stay at NOK 456/night showed NOK 912. Back to dates retained the selection. Capacity validation rejected three guests for a venue allowing two.
+- Test reference `399221d5-f159-47e2-ba7f-0664b26a78f4`: confirmation reloaded without creating a duplicate; exactly one reservation appeared on My bookings and Profile after reload.
+- Date editing excluded that reservation's own dates. Changing to 23–26 January 2027 and one guest showed three nights and NOK 1,368. Back to dates retained the draft. Saving retained the reference and the new values survived reload.
+- Keep booking preserved the reservation. After the user's explicit confirmation, cancellation removed it from both lists, including after full reload. No test reservation remains.
+- Local replay passed for initial/edit price changes requiring reconfirmation, new overlaps, lost POST response, rejected POST, expired/rejected authentication with preserved selection, disabled pending confirmation, confirmation retry, retained profile draft on rejection, missing/broken profile media, three-per-group, independent expansion and the profile's Show all link.
+- `mode=own-incomplete&ownBookings=1&signedIn=1&path=/bookings` now provides missing venue/image/location/price data and a current stay. Readable fallbacks and absence of mutation actions on the current stay were verified. Previous unit tests also cover invalid dates, length boundaries and ownership.
+- Browser fixtures were rechecked at 320px without horizontal overflow; earlier 390px and desktop results remain applicable. These are viewport checks, not physical-device testing.
+
+Result: the described #19–22 checks passed, with no application-code changes required. GitHub checklists, evidence and completed status were updated. No production outages or real account expiry were induced; failure paths used isolated fixtures.
+
+Project audit: all 26 merged PRs are in the project with priority, phase, actual PR creation/merge dates, estimates and milestone. Historical closing-text references were replaced with actual Development links where necessary. #56–66 are issues, not PRs. Public host profile delivery is tracked by #72 under #20 and linked to PR #71. Estimates are planning estimates, not measured hours; dates describe PR history rather than the start of local development.

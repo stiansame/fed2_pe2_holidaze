@@ -51,6 +51,12 @@ if (params.get('ownBookings') === '1') {
   }
 }
 let confirmationRequests = 0;
+if (mode === 'own-incomplete') {
+  const first = savedBookings.get('own-0');
+  if (first) first.venue = { media: [{ url: '/missing-booking.jpg' }] };
+  const current = savedBookings.get('own-1');
+  if (current) Object.assign(current, { dateFrom: addDays(dateKey(), -1), dateTo: addDays(dateKey(), 1) });
+}
 let ownReads = 0;
 
 globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
