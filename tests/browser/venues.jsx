@@ -12,7 +12,7 @@ import { addDays, dateKey } from '../../src/utils/availability.js';
 
 const params = new URLSearchParams(location.search);
 const mode = params.get('mode') || 'data';
-const fixtureUser = { name: 'fixture_guest', email: 'fixture@stud.noroff.no', venueManager: false, accessToken: `fixture.${btoa(JSON.stringify({ exp: 9999999999 }))}.test` };
+const fixtureUser = { name: 'fixture_guest', email: 'fixture@stud.noroff.no', venueManager: params.get('manager') === '1', accessToken: `fixture.${btoa(JSON.stringify({ exp: 9999999999 }))}.test` };
 // Keep fixture sessions in memory; never touch the user's real saved session.
 const fixtureStorage = new Map(params.get('signedIn') === '1' ? [[SESSION_KEY, JSON.stringify(fixtureUser)]] : []);
 Object.defineProperty(window, 'localStorage', { value: {
@@ -21,6 +21,13 @@ Object.defineProperty(window, 'localStorage', { value: {
   removeItem: key => fixtureStorage.delete(key),
 } });
 const photo = `${location.origin}/src/assets/host-placeholder.svg`;
+let fixtureProfile = {
+  name: fixtureUser.name, email: fixtureUser.email, venueManager: fixtureUser.venueManager,
+  bio: mode === 'profile-empty' ? '' : 'I enjoy finding memorable places to stay.',
+  avatar: mode === 'profile-empty' ? null : { url: mode === 'profile-broken' ? `${location.origin}/missing-avatar.jpg` : photo, alt: 'Profile avatar' },
+  banner: mode === 'profile-empty' ? null : { url: mode === 'profile-broken' ? `${location.origin}/missing-banner.jpg` : photo, alt: 'Profile banner' },
+};
+let profileReads = 0;
 const venues = Array.from({ length: 18 }, (_, i) => ({
   id: `test-${i}`, name: i === 0 ? 'LongVenueName'.repeat(20) : `Test stay ${i}`,
   description: i ? 'DescriptionWithoutSpaces'.repeat(30) : ' ', price: i ? 1490 : null,
@@ -39,13 +46,23 @@ let confirmationRequests = 0;
 globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
   signal?.throwIfAborted();
   const url = new URL(input);
-  if (url.origin !== 'https://v2.api.noroff.dev' || !['/holidaze/venues', '/holidaze/bookings', '/auth/login'].some(path => url.pathname.startsWith(path))) {
+  if (url.origin !== 'https://v2.api.noroff.dev' || !['/holidaze/venues', '/holidaze/bookings', '/holidaze/profiles', '/auth/login'].some(path => url.pathname.startsWith(path))) {
     throw new Error('Only fixture requests are allowed.');
   }
   // StrictMode cancels its first effect. Check cancellation before counting a failure.
   await new Promise(resolve => setTimeout(resolve, 100));
   signal?.throwIfAborted();
   if (url.pathname === '/auth/login') return Response.json({ data: fixtureUser });
+  if (url.pathname.startsWith('/holidaze/profiles/')) {
+    if (method === 'PUT') {
+      if (mode === 'profile-save-error') return Response.json({ errors: [{ message: 'Fixture profile update rejected.' }] }, { status: 400 });
+      if (mode === 'profile-unauthorized') return Response.json({ errors: [{ message: 'Session expired' }] }, { status: 401 });
+      fixtureProfile = { ...fixtureProfile, ...JSON.parse(body) };
+    } else if (mode === 'profile-error' && ++profileReads === 1) {
+      return Response.json({ errors: [{ message: 'Fixture profile unavailable.' }] }, { status: 503 });
+    }
+    return Response.json({ data: fixtureProfile });
+  }
   if (url.pathname.startsWith('/holidaze/bookings')) {
     if (method === 'POST') {
       if (mode === 'booking-unauthorized') return Response.json({ errors: [{ message: 'Session expired' }] }, { status: 401 });

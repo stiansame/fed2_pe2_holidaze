@@ -97,3 +97,30 @@ The fixture uses in-memory authentication and bookings. All requests are interce
 
 Recorded locally: login and preserved selection, edit/return, successful save/receipt, double-click, price reconfirmation, new overlap, POST rejection, uncertain outcome, rejected session and confirmation retry passed with fixtures. Mobile review and confirmation have no horizontal overflow at 320/390px. Unit tests cover payload, UTC nights/total, final validation and uncertain POST outcomes.
 Live booking creation and persisted confirmation reload still require the user's manual test with their account; no live bookings were created by these checks.
+
+## Profile and editing — package #20
+
+Open `/tests/browser/venues.html?path=/profile&signedIn=1`. Authentication and profile changes are held in memory; no Noroff profile or real saved session is changed. Reloading the fixture resets its data.
+
+1. Check profile name, email, bio, avatar and banner. Edit profile should focus Bio.
+2. Change Bio, then Cancel: the displayed profile must remain unchanged. Reopen: the original values return.
+3. Save a new bio and public image URLs/descriptions. The returned profile and success message should appear. Navigate to Explore and back to verify another profile GET returns the saved fixture data.
+4. Bio accepts up to 160 characters, image URLs 300 and descriptions 120. Invalid/non-HTTP(S) image URLs are rejected. Empty image URLs preserve current images/descriptions; empty Bio clears the bio.
+5. Use `mode=profile-empty` and `mode=profile-broken` to check placeholders. Bio-only saves must work with unchanged broken images.
+6. Use `mode=profile-error`: the first profile GET fails, then Try again succeeds.
+7. Use `mode=profile-save-error`: Save shows a rejection, retains the draft and re-enables the form. Cancel restores the original profile.
+8. Use `mode=profile-unauthorized`: Save ends the rejected session and sends the user to login.
+9. Become a venue manager should update the session, show the manager badge and add manager links to the account menu. Editing bio/media must never change manager status.
+10. Repeat view/edit with keyboard and at 320px, 390px and desktop widths. Save and Cancel are disabled while saving.
+
+Recorded 2026-10-31: fixture view, Save/Cancel, returned fields, navigation/refetch, missing/failed images, validation, retained draft on rejection, retry, manager upgrade and responsive view/edit passed in local Chromium. Automated tests cover trimmed/whitelisted payloads, unchanged media, safe URL protocols and length boundaries.
+Persistent saving and publicly accessible image validation against Noroff remain for the user's manual check with their own account.
+
+### Account layout and profile header
+
+- The larger avatar overlaps the banner. Identity and the optional Venue manager badge sit beside it on desktop and below it on mobile.
+- Desktop account pages show Profile and My bookings in a left sidebar. Add `manager=1` to the signed-in fixture URL for Dashboard, My venues, Bookings and Create venue.
+- The header keeps Explore, My account and Log out. My account provides entry from public pages.
+- On mobile, Account menu is a native select above the content. Check every manager destination and return to Profile; desktop navigation must highlight only the exact active destination.
+- A regular customer's direct `/manager/bookings` visit must redirect to Profile. Upgrading to manager must immediately update the menu and badge.
+- Recorded: role-based links, all four manager destinations, active states, mobile selection, access guard and view/edit widths of 320/390px passed. Manager screens retain their existing Coming soon scope; this change adds navigation, not dashboard/venue-management functionality.

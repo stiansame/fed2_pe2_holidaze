@@ -12,11 +12,13 @@ const titles = {
   '/manager': 'Manager',
   '/manager/venues': 'My venues',
   '/manager/venues/new': 'Create venue',
+  '/manager/bookings': 'Venue bookings',
 };
 
 export default function Layout() {
   const { pathname } = useLocation();
   const isVenueDetails = !!matchPath('/venues/:id', pathname);
+  const isAccount = /^\/(profile|bookings|manager)(\/|$)/.test(pathname);
   const title = titles[pathname.replace(/\/+$/, '') || '/'] || 'Page not found';
   return (
     <div className="flex min-h-dvh flex-col bg-linear-to-br from-accent/10 via-background to-tint/40">
@@ -25,7 +27,7 @@ export default function Layout() {
         Skip to content
       </a>
       <Header />
-      <main id="main-content" tabIndex={-1} className={`mx-auto w-full max-w-360 flex-1 ${isVenueDetails || pathname === '/' ? 'p-4 md:p-8' : 'p-6 md:p-16'}`}>
+      <main id="main-content" tabIndex={-1} className={`mx-auto w-full max-w-360 flex-1 ${isVenueDetails || isAccount || pathname === '/' ? 'p-4 md:p-8' : 'p-6 md:p-16'}`}>
         <Outlet />
       </main>
       <Footer />
