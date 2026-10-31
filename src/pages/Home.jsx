@@ -40,7 +40,7 @@ export default function Home() {
         if (q && q.length < 3) { input.setCustomValidity('Enter at least 3 characters.'); input.reportValidity(); return; }
         navigate(`/venues${q ? `?${new URLSearchParams({ q })}` : ''}`);
       }}>
-        <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-border px-3 text-muted"><Icon name="search" className="hidden size-5 shrink-0 sm:block" /><span className="sr-only">Search venues</span><input name="q" type="search" minLength="3" onInput={event => event.currentTarget.setCustomValidity('')} placeholder="Search venues" className="min-h-12 min-w-0 w-full bg-surface text-text outline-offset-[-4px]" /></label>
+        <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-border px-3 text-muted focus-within:border-primary focus-within:ring-2 focus-within:ring-primary"><Icon name="search" className="hidden size-5 shrink-0 sm:block" /><span className="sr-only">Search venues</span><input name="q" type="search" minLength="3" onInput={event => event.currentTarget.setCustomValidity('')} placeholder="Search venues" className="min-h-12 min-w-0 w-full bg-surface text-text focus-visible:outline-none" /></label>
         <button type="submit" className="min-h-12 rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover sm:px-6">Search</button>
       </form>
       </HomeHero>
