@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Icon from '../Icon.jsx';
+import GuestSelect from '../GuestSelect.jsx';
 import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, validateStay } from '../../utils/availability.js';
 
 const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
@@ -79,8 +80,8 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
         for (const [key, value] of Object.entries({ from, to, guests })) params.set(key, value);
         navigate(`/venues/${encodeURIComponent(id)}/reserve?${params}`);
       }}>
-        <label className="block text-small">Guests<input type="number" required min="1" max={maxGuests > 0 ? maxGuests : undefined} step="1" value={guests} onChange={event => setGuests(Number(event.target.value))} className={inputClass} /></label>
-        <button disabled={!reliable || !from || !to} className="min-h-12 w-full rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{actionLabel}</button>
+        <label className="block text-small">Guests<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={inputClass} /></label>
+        <button disabled={!reliable || !from || !to || !Number.isInteger(maxGuests) || maxGuests < 1} className="min-h-12 w-full rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{actionLabel}</button>
         {checked && error && <p role="alert" className="text-small text-danger">{error}</p>}
       </form>
     </>}

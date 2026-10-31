@@ -36,6 +36,13 @@
     outline: 2px solid var(--color-primary);
     outline-offset: 4px;
   }
+
+  /* Keep mobile form text legible and avoid automatic focus zoom in Safari. */
+  @media (width < 64rem) {
+    input:not([type='checkbox']):not([type='radio']), select, textarea {
+      font-size: 1rem;
+    }
+  }
 }
 
 @layer components {
