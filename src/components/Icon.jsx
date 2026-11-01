@@ -1,4 +1,6 @@
 const paths = {
+  sort: <path d="M8 3v18m-4-4 4 4 4-4M16 21V3m-4 4 4-4 4 4" />,
+  reset: <><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6" /></>,
   pin: <><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="3" /></>,
   user: <><circle cx="12" cy="8" r="4" /><path d="M4 22v-2a8 8 0 0 1 16 0v2" /></>,
   left: <path d="m15 18-6-6 6-6" />,

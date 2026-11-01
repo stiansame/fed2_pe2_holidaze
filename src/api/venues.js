@@ -1,4 +1,5 @@
 import { apiRequest } from './client.js';
+import { bookedPeriods, overlaps, validDate, dateKey } from '../utils/availability.js';
 
 export function getVenue(id, { signal } = {}) {
   return apiRequest(`holidaze/venues/${encodeURIComponent(id)}`, {
@@ -20,19 +21,19 @@ export const venueSorts = {
   'name-desc': { label: 'Name: Z–A', sort: 'name', sortOrder: 'desc' },
 };
 
-export function getVenues({ q = '', page = 1, order = 'newest', limit = 15, signal } = {}) {
+export function getVenues({ q = '', page = 1, order = 'newest', limit = 15, bookings = false, owner = false, signal } = {}) {
   const { sort, sortOrder } = venueSorts[order] ?? venueSorts.newest;
   return apiRequest(q ? 'holidaze/venues/search' : 'holidaze/venues', {
-    query: { q: q || undefined, page, limit, sort, sortOrder }, signal,
+    query: { q: q || undefined, page, limit, sort, sortOrder, _bookings: bookings || undefined, _owner: owner || undefined }, signal,
   });
 }
 
-export async function getAllVenues({ q = '', signal } = {}) {
+export async function getAllVenues({ q = '', bookings = false, owner = false, signal } = {}) {
   let result = null;
   let page = 1;
   do {
     signal?.throwIfAborted();
-    const next = await getVenues({ q, page, limit: 100, signal });
+    const next = await getVenues({ q, page, limit: 100, bookings, owner, signal });
     result = appendVenuePage(result, next);
     page = next.meta.nextPage;
   } while (page);
@@ -47,9 +48,18 @@ export function sortVenues(venues, order = 'newest') {
     : sort === 'price' ? a.price - b.price : Date.parse(a.created) - Date.parse(b.created)));
 }
 
-export function filterVenues(venues, { guests = 0, amenities = [] } = {}) {
-  return venues.filter(venue => (!guests || venue.maxGuests >= guests)
-    && amenities.every(key => venue.meta?.[key] === true));
+export function filterVenues(venues, { q = '', guests = 0, amenities = [], from = '', to = '' } = {}) {
+  const query = q.trim().toLowerCase();
+  const dates = Boolean(from || to);
+  if (dates && (!validDate(from) || !validDate(to) || from < dateKey() || to <= from)) return [];
+  return venues.filter(venue => {
+    if (query && ![venue.name, venue.description, venue.owner?.name, ...Object.values(venue.location ?? {})]
+      .some(value => typeof value === 'string' && value.toLowerCase().includes(query))) return false;
+    if ((guests && !(venue.maxGuests >= guests)) || !amenities.every(key => venue.meta?.[key] === true)) return false;
+    if (!dates) return true;
+    const { periods, reliable } = bookedPeriods(venue.bookings);
+    return reliable && !overlaps(from, to, periods);
+  });
 }
 
 export function appendVenuePage(previous, next) {

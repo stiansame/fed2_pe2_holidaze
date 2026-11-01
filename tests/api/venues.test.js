@@ -129,3 +129,61 @@ test('appends pages without duplicates and retains latest metadata', () => {
   assert.deepEqual(first, snapshot);
   assert.deepEqual(appendVenuePage(null, { data: [], meta: {} }), { data: [], meta: {} });
 });
+
+
+test('date filters exclude overlaps and unknown availability, allowing checkout boundaries', () => {
+  const venues = [
+    { id: 'free', bookings: [] },
+    { id: 'booked', bookings: [{ dateFrom: '2090-06-10T00:00:00Z', dateTo: '2090-06-15T00:00:00Z' }] },
+    { id: 'unknown' },
+    { id: 'invalid', bookings: [{ dateFrom: 'invalid', dateTo: '2090-06-15' }] },
+  ];
+  assert.deepEqual(filterVenues(venues, { from: '2090-06-12', to: '2090-06-14' }).map(v => v.id), ['free']);
+  assert.deepEqual(filterVenues(venues, { from: '2090-06-15', to: '2090-06-17' }).map(v => v.id), ['free', 'booked']);
+  assert.deepEqual(filterVenues(venues, { from: '2090-06-08', to: '2090-06-10' }).map(v => v.id), ['free', 'booked']);
+  for (const dates of [{ from: '2090-06-12' }, { from: '2090-06-12', to: '2090-06-12' }, { from: '2020-01-01', to: '2020-01-02' }]) {
+    assert.deepEqual(filterVenues(venues, dates), []);
+  }
+  assert.equal(filterVenues(venues).length, 4);
+});
+
+test('requests booking data on every page only when needed for date search', async t => {
+  const calls = [];
+  t.mock.method(globalThis, 'fetch', async url => {
+    calls.push(url);
+    return Response.json({ data: [], meta: { nextPage: url.searchParams.get('page') === '1' ? 2 : null } });
+  });
+  await getAllVenues({ q: 'cabin', bookings: true });
+  assert.equal(calls.length, 2);
+  assert.ok(calls.every(url => url.searchParams.get('_bookings') === 'true'));
+  await getVenues();
+  assert.equal(calls.at(-1).searchParams.has('_bookings'), false);
+});
+
+
+test('searches names, descriptions, locations and host profile names with combined filters', () => {
+  const venues = [
+    { id: 'name', name: 'Coastal Cabin', maxGuests: 4 },
+    { id: 'description', description: 'Coastal views', maxGuests: 2 },
+    { id: 'address', location: { address: 'Coastal Road 12' }, maxGuests: 4 },
+    { id: 'city', location: { city: 'Bergen', country: 'Norway', zip: '5003' }, maxGuests: 4 },
+    { id: 'host', owner: { name: 'CoastalHost' }, maxGuests: 4, meta: { wifi: true }, bookings: [] },
+    { id: 'missing' },
+  ];
+  assert.deepEqual(filterVenues(venues, { q: ' COASTAL ' }).map(v => v.id), ['name', 'description', 'address', 'host']);
+  for (const q of ['BERGEN', 'norway', '5003']) assert.deepEqual(filterVenues(venues, { q }).map(v => v.id), ['city']);
+  assert.deepEqual(filterVenues(venues, { q: 'coastal', guests: 4, amenities: ['wifi'], from: '2090-06-10', to: '2090-06-12' }).map(v => v.id), ['host']);
+  assert.deepEqual(filterVenues(venues, { q: 'not found' }), []);
+});
+
+test('loads host data on all pages so local search can find profile names beyond page one', async t => {
+  const calls = [];
+  t.mock.method(globalThis, 'fetch', async url => {
+    calls.push(url);
+    const page = Number(url.searchParams.get('page'));
+    return Response.json({ data: [{ id: String(page), owner: { name: page === 2 ? 'TargetHost' : 'Other' } }], meta: { nextPage: page === 1 ? 2 : null } });
+  });
+  const venues = await getAllVenues({ owner: true });
+  assert.ok(calls.every(url => url.searchParams.get('_owner') === 'true' && !url.searchParams.has('q') && url.pathname === '/holidaze/venues'));
+  assert.deepEqual(filterVenues(venues, { q: 'targethost' }).map(v => v.id), ['2']);
+});
