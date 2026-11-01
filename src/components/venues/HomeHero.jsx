@@ -10,7 +10,7 @@ export default function HomeHero({ image, children }) {
       <div className="flex min-h-88 flex-col justify-center gap-6 px-4 py-8 sm:min-h-100 sm:px-12 sm:py-12 lg:px-16">
         <div className="max-w-2xl space-y-3">
           <p className="border-l-4 border-accent pl-3 text-caption font-semibold tracking-widest">YOUR NEXT GETAWAY STARTS HERE</p>
-          <h1 id="hero-heading" className="text-[1.875rem] leading-9 font-bold sm:text-display sm:leading-14">Find somewhere<br />worth staying</h1>
+          <h1 id="hero-heading" className="text-[1.875rem] leading-9 font-bold sm:text-display sm:leading-14">Find somewhere<br /><span className="text-accent">worth staying</span></h1>
           <p className="max-w-md text-small sm:text-body">Cabins, apartments and every stay in between. Find your next escape.</p>
         </div>
         <div className="w-full max-w-2xl">{children}</div>
