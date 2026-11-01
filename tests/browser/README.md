@@ -224,3 +224,15 @@ Project audit: all 26 merged PRs are in the project with priority, phase, actual
 - At 320/390px, guest controls and other text-entry controls render at 16px with the default root font size. Check keyboard selection, readable fields and no horizontal overflow. This reduces automatic Safari focus zoom without disabling user zoom.
 
 Recorded locally 2026-10-31: host bio/fallback, six/two guest options, invalid URL selection, missing capacity, login/review/return preservation, booking edit/save and venue-list filtering passed. At 320/390px, tested controls had 16px text and no horizontal overflow; desktop width 1280px also had no overflow. No live bookings were changed. Physical iOS/Android picker and focus-zoom behavior remains for manual device verification; viewport simulation cannot establish that result. Browser screenshot capture was unavailable during this check.
+# Search dates and filter pills
+
+- Search `Norway` (16 fixture matches) and `LongHostName` (17 matches). These appear only in location/host data, not venue names or descriptions.
+- Keyboard-focus Sort by: one ring surrounds the whole pill, without an inner outline. The same fix applies to Guests.
+- Open `/tests/browser/venues.html?path=/venues`.
+- Toggle amenities; the whole pill is clickable and selected pills turn blue.
+- Combine search, guest count and sorting. Reset clears filters and dates but retains the search text.
+- Open the date pill. Set both dates; incomplete, past or reversed ranges show a message.
+- Fixture venues are booked from three days after today until six days after today. Overlapping searches return no stays; checkout boundaries remain available.
+- Dates and guest count follow the venue link. Escape closes the date panel and restores focus to its summary.
+- Checked locally at 1280px and 320px: controls fit without horizontal overflow; mobile date fields remain readable in the expanded panel.
+- Automated checks cover overlap boundaries, unknown booking data, invalid dates and requesting bookings on every API page only for date searches.
