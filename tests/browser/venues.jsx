@@ -38,6 +38,9 @@ const venues = Array.from({ length: 18 }, (_, i) => ({
   owner: i === 0 ? null : { name: 'LongHostName'.repeat(15), bio: mode === 'host-bio' ? 'I enjoy welcoming guests to my venues.' : '', avatar: { url: '/missing-avatar.jpg' } },
   bookings: mode === 'availability-missing' ? undefined : [{ dateFrom: `${addDays(dateKey(), 3)}T00:00:00Z`, dateTo: `${addDays(dateKey(), 6)}T00:00:00Z` }],
 }));
+if (mode === 'description-html') venues[2].description = '<h2>A formatted stay</h2><p>Text with <strong>bold</strong>, <em>emphasis</em> &amp; symbols.<br>Next line.</p><ul><li>First item</li><li>Second item</li></ul><ol><li>Numbered item</li></ol><blockquote>A quiet retreat</blockquote><p><a href="https://example.com">Read more</a></p><script>document.title="UNSAFE"</script><img src="/missing-description.jpg" onerror="document.title=\'UNSAFE\'"><a href="javascript:alert(1)">Unsafe link</a><style>body{display:none}</style><p style="position:fixed;inset:0">Safe text</p>';
+if (mode === 'description-plain') venues[2].description = 'First line.\nSecond line.\n\nAnother paragraph.';
+if (mode === 'description-empty') venues[2].description = ' ';
 let requests = 0;
 let detailRequests = 0;
 const savedBookings = new Map();

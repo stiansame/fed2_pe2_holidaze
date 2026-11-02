@@ -49,6 +49,22 @@
   .navigation-link {
     @apply inline-flex min-h-12 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint;
   }
+
+  .venue-description {
+    @apply overflow-x-auto;
+
+    :is(p, ul, ol, blockquote, pre, table) { @apply mb-3; }
+    :is(h1, h2, h3, h4, h5, h6) { @apply mt-4 mb-3 font-semibold text-text; }
+    :is(h1, h2) { @apply text-h3; }
+    ul { @apply list-disc pl-6; }
+    ol { @apply list-decimal pl-6; }
+    a { @apply text-primary underline underline-offset-4; }
+    blockquote { @apply border-l-4 border-accent pl-4 italic; }
+    pre { @apply overflow-x-auto rounded-lg bg-tint p-3; }
+    :is(th, td) { @apply border border-border p-2; }
+    img { @apply h-auto max-w-full rounded-lg; }
+    > :last-child { @apply mb-0; }
+  }
 }
 
 /* A restrained boost for listing and hero photos; text and badges stay unchanged. */

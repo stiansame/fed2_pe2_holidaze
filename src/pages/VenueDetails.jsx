@@ -5,6 +5,7 @@ import Icon from '../components/Icon.jsx';
 import HostAvatar from '../components/HostAvatar.jsx';
 import Amenities from '../components/venues/Amenities.jsx';
 import VenueGallery from '../components/venues/VenueGallery.jsx';
+import VenueDescription from '../components/venues/VenueDescription.jsx';
 import AvailabilityCalendar from '../components/venues/AvailabilityCalendar.jsx';
 import { formatVenuePrice, venueMapLinks } from '../utils/venue.js';
 
@@ -58,7 +59,7 @@ function VenueContent({ id }) {
             </div>
             <section className="space-y-3">
               <h2 className="text-body font-semibold text-primary">About this stay</h2>
-              <p className="whitespace-pre-line text-muted wrap-anywhere">{venue.description?.trim() || 'No description provided.'}</p>
+              <VenueDescription description={venue.description} />
               <p className="inline-flex items-center gap-2 rounded-lg bg-accent/20 px-3 py-2 text-small font-semibold text-text"><Icon name="user" />{venue.maxGuests > 0 ? `Up to ${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Guest capacity not specified'}</p>
             </section>
             <section className="space-y-3">

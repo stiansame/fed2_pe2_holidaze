@@ -1,5 +1,12 @@
 # Venue browser checks
 
+## Formatted venue descriptions
+
+- `/tests/browser/venues.html?path=/venues/test-2&mode=description-html`: headings, bold/emphasis, paragraphs, line breaks, links, bulleted and numbered lists remain formatted. Scripts, event handlers, unsafe link URLs and API styles are removed; the page title remains `Holidaze | Test stay 2`.
+- `/tests/browser/venues.html?path=/venues/test-2&mode=description-plain`: plain text retains its single and double line breaks.
+- `/tests/browser/venues.html?path=/venues/test-2&mode=description-empty`: shows `No description provided.`.
+- Repeat the HTML case at 320px: content stays within the page; long tables/code may scroll inside the description.
+
 Run `npm run dev`, then open the addresses below using the local URL shown by Vite.
 These fixtures render the real application with a memory router and simulated venue responses.
 They do not call Noroff, use a saved session or change external data. No additional dependencies are needed.
