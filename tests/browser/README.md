@@ -1,12 +1,33 @@
 # Venue browser checks
 
+## Create venue (#25)
+
+- Amenities use the same AmenityPill component as venue filters: no checkbox, the whole button toggles its selected colour, and Space works from the keyboard. Choices survive API validation errors and are included correctly in the saved venue. Verify Amenities has an inside heading like the other cards.
+
+- Layout: three full-width cards, About (including Amenities), Photos, and Location (including the map). Desktop photo rows place URL, Alt text and a labelled trash button side by side; mobile stacks them. Street address spans its column, followed by postcode/city, country/continent and latitude/longitude pairs. All fields stay visible, with no Additional details disclosure. Checked at 1280px and 320px: no horizontal overflow, image removal preserves other values and coordinates still position the marker.
+
+- Leaflet follow-up: no marker is selected initially. Enter latitude `60.39` and longitude `5.32`: a marker appears in Bergen. Click another map position: both fields update to six decimal places. Clearing either coordinate removes the marker.
+- Keyboard users can focus/pan the map and select Use map centre. Verify the OpenStreetMap attribution stays visible and the map fits at 320px. Coordinate selection is disabled during saving and uncertain POST outcomes.
+- Submit with a chosen point: the resulting venue's existing location map uses those coordinates. Address fields remain manual; no forward/reverse geocoding service is connected. Venue detail maps are unchanged.
+- Leaflet is loaded as a separate chunk only for the form. It requests standard OpenStreetMap tiles with normal browser caching; unavailable tiles do not prevent manual coordinate entry.
+
+- `/tests/browser/venues.html?path=/manager/venues/new&signedIn=1&manager=1`: create a fixture venue. Required fields are name, description, price (zero or more, at most two decimals) and a whole guest count of at least one.
+- Check whitespace-only text, negative/decimal guest counts, invalid price, non-HTTP image URLs, orphan alt text and incomplete/out-of-range coordinates. Invalid data must not be submitted.
+- Add a second image, enter values, then remove the first: the remaining URL/alt values must stay intact. Empty image rows and optional location fields may be omitted.
+- Select amenities and enter address/coordinates. Submit once; the new venue opens with the entered name, description, price, guest capacity, photos, amenities and location. The fixture never creates a real Noroff venue.
+- `mode=venue-create-error`: the first POST returns 400. Every value remains editable; retry succeeds after correction.
+- `mode=venue-create-uncertain`: POST saves the fixture venue and loses its response. Submit stays disabled and the My venues link reveals exactly one created venue (`created-venue-1`). Do not automatically retry.
+- Cancel returns to My venues without saving. During a pending save, form controls and Cancel are disabled. Navigating elsewhere must not redirect back when a late response arrives.
+- Remove `manager=1`: an ordinary user reaches their profile. Without a signed-in session the route requires login. `mode=venue-create-unauthorized` simulates a rejected session during POST.
+- Checked locally at 320px with two image rows: no horizontal overflow, and text/number fields use 16px font. Physical mobile and real-account/Netlify verification remain manual.
+
 ## Own venues (#24)
 
 - `/tests/browser/venues.html?path=/manager/venues&signedIn=1&manager=1&mode=manager-list`: loads 18 own venues across four fixture pages. First 15 appear; Load more shows all 18 and disappears.
 - Venue cards open the correct details. The active account menu item and browser title are My venues.
 - `manager-empty` shows guidance and Create venue. `manager-error` fails once; Try again restores the complete list.
 - Checked at 320px without horizontal overflow. Manager route protection is shared with the dashboard.
-- The list requests no booking data. Creating, editing, deleting and viewing venue bookings are separate work packages; Create venue still opens its placeholder.
+- The list requests no booking data. Create venue opens the form from #25. Editing, deleting and viewing venue bookings are separate work packages.
 
 ## Manager dashboard (#23)
 
@@ -17,7 +38,7 @@
 - `manager-error`: a readable error appears; Try again loads the full dashboard.
 - `manager-missing`: missing booking data produces an error, never misleading zero counts.
 - Remove `manager=1`: ordinary users reach their profile. Remove `signedIn=1` too: visitors reach login.
-- At 320px, the account menu and dashboard fit without horizontal overflow. Use the menu to visit My venues. The dashboard links to existing Create venue and Bookings placeholders too.
+- At 320px, the account menu and dashboard fit without horizontal overflow. Use the menu to visit My venues. Create venue opens its form; Bookings remains a placeholder.
 - Checked locally with fixture data; real-account/Netlify verification remains manual. Automated tests cover complete pagination, aborts, failed pages, rating calculations and future/current/past/invalid booking dates.
 
 ## Formatted venue descriptions
