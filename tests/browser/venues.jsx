@@ -28,6 +28,7 @@ let fixtureProfile = {
   banner: mode === 'profile-empty' ? null : { url: mode === 'profile-broken' ? `${location.origin}/missing-banner.jpg` : photo, alt: 'Profile banner' },
 };
 let profileReads = 0;
+let managerReads = 0;
 const venues = Array.from({ length: 18 }, (_, i) => ({
   id: `test-${i}`, name: i === 0 ? 'LongVenueName'.repeat(20) : `Test stay ${i}`,
   description: i ? 'DescriptionWithoutSpaces'.repeat(30) : ' ', price: i ? 1490 : null,
@@ -76,7 +77,15 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
     const profileName = decodeURIComponent(url.pathname.split('/')[3]);
     if (profileName === 'missing') return Response.json({ errors: [{ message: 'Profile not found.' }] }, { status: 404 });
     if (url.pathname.endsWith('/venues')) {
-      const all = mode === 'host-empty' ? [] : venues.filter(venue => venue.owner?.name === profileName);
+      if (mode === 'manager-error' && ++managerReads === 1) return Response.json({ errors: [{ message: 'Fixture dashboard unavailable.' }] }, { status: 503 });
+      const ownManager = mode.startsWith('manager-') && profileName === fixtureUser.name;
+      const all = mode === 'host-empty' || mode === 'manager-empty' ? [] : ownManager ? venues.slice(2, 8).map((venue, i) => ({
+        ...venue,
+        bookings: mode === 'manager-missing' ? undefined : [
+          { id: `manager-${i}`, dateFrom: addDays(dateKey(), i + 2), dateTo: addDays(dateKey(), i + 4), guests: i + 1, customer: { name: `Guest ${i + 1}` } },
+          { id: `manager-past-${i}`, dateFrom: addDays(dateKey(), -10), dateTo: addDays(dateKey(), -8), guests: 2 },
+        ],
+      })) : venues.filter(venue => venue.owner?.name === profileName);
       const page = Number(url.searchParams.get('page')) || 1;
       return Response.json({ data: all.slice((page - 1) * 5, page * 5), meta: { nextPage: page * 5 < all.length ? page + 1 : null } });
     }

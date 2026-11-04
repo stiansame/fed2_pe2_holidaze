@@ -1,0 +1,78 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext.js';
+import { getProfileVenues } from '../api/profiles.js';
+import { managerSummary } from '../utils/manager.js';
+import { formatBookingDate } from '../utils/bookings.js';
+import VenueCard from '../components/venues/VenueCard.jsx';
+import Icon from '../components/Icon.jsx';
+
+export default function ManagerDashboard() {
+  const { user, request } = useAuth();
+  const [data, setData] = useState(null);
+  const [error, setError] = useState('');
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getProfileVenues(request, user.name, { bookings: true, signal: controller.signal }).then(venues => {
+      const summary = managerSummary(venues);
+      if (!controller.signal.aborted) setData({ venues, ...summary });
+    }).catch(error => { if (!controller.signal.aborted) setError(error.message); });
+    return () => controller.abort();
+  }, [request, user.name, attempt]);
+
+  return <section className="min-w-0 space-y-6">
+    <title>Holidaze | Manager dashboard</title>
+    <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="min-w-0 space-y-2">
+        <h1 className="text-h3 font-bold wrap-anywhere sm:text-h2">Welcome back, {user.name}</h1>
+        <p className="text-muted">Here’s an overview of your venues and bookings.</p>
+      </div>
+      <Link to="/manager/venues/new" className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover"><Icon name="plus" />Create venue</Link>
+    </div>
+    {error ? <div role="alert" className="space-y-3">
+      <p>Unable to load your dashboard. {error}</p>
+      <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
+    </div> : !data ? <p role="status">Loading your dashboard…</p> : <>
+      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          ['My venues', data.venues.length, 'home'],
+          ['Total bookings', data.totalBookings, 'calendar'],
+          ['Upcoming bookings', data.upcoming.length, 'calendar'],
+          ['Average venue rating', data.averageRating ?? 'Not rated yet', 'star'],
+        ].map(([label, value, icon]) => <div key={label} className="min-w-0 space-y-3 rounded-xl border border-border bg-surface p-4">
+          <Icon name={icon} className="size-10 rounded-lg bg-accent/15 p-2 text-success" />
+          <dt className="text-small text-muted">{label}</dt><dd className="text-h3 font-bold">{value}</dd>
+        </div>)}
+      </dl>
+      <section className="space-y-4" aria-labelledby="manager-venues-heading">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="manager-venues-heading" className="text-h3 font-bold">My venues</h2>
+          <Link to="/manager/venues" className="navigation-link">View all venues<Icon name="right" /></Link>
+        </div>
+        {data.venues.length ? <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {data.venues.slice(0, 3).map(venue => <VenueCard key={venue.id} venue={venue} />)}
+        </div> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. Create your first venue to get started.</p>}
+      </section>
+      <section className="space-y-4" aria-labelledby="manager-bookings-heading">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="manager-bookings-heading" className="text-h3 font-bold">Upcoming bookings</h2>
+          <Link to="/manager/bookings" className="navigation-link">View all bookings<Icon name="right" /></Link>
+        </div>
+        {data.upcoming.length ? <ul className="space-y-3">
+          {data.upcoming.slice(0, 3).map(booking => <li key={booking.id} className="grid min-w-0 gap-2 rounded-xl border border-border bg-surface p-4 text-small sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div className="min-w-0 space-y-1">
+              <Link to={`/venues/${encodeURIComponent(booking.venue.id)}`} className="font-semibold text-primary wrap-anywhere hover:underline">{booking.venue.name?.trim() || 'Unnamed stay'}</Link>
+              <p className="text-muted wrap-anywhere">{booking.customer?.name?.trim() || 'Guest name unavailable'}</p>
+            </div>
+            <div className="space-y-1">
+              <p>{formatBookingDate(booking.dateFrom)} – {formatBookingDate(booking.dateTo)}</p>
+              <p className="text-muted">{Number.isInteger(booking.guests) && booking.guests > 0 ? `${booking.guests} ${booking.guests === 1 ? 'guest' : 'guests'}` : 'Guest count unavailable'}</p>
+            </div>
+          </li>)}
+        </ul> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">No upcoming bookings for your venues.</p>}
+      </section>
+    </>}
+  </section>;
+}

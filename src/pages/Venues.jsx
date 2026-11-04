@@ -25,6 +25,7 @@ export default function Venues() {
     : datesSelected && (from < dateKey() || to <= from)
       ? 'Choose a future stay with check-out after check-in.' : '';
   const activeFilters = Number(guests > 0) + amenities.length + Number(order !== 'newest') + Number(datesSelected);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [search, setSearch] = useState({ value: q, url: q });
   // Synchronise the input on back/forward navigation without replacing the focused input.
   if (search.url !== q) setSearch({ value: q, url: q });
@@ -66,32 +67,37 @@ export default function Venues() {
     <section aria-labelledby="venues-heading">
       <h1 id="venues-heading" className="text-h3 font-bold sm:text-h2">Explore venues</h1>
       <p className="mt-2 text-small text-muted sm:text-body">Find somewhere worth staying.</p>
-      <form role="search" className="mt-4 sm:mt-6" onSubmit={event => event.preventDefault()}>
-        <div className="flex flex-wrap items-center gap-2">
-          <label className={`${pillClass} min-w-0 max-w-full`}>
-            <span className="sr-only">Sort by</span><Icon name="sort" />
-            <select value={order} onChange={event => update('order', event.target.value === 'newest' ? '' : event.target.value)} className={selectClass}>
-              {Object.entries(venueSorts).map(([key, option]) => <option key={key} value={key}>{option.label}</option>)}
-            </select>
-          </label>
-          <div role="group" aria-label="Amenities" className="flex flex-wrap gap-2">
-            {amenityOptions.map(item => <button key={item.key} type="button" aria-pressed={amenities.includes(item.key)} onClick={() => update(item.key, amenities.includes(item.key) ? '' : 'true')}
-              className={`${pillClass} ${amenities.includes(item.key) ? 'border-primary bg-primary! text-surface' : 'hover:bg-tint'}`}>
-              <img src={item.icon} alt="" width="18" height="18" className={amenities.includes(item.key) ? 'brightness-0 invert' : ''} />{item.label}
-            </button>)}
+      <form role="search" className="mt-4 grid min-w-0 gap-3 sm:mt-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1.6fr)_minmax(0,0.8fr)]" onSubmit={event => event.preventDefault()}>
+        <label className={`${pillClass} min-w-0 lg:order-2`}>
+          <span className="sr-only">Search venues</span><Icon name="search" />
+          <input name="q" type="search" value={search.value} onChange={event => setSearch({ value: event.target.value, url: q })} aria-describedby="search-hint" placeholder="Search venues, locations or hosts" className="min-h-12 w-full min-w-0 bg-transparent outline-none!" />
+        </label>
+        <button type="button" aria-expanded={filtersOpen} aria-controls="venue-filters" onClick={() => setFiltersOpen(value => !value)} className={`${pillClass} justify-self-start font-semibold text-primary lg:hidden`}>
+          <Icon name="sort" />Filters &amp; sort
+          {activeFilters > 0 && <span className="rounded-full bg-primary px-2 py-0.5 text-caption text-surface">{activeFilters}<span className="sr-only"> active</span></span>}
+          <span aria-hidden="true">{filtersOpen ? '−' : '+'}</span>
+        </button>
+        <div id="venue-filters" className={`${filtersOpen ? 'grid' : 'hidden'} min-w-0 gap-3 rounded-xl border border-border bg-surface/60 p-3 lg:contents`}>
+          <div className="flex flex-wrap items-center gap-2 lg:order-1 lg:col-span-3">
+            <label className={`${pillClass} min-w-0 max-w-full`}>
+              <span className="sr-only">Sort by</span><Icon name="sort" />
+              <select value={order} onChange={event => update('order', event.target.value === 'newest' ? '' : event.target.value)} className={selectClass}>
+                {Object.entries(venueSorts).map(([key, option]) => <option key={key} value={key}>{option.label}</option>)}
+              </select>
+            </label>
+            <div role="group" aria-label="Amenities" className="flex flex-wrap gap-2">
+              {amenityOptions.map(item => <button key={item.key} type="button" aria-pressed={amenities.includes(item.key)} onClick={() => update(item.key, amenities.includes(item.key) ? '' : 'true')}
+                className={`${pillClass} ${amenities.includes(item.key) ? 'border-primary bg-primary! text-surface' : 'hover:bg-tint'}`}>
+                <img src={item.icon} alt="" width="18" height="18" className={amenities.includes(item.key) ? 'brightness-0 invert' : ''} />{item.label}
+              </button>)}
+            </div>
+            <button type="button" disabled={!activeFilters} className={`${pillClass} text-primary hover:bg-tint disabled:opacity-50 sm:ml-auto`} onClick={resetFilters}><Icon name="reset" />Reset filters</button>
           </div>
-          <button type="button" disabled={!activeFilters} className={`${pillClass} text-primary hover:bg-tint disabled:opacity-50 sm:ml-auto`} onClick={resetFilters}><Icon name="reset" />Reset filters</button>
-        </div>
-        <div className="mt-4 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1.6fr)_minmax(0,0.8fr)]">
-          <label className={`${pillClass} min-w-0`}>
-            <span className="sr-only">Search venues</span><Icon name="search" />
-            <input name="q" type="search" value={search.value} onChange={event => setSearch({ value: event.target.value, url: q })} aria-describedby="search-hint" placeholder="Search venues, locations or hosts" className="min-h-12 w-full min-w-0 bg-transparent outline-none!" />
-          </label>
-          <details className="relative min-w-0" onKeyDown={event => { if (event.key === 'Escape') { event.currentTarget.open = false; event.currentTarget.querySelector('summary').focus(); } }}>
-            <summary className={`${pillClass} h-full w-full cursor-pointer list-none [&::-webkit-details-marker]:hidden`}>
+          <details className="relative min-w-0 lg:order-3" onKeyDown={event => { if (event.key === 'Escape') { event.currentTarget.open = false; event.currentTarget.querySelector('summary').focus(); } }}>
+            <summary className={`${pillClass} w-full cursor-pointer lg:h-full list-none [&::-webkit-details-marker]:hidden`}>
               <Icon name="calendar" /><span className="min-w-0 truncate">{from || 'Check-in'} — {to || 'Check-out'}</span>
             </summary>
-            <div className="absolute inset-x-0 top-full z-10 mt-2 grid gap-3 rounded-xl border border-border bg-surface p-4 shadow-lg sm:grid-cols-2">
+            <div className="mt-2 grid lg:absolute lg:inset-x-0 lg:top-full lg:z-10 gap-3 rounded-xl border border-border bg-surface p-4 shadow-lg sm:grid-cols-2">
               <label className="min-w-0 text-small font-semibold">Check-in
                 <input type="date" value={validDate(from) ? from : ''} min={dateKey()} onChange={event => update('from', event.target.value)} aria-invalid={Boolean(dateError)} aria-describedby="date-hint" className="mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2 font-normal" />
               </label>
@@ -100,13 +106,13 @@ export default function Venues() {
               </label>
             </div>
           </details>
-          <label className={`${pillClass} min-w-0`}>
+          <label className={`${pillClass} min-w-0 lg:order-4`}>
             <span className="sr-only">Guests</span><Icon name="user" />
             <GuestSelect value={guests} onChange={value => update('guests', value || '')} allowAny className={selectClass} />
           </label>
         </div>
-        <p id="search-hint" role="status" className="mt-2 text-caption text-muted">{tooShort ? 'Enter at least 3 characters.' : 'Search updates automatically · min. 3 characters.'}</p>
-        <p id="date-hint" role="status" className="mt-1 text-small text-danger">{dateError}</p>
+        <p id="search-hint" role="status" className="text-caption text-muted lg:order-5 lg:col-span-3">{tooShort ? 'Enter at least 3 characters.' : 'Search updates automatically · min. 3 characters.'}</p>
+        <p id="date-hint" role="status" className="text-small text-danger lg:order-6 lg:col-span-3">{dateError}</p>
       </form>
       {!dateError && <VenueResults key={String(datesSelected)} order={order} filters={{ q, guests, amenities, from, to }} waiting={waiting} tooShort={tooShort} />}
 
