@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import Loading from '../components/Loading.jsx';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { getVenue } from '../api/venues.js';
 import Icon from '../components/Icon.jsx';
@@ -8,6 +9,8 @@ import VenueGallery from '../components/venues/VenueGallery.jsx';
 import VenueDescription from '../components/venues/VenueDescription.jsx';
 import AvailabilityCalendar from '../components/venues/AvailabilityCalendar.jsx';
 import { formatVenuePrice, venueMapLinks } from '../utils/venue.js';
+
+const VenueLocationMap = lazy(() => import('../components/venues/VenueLocationMap.jsx'));
 
 export default function VenueDetails() {
   const { id } = useParams();
@@ -46,7 +49,7 @@ function VenueContent({ id }) {
         <h1 className="text-h2 font-bold">{notFound ? 'Venue not found' : 'Unable to load this stay'}</h1>
         <p role="alert">{notFound ? 'This stay may have been removed or the link is incorrect.' : error.message}</p>
         {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Try again</button>}
-      </> : !venue ? <p role="status">Loading stay…</p> : <>
+      </> : !venue ? <Loading>Loading stay…</Loading> : <>
         <VenueGallery media={venue.media} name={name} />
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-6">
@@ -76,7 +79,9 @@ function VenueContent({ id }) {
               <h2 className="text-h3 font-bold">Location</h2>
               <p className="flex items-center gap-2 text-muted wrap-anywhere"><Icon name="pin" className="size-5 shrink-0 text-success" />{address || 'Location not specified'}</p>
               {map && <div className="max-w-155 space-y-2">
-                <iframe title={`Location of ${name}`} src={map.embed} loading="lazy" className="h-65 w-full rounded-lg border border-border" />
+                <Suspense fallback={<Loading>Loading map…</Loading>}>
+                  <VenueLocationMap lat={location.lat} lng={location.lng} />
+                </Suspense>
                 <a href={map.full} target="_blank" rel="noopener noreferrer" className="inline-block py-2 text-small text-primary underline">View larger map · © OpenStreetMap contributors</a>
               </div>}
             </section>

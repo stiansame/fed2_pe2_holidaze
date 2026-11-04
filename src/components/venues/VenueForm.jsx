@@ -1,3 +1,4 @@
+import Loading from '../Loading.jsx';
 import { lazy, Suspense, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { amenityOptions } from './amenityOptions.js';
@@ -85,7 +86,7 @@ export default function VenueForm({ onSave, onCancel }) {
             <label className="block min-w-0 text-small font-semibold">Latitude<input name="lat" type="number" min="-90" max="90" step="any" value={coordinates.lat} onChange={event => setCoordinates(value => ({ ...value, lat: event.target.value }))} className={inputClass} /></label>
             <label className="block min-w-0 text-small font-semibold">Longitude<input name="lng" type="number" min="-180" max="180" step="any" value={coordinates.lng} onChange={event => setCoordinates(value => ({ ...value, lng: event.target.value }))} className={inputClass} /></label>
           </div>
-          <Suspense fallback={<p role="status">Loading map…</p>}>
+          <Suspense fallback={<Loading>Loading map…</Loading>}>
             <VenueLocationMap {...coordinates} onChange={setCoordinates} disabled={pending || uncertain} />
           </Suspense>
         </div>

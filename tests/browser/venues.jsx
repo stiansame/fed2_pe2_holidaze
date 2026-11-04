@@ -43,6 +43,10 @@ const venues = Array.from({ length: 18 }, (_, i) => ({
 if (mode === 'description-html') venues[2].description = '<h2>A formatted stay</h2><p>Text with <strong>bold</strong>, <em>emphasis</em> &amp; symbols.<br>Next line.</p><ul><li>First item</li><li>Second item</li></ul><ol><li>Numbered item</li></ol><blockquote>A quiet retreat</blockquote><p><a href="https://example.com">Read more</a></p><script>document.title="UNSAFE"</script><img src="/missing-description.jpg" onerror="document.title=\'UNSAFE\'"><a href="javascript:alert(1)">Unsafe link</a><style>body{display:none}</style><p style="position:fixed;inset:0">Safe text</p>';
 if (mode === 'description-plain') venues[2].description = 'First line.\nSecond line.\n\nAnother paragraph.';
 if (mode === 'description-empty') venues[2].description = ' ';
+if (mode === 'venue-map') {
+  venues[2].location = { address: 'Fjordveien 12', city: 'Bergen', country: 'Norway', lat: 60.39, lng: 5.32 };
+  venues[2].description = 'A stay with a mapped location.';
+}
 let requests = 0;
 let detailRequests = 0;
 const savedBookings = new Map();
@@ -70,6 +74,10 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
   if (url.origin !== 'https://v2.api.noroff.dev' || !['/holidaze/venues', '/holidaze/bookings', '/holidaze/profiles', '/auth/login'].some(path => url.pathname.startsWith(path))) {
     throw new Error('Only fixture requests are allowed.');
   }
+  // Keep the real loading state visible until navigation cancels the request.
+  if (mode === 'loading') await new Promise((resolve, reject) => {
+    signal?.addEventListener('abort', () => reject(signal.reason), { once: true });
+  });
   // StrictMode cancels its first effect. Check cancellation before counting a failure.
   await new Promise(resolve => setTimeout(resolve, 100));
   signal?.throwIfAborted();

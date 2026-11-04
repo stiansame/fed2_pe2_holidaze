@@ -1,3 +1,4 @@
+import Loading from '../components/Loading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -62,7 +63,7 @@ function Review({ id, search }) {
   return <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8" aria-busy={pending}>
     <title>Holidaze | Review booking</title>
     <h1 className="text-h3 font-bold">Review your booking</h1>
-    {!venue && !error && <p role="status">Loading your stay…</p>}
+    {!venue && !error && <Loading>Loading your stay…</Loading>}
     {venue && <>
       <StaySummary venue={venue} stay={stay} summary={summary} />
       {summary.error && <p role="alert" className="text-danger">{summary.error}</p>}

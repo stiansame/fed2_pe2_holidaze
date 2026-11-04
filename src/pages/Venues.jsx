@@ -1,3 +1,4 @@
+import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { filterVenues, getAllVenues, sortVenues, venueSorts } from '../api/venues.js';
@@ -141,7 +142,7 @@ function VenueResults({ order, filters, waiting, tooShort }) {
     <p role="alert" className="text-danger">{error}</p>
     <button type="button" onClick={() => { setError(''); setAttempt(value => value + 1); }} className={buttonClass}>Try again</button>
   </div>;
-  if (!venues) return <p role="status" className="mt-6">Loading stays…</p>;
+  if (!venues) return <Loading className="mt-6">Loading stays…</Loading>;
   const matches = sortVenues(filterVenues(venues, filters), order);
   return <VenueMatches key={JSON.stringify([order, filters])} venues={matches} />;
 }

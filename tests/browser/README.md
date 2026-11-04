@@ -1,5 +1,20 @@
 # Venue browser checks
 
+## Compact amenity pills and logo loader
+
+- `/tests/browser/venues.html?path=/manager/venues/new&signedIn=1&manager=1`: at 1280px the four amenity pills fit on one row. At 320px they wrap without horizontal overflow and retain a 44px touch height. Space toggles a focused pill and its selected colour.
+- `/tests/browser/venues.html?path=/venues&mode=loading`: keeps a fixture GET pending so the three logo panels can be seen fanning out, rotating and swapping positions before returning to the original logo. A 3.2-second cycle includes a pause at the assembled logo. The pin follows its panel. The logo is decorative; the loading text is announced as a status.
+- Enable the operating system/browser's reduced-motion preference: the logo must stay fully open and still, with the loading text visible.
+- Remove `mode=loading`: the loader disappears when the venues arrive. Other data-fetch screens use the same Loading component and retain their specific loading text. Saving-button labels remain unchanged.
+
+## Leaflet on venue details
+
+- `/tests/browser/venues.html?path=/venues/test-2&mode=venue-map`: signed-out visitors see the shared Leaflet map centred on Bergen, with its marker and OpenStreetMap attribution.
+- Mouse-wheel zoom and zoom controls work. Clicking the display map must not move the saved marker. No coordinate-selection instructions or Use map centre button appear.
+- View larger map keeps the venue's original coordinates even after panning or zooming. No iframe is used.
+- Remove `mode=venue-map`: fixture coordinates default to zero and the map is omitted as before. Missing/invalid coordinates do not render a misleading map.
+- Checked at desktop and 320px without horizontal overflow. The form still uses the same component with coordinate selection enabled.
+
 ## Create venue (#25)
 
 - Amenities use the same AmenityPill component as venue filters: no checkbox, the whole button toggles its selected colour, and Space works from the keyboard. Choices survive API validation errors and are included correctly in the saved venue. Verify Amenities has an inside heading like the other cards.
@@ -8,7 +23,7 @@
 
 - Leaflet follow-up: no marker is selected initially. Enter latitude `60.39` and longitude `5.32`: a marker appears in Bergen. Click another map position: both fields update to six decimal places. Clearing either coordinate removes the marker.
 - Keyboard users can focus/pan the map and select Use map centre. Verify the OpenStreetMap attribution stays visible and the map fits at 320px. Coordinate selection is disabled during saving and uncertain POST outcomes.
-- Submit with a chosen point: the resulting venue's existing location map uses those coordinates. Address fields remain manual; no forward/reverse geocoding service is connected. Venue detail maps are unchanged.
+- Submit with a chosen point: the resulting venue's location map uses those coordinates. Address fields remain manual; no forward/reverse geocoding service is connected.
 - Leaflet is loaded as a separate chunk only for the form. It requests standard OpenStreetMap tiles with normal browser caching; unavailable tiles do not prevent manual coordinate entry.
 
 - `/tests/browser/venues.html?path=/manager/venues/new&signedIn=1&manager=1`: create a fixture venue. Required fields are name, description, price (zero or more, at most two decimals) and a whole guest count of at least one.

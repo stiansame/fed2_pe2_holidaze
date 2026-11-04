@@ -1,3 +1,4 @@
+import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -30,7 +31,7 @@ function HostProfile({ name }) {
   const profile = data?.profile;
   return <section className="space-y-5">
     <title>{`Holidaze | ${notFound ? 'Profile not found' : name}`}</title>
-    {!data && !error && <p role="status">Loading host profile…</p>}
+    {!data && !error && <Loading>Loading host profile…</Loading>}
     {error && <div className="space-y-3">
       <h1 className="text-h3 font-bold">{notFound ? 'Profile not found' : 'Unable to load host profile'}</h1>
       <p role="alert">{notFound ? 'This profile may have been removed or the link is incorrect.' : error.message}</p>

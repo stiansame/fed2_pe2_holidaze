@@ -1,3 +1,4 @@
+import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -34,7 +35,7 @@ export default function ManagerDashboard() {
     {error ? <div role="alert" className="space-y-3">
       <p>Unable to load your dashboard. {error}</p>
       <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
-    </div> : !data ? <p role="status">Loading your dashboard…</p> : <>
+    </div> : !data ? <Loading>Loading your dashboard…</Loading> : <>
       <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[
           ['My venues', data.venues.length, 'home'],

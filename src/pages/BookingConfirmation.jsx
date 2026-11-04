@@ -1,3 +1,4 @@
+import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -25,7 +26,7 @@ export default function BookingConfirmation() {
   return <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8">
     <title>Holidaze | Booking confirmation</title>
     <h1 className="text-h3 font-bold">{booking ? 'Booking confirmed' : 'Booking confirmation'}</h1>
-    {!booking && !error && <p role="status">Loading your reservation…</p>}
+    {!booking && !error && <Loading>Loading your reservation…</Loading>}
     {booking && <>
       <p role="status" className="text-success">Your reservation is saved.</p>
       <h2 className="text-h3 font-semibold wrap-anywhere">{booking.venue?.name || 'Your stay'}</h2>
