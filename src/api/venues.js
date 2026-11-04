@@ -1,5 +1,19 @@
-import { apiRequest } from './client.js';
+import { apiRequest, ApiError } from './client.js';
+import { venueFormData } from '../utils/venueForm.js';
 import { bookedPeriods, overlaps, validDate, dateKey } from '../utils/availability.js';
+
+export async function createVenue(request, form) {
+  const body = venueFormData(form);
+  try {
+    const { data } = await request('holidaze/venues', { method: 'POST', body });
+    if (!data?.id) throw new ApiError('The server did not return a venue reference.');
+    return data;
+  } catch (error) {
+    // A lost response can follow a saved venue. Never retry POST automatically.
+    error.venueUncertain = !error.status || error.status >= 500 || (error.status >= 200 && error.status < 300);
+    throw error;
+  }
+}
 
 export function getVenue(id, { signal } = {}) {
   return apiRequest(`holidaze/venues/${encodeURIComponent(id)}`, {

@@ -29,6 +29,7 @@ let fixtureProfile = {
 };
 let profileReads = 0;
 let managerReads = 0;
+let venueCreates = 0;
 const venues = Array.from({ length: 18 }, (_, i) => ({
   id: `test-${i}`, name: i === 0 ? 'LongVenueName'.repeat(20) : `Test stay ${i}`,
   description: i ? 'DescriptionWithoutSpaces'.repeat(30) : ' ', price: i ? 1490 : null,
@@ -73,6 +74,16 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
   await new Promise(resolve => setTimeout(resolve, 100));
   signal?.throwIfAborted();
   if (url.pathname === '/auth/login') return Response.json({ data: fixtureUser });
+  if (url.pathname === '/holidaze/venues' && method === 'POST') {
+    venueCreates++;
+    if (!fixtureUser.venueManager) return Response.json({ errors: [{ message: 'Manager access required.' }] }, { status: 403 });
+    if (mode === 'venue-create-error' && venueCreates === 1) return Response.json({ errors: [{ message: 'Fixture venue rejected. Check your image URL.' }] }, { status: 400 });
+    if (mode === 'venue-create-unauthorized') return Response.json({ errors: [{ message: 'Session expired' }] }, { status: 401 });
+    const venue = { ...JSON.parse(body), id: `created-venue-${venueCreates}`, created: new Date().toISOString(), rating: 0, bookings: [], owner: { ...fixtureProfile } };
+    venues.push(venue);
+    if (mode === 'venue-create-uncertain') throw new TypeError('Fixture response lost after saving');
+    return Response.json({ data: venue }, { status: 201 });
+  }
   if (url.pathname.startsWith('/holidaze/profiles/')) {
     const profileName = decodeURIComponent(url.pathname.split('/')[3]);
     if (profileName === 'missing') return Response.json({ errors: [{ message: 'Profile not found.' }] }, { status: 404 });

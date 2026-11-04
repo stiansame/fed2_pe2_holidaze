@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { filterVenues, getAllVenues, sortVenues, venueSorts } from '../api/venues.js';
 import { amenityOptions } from '../components/venues/amenityOptions.js';
+import AmenityPill from '../components/venues/AmenityPill.jsx';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import GuestSelect from '../components/GuestSelect.jsx';
 import Icon from '../components/Icon.jsx';
@@ -86,10 +87,7 @@ export default function Venues() {
               </select>
             </label>
             <div role="group" aria-label="Amenities" className="flex flex-wrap gap-2">
-              {amenityOptions.map(item => <button key={item.key} type="button" aria-pressed={amenities.includes(item.key)} onClick={() => update(item.key, amenities.includes(item.key) ? '' : 'true')}
-                className={`${pillClass} ${amenities.includes(item.key) ? 'border-primary bg-primary! text-surface' : 'hover:bg-tint'}`}>
-                <img src={item.icon} alt="" width="18" height="18" className={amenities.includes(item.key) ? 'brightness-0 invert' : ''} />{item.label}
-              </button>)}
+              {amenityOptions.map(item => <AmenityPill key={item.key} item={item} selected={amenities.includes(item.key)} onClick={() => update(item.key, amenities.includes(item.key) ? '' : 'true')} />)}
             </div>
             <button type="button" disabled={!activeFilters} className={`${pillClass} text-primary hover:bg-tint disabled:opacity-50 sm:ml-auto`} onClick={resetFilters}><Icon name="reset" />Reset filters</button>
           </div>
