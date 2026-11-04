@@ -14,6 +14,7 @@ import AccountLayout from './components/layout/AccountLayout.jsx';
 import MyBookings from './pages/MyBookings.jsx';
 import BookingEdit from './pages/BookingEdit.jsx';
 import PublicProfile from './pages/PublicProfile.jsx';
+import ManagerDashboard from './pages/ManagerDashboard.jsx';
 
 export default function App() {
   return (
@@ -33,7 +34,7 @@ export default function App() {
             <Route path="/bookings" element={<MyBookings />} />
             <Route path="/bookings/:id/edit" element={<BookingEdit />} />
             <Route element={<RequireAuth manager />}>
-              <Route path="/manager" element={<ComingSoon title="Manager dashboard" />} />
+              <Route path="/manager" element={<ManagerDashboard />} />
               <Route path="/manager/venues" element={<ComingSoon title="My venues" />} />
               <Route path="/manager/venues/new" element={<ComingSoon title="Create venue" />} />
               <Route path="/manager/bookings" element={<ComingSoon title="Venue bookings" />} />
