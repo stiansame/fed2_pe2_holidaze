@@ -1,3 +1,4 @@
+import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -32,7 +33,7 @@ export default function MyVenues() {
     {error ? <div role="alert" className="space-y-3">
       <p>Unable to load your venues. {error}</p>
       <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
-    </div> : !venues ? <p role="status">Loading your venues…</p> : venues.length ? <>
+    </div> : !venues ? <Loading>Loading your venues…</Loading> : venues.length ? <>
       <p role="status" className="text-small text-muted">Showing {Math.min(count, venues.length)} of {venues.length} venues.</p>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {venues.slice(0, count).map(venue => <VenueCard key={venue.id} venue={venue} />)}

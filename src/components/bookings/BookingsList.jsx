@@ -1,3 +1,4 @@
+import Loading from '../Loading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
@@ -30,7 +31,7 @@ export default function BookingsList({ upcomingOnly = false }) {
     {notice && <p role="status" className="text-success">{notice}</p>}
     {bookings?.length > 0 && <p className="text-small text-muted">Prices are estimates based on the venue’s current nightly rate.</p>}
     {error && <p role="alert" className="text-danger">{error}</p>}
-    {!bookings && !error && <p role="status">Loading your bookings…</p>}
+    {!bookings && !error && <Loading>Loading your bookings…</Loading>}
     {(bookings || error) && <button type="button" onClick={() => { setError(''); setBookings(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border bg-surface px-4 text-small font-semibold text-primary hover:bg-tint">{error ? 'Try again' : 'Refresh bookings'}</button>}
     {groups && Object.entries(groups).filter(([key, values]) => upcomingOnly ? key === 'upcoming' : key !== 'unknown' || values.length > 0).map(([key, values]) => <BookingGroup
       key={key}

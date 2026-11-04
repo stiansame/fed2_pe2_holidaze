@@ -71,3 +71,34 @@
 .venue-photo {
   filter: saturate(1.08) contrast(1.04);
 }
+
+.loading-map-left, .loading-map-middle, .loading-map-right {
+  animation-duration: 3.2s;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+  animation-iteration-count: infinite;
+  filter: drop-shadow(0 2px 2px rgb(0 47 100 / 20%));
+}
+.loading-map-left { transform-origin: 13px 36px; animation-name: map-shuffle-left; }
+.loading-map-middle { transform-origin: 46px 36px; animation-name: map-shuffle-middle; }
+.loading-map-right { transform-origin: 81px 36px; animation-name: map-shuffle-right; }
+@keyframes map-shuffle-left {
+  0%, 10%, 90%, 100% { transform: none; }
+  22%, 76% { transform: translate(-8px, -3px) rotate(-12deg); }
+  40% { transform: translate(66px, -10px) rotate(12deg); }
+  58% { transform: translate(33px, 8px) rotate(-8deg); }
+}
+@keyframes map-shuffle-middle {
+  0%, 10%, 90%, 100% { transform: none; }
+  22%, 76% { transform: translateY(-7px); }
+  40% { transform: translate(-33px, 8px) rotate(-10deg); }
+  58% { transform: translate(35px, -10px) rotate(10deg); }
+}
+@keyframes map-shuffle-right {
+  0%, 10%, 90%, 100% { transform: none; }
+  22%, 76% { transform: translate(8px, -3px) rotate(12deg); }
+  40% { transform: translate(-35px, -10px) rotate(-8deg); }
+  58% { transform: translate(-68px, -5px) rotate(-12deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-map-left, .loading-map-middle, .loading-map-right { animation: none; }
+}

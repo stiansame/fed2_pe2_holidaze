@@ -1,3 +1,4 @@
+import Loading from '../components/Loading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -35,7 +36,7 @@ function EditLoader({ id }) {
   return <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-4 sm:p-6">
     <title>Holidaze | Change booking</title>
     <h1 className="text-h3 font-bold">Change booking</h1>
-    {!data && !error && <p role="status">Loading your booking…</p>}
+    {!data && !error && <Loading>Loading your booking…</Loading>}
     {data && <BookingEditor booking={data.booking} initialVenue={data.venue} />}
     {error && <><p role="alert" className="text-danger">{error}</p><button type="button" onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Try again</button></>}
     <Link to="/bookings" className="inline-block py-2 text-primary underline">Back to my bookings</Link>

@@ -1,3 +1,4 @@
+import Loading from '../components/Loading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.js';
 import HostAvatar from '../components/HostAvatar.jsx';
@@ -44,7 +45,7 @@ export default function Profile() {
       {profile && <VenueImage key={profile.banner?.url} media={profile.banner} name={`${user.name}'s banner`} className="h-40 sm:h-56" loading="eager" />}
       <div className={`space-y-5 px-5 pb-5 sm:px-8 sm:pb-8 ${profile ? '' : 'pt-5 sm:pt-8'}`}>
         <h1 className="sr-only">My profile</h1>
-        {!profile && !error && <p role="status">Loading your profile…</p>}
+        {!profile && !error && <Loading>Loading your profile…</Loading>}
         {profile && <>
           <div className="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-6">
             <HostAvatar key={profile.avatar?.url} media={profile.avatar} className="-mt-14 size-28 border-4 border-surface bg-surface sm:-mt-16 sm:size-32" />
