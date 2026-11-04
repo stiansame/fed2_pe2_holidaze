@@ -15,6 +15,7 @@ import MyBookings from './pages/MyBookings.jsx';
 import BookingEdit from './pages/BookingEdit.jsx';
 import PublicProfile from './pages/PublicProfile.jsx';
 import ManagerDashboard from './pages/ManagerDashboard.jsx';
+import MyVenues from './pages/MyVenues.jsx';
 
 export default function App() {
   return (
@@ -35,7 +36,7 @@ export default function App() {
             <Route path="/bookings/:id/edit" element={<BookingEdit />} />
             <Route element={<RequireAuth manager />}>
               <Route path="/manager" element={<ManagerDashboard />} />
-              <Route path="/manager/venues" element={<ComingSoon title="My venues" />} />
+              <Route path="/manager/venues" element={<MyVenues />} />
               <Route path="/manager/venues/new" element={<ComingSoon title="Create venue" />} />
               <Route path="/manager/bookings" element={<ComingSoon title="Venue bookings" />} />
             </Route>

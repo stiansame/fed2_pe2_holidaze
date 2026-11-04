@@ -79,7 +79,7 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
     if (url.pathname.endsWith('/venues')) {
       if (mode === 'manager-error' && ++managerReads === 1) return Response.json({ errors: [{ message: 'Fixture dashboard unavailable.' }] }, { status: 503 });
       const ownManager = mode.startsWith('manager-') && profileName === fixtureUser.name;
-      const all = mode === 'host-empty' || mode === 'manager-empty' ? [] : ownManager ? venues.slice(2, 8).map((venue, i) => ({
+      const all = mode === 'host-empty' || mode === 'manager-empty' ? [] : ownManager ? (mode === 'manager-list' ? venues : venues.slice(2, 8)).map((venue, i) => ({
         ...venue,
         bookings: mode === 'manager-missing' ? undefined : [
           { id: `manager-${i}`, dateFrom: addDays(dateKey(), i + 2), dateTo: addDays(dateKey(), i + 4), guests: i + 1, customer: { name: `Guest ${i + 1}` } },

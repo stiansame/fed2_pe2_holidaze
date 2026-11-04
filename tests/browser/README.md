@@ -1,5 +1,13 @@
 # Venue browser checks
 
+## Own venues (#24)
+
+- `/tests/browser/venues.html?path=/manager/venues&signedIn=1&manager=1&mode=manager-list`: loads 18 own venues across four fixture pages. First 15 appear; Load more shows all 18 and disappears.
+- Venue cards open the correct details. The active account menu item and browser title are My venues.
+- `manager-empty` shows guidance and Create venue. `manager-error` fails once; Try again restores the complete list.
+- Checked at 320px without horizontal overflow. Manager route protection is shared with the dashboard.
+- The list requests no booking data. Creating, editing, deleting and viewing venue bookings are separate work packages; Create venue still opens its placeholder.
+
 ## Manager dashboard (#23)
 
 - Mobile follow-up: summary cards use one column below 640px, two from 640px and four from 1280px. Venue search below 1024px initially shows only search and Filters & sort. Expand to access amenities, sorting, guest count, dates and reset; collapse/reopen must retain values and show the active count. The date panel expands in normal document flow on mobile. Checked at 320px without overflow; desktop retains its two-row search layout.
@@ -9,7 +17,7 @@
 - `manager-error`: a readable error appears; Try again loads the full dashboard.
 - `manager-missing`: missing booking data produces an error, never misleading zero counts.
 - Remove `manager=1`: ordinary users reach their profile. Remove `signedIn=1` too: visitors reach login.
-- At 320px, the account menu and dashboard fit without horizontal overflow. Use the menu to visit My venues; it remains a placeholder until #24. The dashboard links to existing Create venue and Bookings placeholders too.
+- At 320px, the account menu and dashboard fit without horizontal overflow. Use the menu to visit My venues. The dashboard links to existing Create venue and Bookings placeholders too.
 - Checked locally with fixture data; real-account/Netlify verification remains manual. Automated tests cover complete pagination, aborts, failed pages, rating calculations and future/current/past/invalid booking dates.
 
 ## Formatted venue descriptions
