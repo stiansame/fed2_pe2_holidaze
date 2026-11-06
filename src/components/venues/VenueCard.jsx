@@ -5,13 +5,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { formatVenuePrice } from '../../utils/venue.js';
 
 export default function VenueCard({ venue, onImageError }) {
-  const { search } = useLocation();
+  const { search, pathname } = useLocation();
   const name = venue.name?.trim() || 'Unnamed stay';
   const location = [venue.location?.city, venue.location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified';
   return (
     <article className="min-w-0 overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[translate,box-shadow] duration-200 hover:shadow-xl focus-within:shadow-xl motion-safe:hover:-translate-y-1 motion-safe:focus-within:-translate-y-1 motion-reduce:transition-none">
-      <Link to={`/venues/${encodeURIComponent(venue.id)}${search}`} aria-label={`View ${name}`} className="block h-full focus-visible:outline-offset-[-4px]">
+      <Link to={`/venues/${encodeURIComponent(venue.id)}${search}`} state={pathname === '/manager/venues' ? { fromMyVenues: true } : undefined} aria-label={`View ${name}`} className="block h-full focus-visible:outline-offset-[-4px]">
       <div className="relative">
         <VenueImage key={venue.media?.[0]?.url || 'missing'} media={venue.media?.[0]} name={name} className="h-65 rounded-t-lg" imageClass="venue-photo object-cover" onImageError={() => onImageError?.(venue.id)} />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
