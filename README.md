@@ -60,6 +60,11 @@ Set `VITE_NOROFF_API_KEY` in Netlify with the Builds scope and redeploy after ch
 - [Sitemap and user flows](https://www.figma.com/board/fbrkKssEjAdOFtDyUkCZSK/Holidaze)
 - [Noroff Holidaze API](https://docs.noroff.dev/docs/v2/holidaze/venues)
 
+## 📚 Documentation
+
+- [Sources](documentation/Sources.md)
+- [Notes on AI](documentation/Notes%20on%20AI.md)
+
 ## 📅 Project planning
 
 [GitHub Project](https://github.com/users/stiansame/projects/6)
