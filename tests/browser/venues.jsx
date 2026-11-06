@@ -30,6 +30,7 @@ let fixtureProfile = {
 let profileReads = 0;
 let managerReads = 0;
 let venueCreates = 0;
+let venueUpdates = 0;
 const venues = Array.from({ length: 18 }, (_, i) => ({
   id: `test-${i}`, name: i === 0 ? 'LongVenueName'.repeat(20) : `Test stay ${i}`,
   description: i ? 'DescriptionWithoutSpaces'.repeat(30) : ' ', price: i ? 1490 : null,
@@ -40,6 +41,14 @@ const venues = Array.from({ length: 18 }, (_, i) => ({
   owner: i === 0 ? null : { name: 'LongHostName'.repeat(15), bio: mode === 'host-bio' ? 'I enjoy welcoming guests to my venues.' : '', avatar: { url: '/missing-avatar.jpg' } },
   bookings: mode === 'availability-missing' ? undefined : [{ dateFrom: `${addDays(dateKey(), 3)}T00:00:00Z`, dateTo: `${addDays(dateKey(), 6)}T00:00:00Z` }],
 }));
+if (mode.startsWith('venue-edit')) {
+  venues[2].owner = { ...fixtureProfile };
+  venues[2].name = 'Editable cabin';
+  venues[2].description = 'An existing description.';
+  venues[2].location = { address: 'Fjordveien 12', zip: '5003', city: 'Bergen', country: 'Norway', continent: 'Europe', lat: 60.39, lng: 5.32 };
+  venues[2].media[0].alt = 'Original cover';
+  if (mode === 'venue-edit-other') venues[2].owner.name = 'AnotherHost';
+}
 if (mode === 'description-html') venues[2].description = '<h2>A formatted stay</h2><p>Text with <strong>bold</strong>, <em>emphasis</em> &amp; symbols.<br>Next line.</p><ul><li>First item</li><li>Second item</li></ul><ol><li>Numbered item</li></ol><blockquote>A quiet retreat</blockquote><p><a href="https://example.com">Read more</a></p><script>document.title="UNSAFE"</script><img src="/missing-description.jpg" onerror="document.title=\'UNSAFE\'"><a href="javascript:alert(1)">Unsafe link</a><style>body{display:none}</style><p style="position:fixed;inset:0">Safe text</p>';
 if (mode === 'description-plain') venues[2].description = 'First line.\nSecond line.\n\nAnother paragraph.';
 if (mode === 'description-empty') venues[2].description = ' ';
@@ -161,6 +170,11 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
   const id = url.pathname.split('/')[3];
   if (id && id !== 'search') {
     const venue = venues.find(item => item.id === id);
+    if (venue && method === 'PUT') {
+      venueUpdates++;
+      if (mode === 'venue-edit-error' && venueUpdates === 1) return Response.json({ errors: [{ message: 'Fixture update rejected.' }] }, { status: 400 });
+      Object.assign(venue, JSON.parse(body));
+    }
     detailRequests++;
     // StrictMode's aborted request is excluded, so the second detail load is the final preflight.
     if (venue && detailRequests > 1 && mode === 'booking-price') venue.price = 1600;

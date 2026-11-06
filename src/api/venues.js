@@ -15,6 +15,24 @@ export async function createVenue(request, form) {
   }
 }
 
+export async function getOwnVenue(request, id, name, { signal } = {}) {
+  const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, {
+    query: { _owner: true }, signal,
+  });
+  if (!name || data?.owner?.name !== name) throw new Error('You can only edit your own venues.');
+  return data;
+}
+
+export async function updateVenue(request, id, name, form) {
+  const body = venueFormData(form);
+  // Send empty values explicitly so removed location fields are cleared.
+  body.location = { address: '', city: '', zip: '', country: '', continent: '', lat: 0, lng: 0, ...body.location };
+  await getOwnVenue(request, id, name);
+  const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, { method: 'PUT', body });
+  if (data?.id !== id) throw new Error('The update could not be confirmed. Check My venues before saving again.');
+  return data;
+}
+
 export function getVenue(id, { signal } = {}) {
   return apiRequest(`holidaze/venues/${encodeURIComponent(id)}`, {
     query: { _owner: true, _bookings: true }, signal,
