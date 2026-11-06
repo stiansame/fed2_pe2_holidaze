@@ -53,10 +53,11 @@ test('only creates map links for usable coordinates, not API defaults', () => {
     assert.equal(venueMapLinks(location), null);
   }
   const map = venueMapLinks({ lat: 60.39, lng: 5.32 });
-  const url = new URL(map.embed);
+  const url = new URL(map.full);
   assert.equal(url.origin, 'https://www.openstreetmap.org');
-  assert.equal(url.searchParams.get('marker'), '60.39,5.32');
-  assert.equal(url.searchParams.get('bbox').split(',').length, 4);
+  assert.equal(url.searchParams.get('mlat'), '60.39');
+  assert.equal(url.searchParams.get('mlon'), '5.32');
+  assert.equal(url.hash, '#map=15/60.39/5.32');
   assert.ok(venueMapLinks({ lat: 0, lng: 5 }));
   assert.ok(venueMapLinks({ lat: 60, lng: 0 }));
 });

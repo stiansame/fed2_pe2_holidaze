@@ -35,23 +35,18 @@ export const venueSorts = {
   'name-desc': { label: 'Name: Z–A', sort: 'name', sortOrder: 'desc' },
 };
 
-export function getVenues({ q = '', page = 1, order = 'newest', limit = 15, bookings = false, owner = false, signal } = {}) {
-  const { sort, sortOrder } = venueSorts[order] ?? venueSorts.newest;
-  return apiRequest(q ? 'holidaze/venues/search' : 'holidaze/venues', {
-    query: { q: q || undefined, page, limit, sort, sortOrder, _bookings: bookings || undefined, _owner: owner || undefined }, signal,
-  });
-}
-
-export async function getAllVenues({ q = '', bookings = false, owner = false, signal } = {}) {
-  let result = null;
+export async function getAllVenues({ bookings = false, owner = false, signal } = {}) {
+  const venues = new Map();
   let page = 1;
   do {
     signal?.throwIfAborted();
-    const next = await getVenues({ q, page, limit: 100, bookings, owner, signal });
-    result = appendVenuePage(result, next);
-    page = next.meta.nextPage;
+    const { data, meta } = await apiRequest('holidaze/venues', {
+      query: { page, limit: 100, sort: 'created', sortOrder: 'desc', _bookings: bookings || undefined, _owner: owner || undefined }, signal,
+    });
+    for (const venue of data) venues.set(venue.id, venue);
+    page = meta.nextPage;
   } while (page);
-  return result.data;
+  return [...venues.values()];
 }
 
 export function sortVenues(venues, order = 'newest') {
@@ -74,11 +69,4 @@ export function filterVenues(venues, { q = '', guests = 0, amenities = [], from 
     const { periods, reliable } = bookedPeriods(venue.bookings);
     return reliable && !overlaps(from, to, periods);
   });
-}
-
-export function appendVenuePage(previous, next) {
-  return {
-    ...next,
-    data: [...new Map([...(previous?.data ?? []), ...next.data].map(venue => [venue.id, venue])).values()],
-  };
 }

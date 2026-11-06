@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { appendVenuePage, filterVenues, getAllVenues, getHighlyRatedVenues, getVenue, getVenues, sortVenues, venueSorts } from '../../src/api/venues.js';
+import { filterVenues, getAllVenues, getHighlyRatedVenues, getVenue, sortVenues } from '../../src/api/venues.js';
 
 test('requests a bounded highest-rating pool and forwards cancellation', async t => {
   const controller = new AbortController();
@@ -12,22 +12,6 @@ test('requests a bounded highest-rating pool and forwards cancellation', async t
     return Response.json({ data: [{ id: 'rated', rating: 5 }], meta: {} });
   });
   assert.equal((await getHighlyRatedVenues({ signal: controller.signal })).data[0].rating, 5);
-});
-
-test('uses listing or search with encoded query and requested page', async t => {
-  const calls = [];
-  t.mock.method(globalThis, 'fetch', async url => {
-    calls.push(url);
-    return Response.json({ data: [], meta: { nextPage: null } });
-  });
-  await getVenues();
-  await getVenues({ q: 'cabin & sea', page: 2 });
-  assert.equal(calls[0].pathname, '/holidaze/venues');
-  assert.equal(calls[0].searchParams.has('q'), false);
-  assert.equal(calls[1].pathname, '/holidaze/venues/search');
-  assert.equal(calls[1].searchParams.get('q'), 'cabin & sea');
-  assert.equal(calls[1].searchParams.get('page'), '2');
-  assert.equal(calls[1].searchParams.get('limit'), '15');
 });
 
 test('fetches venue details with host data and forwards the abort signal and API errors', async t => {
@@ -50,15 +34,25 @@ test('loads every page before filtering, including matches beyond the first page
     const page = Number(url.searchParams.get('page'));
     pages.push(page);
     assert.equal(url.searchParams.get('limit'), '100');
-    assert.equal(url.searchParams.get('q'), 'cabin');
+    assert.equal(url.pathname, '/holidaze/venues');
+    assert.equal(url.searchParams.has('q'), false);
+    assert.equal(url.searchParams.get('sort'), 'created');
+    assert.equal(url.searchParams.get('sortOrder'), 'desc');
     return Response.json({
       data: [{ id: String(page), maxGuests: page === 1 ? 2 : 6, meta: { wifi: true } }],
       meta: { nextPage: page === 1 ? 2 : null },
     });
   });
-  const venues = await getAllVenues({ q: 'cabin' });
+  const venues = await getAllVenues();
   assert.deepEqual(pages, [1, 2]);
   assert.deepEqual(filterVenues(venues, { guests: 4 }).map(v => v.id), ['2']);
+});
+
+test('deduplicates venues across pages and keeps the latest data', async t => {
+  t.mock.method(globalThis, 'fetch', async url => Response.json(url.searchParams.get('page') === '1'
+    ? { data: [{ id: 'a' }, { id: 'b', name: 'Old' }], meta: { nextPage: 2 } }
+    : { data: [{ id: 'b', name: 'Updated' }, { id: 'c' }], meta: { nextPage: null } }));
+  assert.deepEqual(await getAllVenues(), [{ id: 'a' }, { id: 'b', name: 'Updated' }, { id: 'c' }]);
 });
 
 test('does not return partial results when a page fails and respects cancellation', async t => {
@@ -87,23 +81,6 @@ test('sorts the complete filtered list without changing input', () => {
   assert.deepEqual(venues, snapshot);
 });
 
-test('sends supported sorting to the API and defaults unknown options', async t => {
-  const calls = [];
-  t.mock.method(globalThis, 'fetch', async url => {
-    calls.push(url);
-    return Response.json({ data: [], meta: {} });
-  });
-  for (const order of Object.keys(venueSorts)) await getVenues({ q: 'cabin', order, page: 2 });
-  await getVenues({ order: 'unknown' });
-  Object.values(venueSorts).forEach((option, index) => {
-    assert.equal(calls[index].searchParams.get('sort'), option.sort);
-    assert.equal(calls[index].searchParams.get('sortOrder'), option.sortOrder);
-    assert.equal(calls[index].searchParams.get('page'), '2');
-    assert.equal(calls[index].searchParams.get('q'), 'cabin');
-  });
-  assert.equal(calls.at(-1).searchParams.get('sort'), 'created');
-});
-
 test('filters capacity and all selected amenities without changing the loaded list', () => {
   const venues = [
     { id: 'a', maxGuests: 2, meta: { wifi: true, pets: true } },
@@ -118,18 +95,6 @@ test('filters capacity and all selected amenities without changing the loaded li
   assert.deepEqual(filterVenues(venues, { amenities: ['breakfast'] }), []);
   assert.deepEqual(venues, snapshot);
 });
-
-test('appends pages without duplicates and retains latest metadata', () => {
-  const first = { data: [{ id: 'a' }, { id: 'b', name: 'Old' }], meta: { nextPage: 2 } };
-  const next = { data: [{ id: 'b', name: 'Updated' }, { id: 'c' }], meta: { nextPage: null } };
-  const snapshot = structuredClone(first);
-  assert.deepEqual(appendVenuePage(first, next), {
-    data: [{ id: 'a' }, { id: 'b', name: 'Updated' }, { id: 'c' }], meta: { nextPage: null },
-  });
-  assert.deepEqual(first, snapshot);
-  assert.deepEqual(appendVenuePage(null, { data: [], meta: {} }), { data: [], meta: {} });
-});
-
 
 test('date filters exclude overlaps and unknown availability, allowing checkout boundaries', () => {
   const venues = [
@@ -153,13 +118,12 @@ test('requests booking data on every page only when needed for date search', asy
     calls.push(url);
     return Response.json({ data: [], meta: { nextPage: url.searchParams.get('page') === '1' ? 2 : null } });
   });
-  await getAllVenues({ q: 'cabin', bookings: true });
+  await getAllVenues({ bookings: true });
   assert.equal(calls.length, 2);
   assert.ok(calls.every(url => url.searchParams.get('_bookings') === 'true'));
-  await getVenues();
+  await getAllVenues();
   assert.equal(calls.at(-1).searchParams.has('_bookings'), false);
 });
-
 
 test('searches names, descriptions, locations and host profile names with combined filters', () => {
   const venues = [
