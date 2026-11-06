@@ -1,5 +1,21 @@
 # Venue browser checks
 
+## Rating in the shared venue form
+
+- Create venue defaults Rating (0–5) to zero; Edit venue prefills the saved rating. Decimals such as 4.5 are accepted. Blank means zero; negative values and values above five must be rejected.
+- Save a rating and verify it remains after reloading the venue and reopening Edit. Setting zero removes the numerical rating and uses the existing New display.
+
+## Delete venue (#27)
+
+- `/tests/browser/venues.html?path=/manager/venues&signedIn=1&manager=1&mode=venue-delete`: Delete venue appears beside Edit. Cancel and Escape close the confirmation without deleting; focus returns to the trigger.
+- Confirm deletion: the venue is removed from My venues, the count/empty state updates and a Venue deleted status appears.
+- Open its details first: Delete venue appears beside Edit venue. Confirmation returns to My venues with the success message. The old detail URL no longer loads the venue.
+- `mode=venue-delete-error`: the first DELETE fails. The dialog stays open, the error is announced and Cancel or a deliberate retry remains available.
+- `mode=venue-delete-uncertain`: deletion succeeds but its response is lost. No automatic retry or success message; the error tells the user to refresh My venues to check the outcome.
+- `mode=venue-delete-other` on `/venues/test-2`: neither Edit nor Delete appears for another host's venue. Signed-out and non-manager users must not see deletion controls.
+- Verify at 320px and desktop: the dialog fits, the venue name wraps, Cancel initially receives focus and Tab stays within the dialog. While Deleting is shown, repeated confirmation and Escape cannot interrupt it.
+- Real-account/Netlify verification remains manual. These fixtures never delete Noroff venues.
+
 ## Edit venue (#26)
 
 - `/tests/browser/venues.html?path=/manager/venues/test-2/edit&signedIn=1&manager=1&mode=venue-edit`: name, description, price, guest capacity, both images, amenities, address and map position are prefilled.

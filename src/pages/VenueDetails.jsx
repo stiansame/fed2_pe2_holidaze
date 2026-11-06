@@ -7,6 +7,7 @@ import Icon from '../components/Icon.jsx';
 import HostAvatar from '../components/HostAvatar.jsx';
 import Amenities from '../components/venues/Amenities.jsx';
 import VenueGallery from '../components/venues/VenueGallery.jsx';
+import DeleteVenue from '../components/venues/DeleteVenue.jsx';
 import VenueDescription from '../components/venues/VenueDescription.jsx';
 import AvailabilityCalendar from '../components/venues/AvailabilityCalendar.jsx';
 import { formatVenuePrice, venueMapLinks } from '../utils/venue.js';
@@ -56,7 +57,10 @@ function VenueContent({ id }) {
         {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Try again</button>}
       </> : !venue ? <Loading>Loading stay…</Loading> : <>
         <VenueGallery media={venue.media} name={name}>
-          {user?.venueManager && user.name === venue.owner?.name && <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} className="navigation-link w-full gap-2 sm:w-auto"><Icon name="edit" />Edit venue</Link>}
+          {user?.venueManager && user.name === venue.owner?.name && <>
+            <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} className="navigation-link w-full gap-2 sm:w-auto"><Icon name="edit" />Edit venue</Link>
+            <DeleteVenue venue={venue} />
+          </>}
         </VenueGallery>
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-6">

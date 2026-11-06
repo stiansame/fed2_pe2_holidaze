@@ -19,8 +19,13 @@ export async function getOwnVenue(request, id, name, { signal } = {}) {
   const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, {
     query: { _owner: true }, signal,
   });
-  if (!name || data?.owner?.name !== name) throw new Error('You can only edit your own venues.');
+  if (!name || data?.owner?.name !== name) throw new Error('You can only manage your own venues.');
   return data;
+}
+
+export async function deleteVenue(request, id, name) {
+  await getOwnVenue(request, id, name);
+  await request(`holidaze/venues/${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
 export async function updateVenue(request, id, name, form) {

@@ -10,12 +10,14 @@ export function venueFormData(form) {
   const description = text('description');
   const price = Number(text('price'));
   const maxGuests = Number(text('maxGuests'));
+  const rating = Number(text('rating'));
   if (!name || !description) throw new Error('Enter a venue name and description.');
   if (!text('price') || !Number.isFinite(price) || price < 0
     || !Number.isSafeInteger(Math.round(price * 100)) || price !== Math.round(price * 100) / 100) {
     throw new Error('Enter a price of zero or more, with at most two decimal places.');
   }
   if (!Number.isSafeInteger(maxGuests) || maxGuests < 1) throw new Error('Enter a whole guest count of at least one.');
+  if (!Number.isFinite(rating) || rating < 0 || rating > 5) throw new Error('Enter a rating from 0 to 5.');
 
   const descriptions = form.getAll('mediaAlt');
   const media = form.getAll('mediaUrl').map((value, index) => {
@@ -45,7 +47,7 @@ export function venueFormData(form) {
     [location.lat, location.lng] = point;
   }
   return {
-    name, description, price, maxGuests, media,
+    name, description, price, maxGuests, rating, media,
     meta: Object.fromEntries(['wifi', 'parking', 'breakfast', 'pets'].map(key => [key, form.has(key)])),
     ...(Object.keys(location).length && { location }),
   };

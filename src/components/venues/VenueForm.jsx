@@ -54,6 +54,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block min-w-0 text-small font-semibold">Price per night (NOK)<input name="price" defaultValue={venue.price ?? ''} type="number" required min="0" step="0.01" inputMode="decimal" className={inputClass} /></label>
               <label className="block min-w-0 text-small font-semibold">Maximum guests<input name="maxGuests" defaultValue={venue.maxGuests ?? ''} type="number" required min="1" step="1" inputMode="numeric" className={inputClass} /></label>
+              <label className="block min-w-0 text-small font-semibold">Rating (0–5)<input name="rating" defaultValue={venue.rating ?? 0} type="number" min="0" max="5" step="any" inputMode="decimal" className={inputClass} /></label>
             </div>
             <div role="group" aria-labelledby="venue-amenities" className="space-y-3">
               <h3 id="venue-amenities" className="font-semibold">Amenities</h3>
