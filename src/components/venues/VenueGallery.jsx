@@ -5,7 +5,7 @@ import Icon from '../Icon.jsx';
 const controlClass = 'min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-50';
 const galleryControl = 'absolute z-10 flex size-12 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-sm hover:bg-tint';
 
-export default function VenueGallery({ media = [], name }) {
+export default function VenueGallery({ media = [], name, children }) {
   const photos = (media ?? []).filter(photo => typeof photo?.url === 'string' && photo.url.trim());
   const [active, setActive] = useState(0);
   const dialog = useRef(null);
@@ -29,7 +29,6 @@ export default function VenueGallery({ media = [], name }) {
             </button>)}
           </div>}
         </div>
-        <button type="button" onClick={() => dialog.current.showModal()} className={`${controlClass} w-full sm:w-auto`}>View all photos ({photos.length})</button>
         <dialog ref={dialog} aria-label={`Photos of ${name}`} className="m-auto max-h-[94dvh] max-w-[96vw] overflow-hidden rounded-lg bg-surface p-0 text-text backdrop:bg-black/70" onKeyDown={event => {
           if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
           if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
@@ -43,6 +42,10 @@ export default function VenueGallery({ media = [], name }) {
           </>}
         </dialog>
       </> : <VenueImage name={name} className="h-64 rounded-lg sm:h-90" />}
+      {(photos.length > 0 || children) && <div className="flex flex-wrap gap-3">
+        {photos.length > 0 && <button type="button" onClick={() => dialog.current.showModal()} className={`${controlClass} w-full sm:w-auto`}>View all photos ({photos.length})</button>}
+        {children}
+      </div>}
     </section>
   );
 }

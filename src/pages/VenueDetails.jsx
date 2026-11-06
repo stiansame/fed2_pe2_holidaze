@@ -2,6 +2,7 @@ import Loading from '../components/Loading.jsx';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { getVenue } from '../api/venues.js';
+import { useAuth } from '../auth/AuthContext.js';
 import Icon from '../components/Icon.jsx';
 import HostAvatar from '../components/HostAvatar.jsx';
 import Amenities from '../components/venues/Amenities.jsx';
@@ -18,7 +19,8 @@ export default function VenueDetails() {
 }
 
 function VenueContent({ id }) {
-  const { search } = useLocation();
+  const { search, state } = useLocation();
+  const { user } = useAuth();
   const [venue, setVenue] = useState(null);
   const [error, setError] = useState(null);
   const [attempt, setAttempt] = useState(0);
@@ -44,13 +46,18 @@ function VenueContent({ id }) {
   return (
     <section className="space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
       <title>{`Holidaze | ${notFound ? 'Venue not found' : venue ? name : 'Venue details'}`}</title>
-      <Link to={`/venues${search}`} className="navigation-link">← Back to venues</Link>
+      <div className="flex flex-wrap gap-3">
+        <Link to={`/venues${search}`} className="navigation-link">← Back to venues</Link>
+        {user?.venueManager && state?.fromMyVenues && <Link to="/manager/venues" className="navigation-link">← Back to my venues</Link>}
+      </div>
       {error ? <>
         <h1 className="text-h2 font-bold">{notFound ? 'Venue not found' : 'Unable to load this stay'}</h1>
         <p role="alert">{notFound ? 'This stay may have been removed or the link is incorrect.' : error.message}</p>
         {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Try again</button>}
       </> : !venue ? <Loading>Loading stay…</Loading> : <>
-        <VenueGallery media={venue.media} name={name} />
+        <VenueGallery media={venue.media} name={name}>
+          {user?.venueManager && user.name === venue.owner?.name && <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} className="navigation-link w-full gap-2 sm:w-auto"><Icon name="edit" />Edit venue</Link>}
+        </VenueGallery>
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-6">
             <div className="space-y-3 border-b border-border pb-5">
