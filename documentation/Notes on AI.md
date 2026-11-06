@@ -22,7 +22,8 @@ I used an AI assistant to discuss the assignment, break it into milestones and w
 
 ## Code and documentation
 
-- AI rubberducking has been used throughout the project. AI has also been used as a benevolent tutor, explaining and guiding me, never writing any code, or giving me complete snippets, but highlighting where my code could be improved, and where I could find proper guidance and documentation.
+- AI rubberducking has been used throughout the project.
+- AI has also been used as a benevolent tutor, explaining and guiding me, never writing any code, or giving me complete snippets, but highlighting where my code could be improved, and where I could find proper guidance and documentation.
 - AI has also suggested libraries to add that help optimize my code delivery, eg. Leaflet and DOMPurify.
 - AI has also helped writing JSDOCS for all functions.
 
