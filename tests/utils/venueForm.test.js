@@ -22,7 +22,7 @@ test('map coordinates require a complete valid pair and preserve zero', () => {
 
 test('venue form trims required fields, supports optional media/amenities/location and sends numeric values', () => {
   assert.deepEqual(venueFormData(form({ price: '0' })), {
-    name: 'Cabin', description: 'A quiet stay.', price: 0, maxGuests: 4, media: [],
+    name: 'Cabin', description: 'A quiet stay.', price: 0, maxGuests: 4, rating: 0, media: [],
     meta: { wifi: false, parking: false, breakfast: false, pets: false },
   });
   const body = venueFormData(form({
@@ -35,13 +35,14 @@ test('venue form trims required fields, supports optional media/amenities/locati
   assert.equal(body.meta.pets, true);
   assert.equal(body.meta.parking, false);
   assert.equal(Object.hasOwn(body, 'owner'), false);
-  assert.equal(Object.hasOwn(body, 'rating'), false);
+  assert.equal(body.rating, 0);
 });
 
 test('venue form rejects invalid required fields, numbers, image URLs and incomplete coordinates', () => {
   for (const values of [
     { name: ' ' }, { description: '' }, { price: '' }, { price: '-1' }, { price: 'NaN' }, { price: '1.001' },
     { maxGuests: '' }, { maxGuests: '0' }, { maxGuests: '1.5' },
+    { rating: '-1' }, { rating: '5.1' }, { rating: 'NaN' }, { rating: 'Infinity' },
     { mediaUrl: ['javascript:alert(1)'] }, { mediaUrl: ['data:image/png;base64,abc'] },
     { mediaUrl: ['https://user:password@example.com/image.jpg'] }, { mediaUrl: [''], mediaAlt: ['Orphan alt'] },
     { mediaUrl: ['https://example.com/a.jpg'], mediaAlt: ['a'.repeat(121)] },
@@ -49,17 +50,22 @@ test('venue form rejects invalid required fields, numbers, image URLs and incomp
   ]) assert.throws(() => venueFormData(form(values)), Error, JSON.stringify(values));
 });
 
+test('rating accepts decimals and boundaries, with zero for an empty field', () => {
+  for (const rating of ['', '0', '4.5', '5']) assert.equal(venueFormData(form({ rating })).rating, Number(rating));
+});
+
 test('venue creation posts once with validated fields and distinguishes rejected from uncertain outcomes', async () => {
   const calls = [];
   const venue = await createVenue(async (path, options) => {
     calls.push([path, options]);
     return { data: { id: 'new-venue' } };
-  }, form());
+  }, form({ rating: '4.5' }));
   assert.equal(venue.id, 'new-venue');
   assert.equal(calls.length, 1);
   assert.equal(calls[0][0], 'holidaze/venues');
   assert.equal(calls[0][1].method, 'POST');
   assert.equal(calls[0][1].body.maxGuests, 4);
+  assert.equal(calls[0][1].body.rating, 4.5);
   await assert.rejects(createVenue(() => { throw new Error('Must not send'); }, form({ name: ' ' })), /venue name/);
   for (const status of [0, 400, 403, 500, 201]) {
     await assert.rejects(createVenue(async () => { throw new ApiError('Fixture error', status); }, form()), error => error.venueUncertain === (status === 0 || status === 500 || status === 201));

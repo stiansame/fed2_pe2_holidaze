@@ -31,6 +31,7 @@ let profileReads = 0;
 let managerReads = 0;
 let venueCreates = 0;
 let venueUpdates = 0;
+let venueDeletes = 0;
 const venues = Array.from({ length: 18 }, (_, i) => ({
   id: `test-${i}`, name: i === 0 ? 'LongVenueName'.repeat(20) : `Test stay ${i}`,
   description: i ? 'DescriptionWithoutSpaces'.repeat(30) : ' ', price: i ? 1490 : null,
@@ -41,13 +42,13 @@ const venues = Array.from({ length: 18 }, (_, i) => ({
   owner: i === 0 ? null : { name: 'LongHostName'.repeat(15), bio: mode === 'host-bio' ? 'I enjoy welcoming guests to my venues.' : '', avatar: { url: '/missing-avatar.jpg' } },
   bookings: mode === 'availability-missing' ? undefined : [{ dateFrom: `${addDays(dateKey(), 3)}T00:00:00Z`, dateTo: `${addDays(dateKey(), 6)}T00:00:00Z` }],
 }));
-if (mode.startsWith('venue-edit')) {
+if (mode.startsWith('venue-edit') || mode.startsWith('venue-delete')) {
   venues[2].owner = { ...fixtureProfile };
   venues[2].name = 'Editable cabin';
   venues[2].description = 'An existing description.';
   venues[2].location = { address: 'Fjordveien 12', zip: '5003', city: 'Bergen', country: 'Norway', continent: 'Europe', lat: 60.39, lng: 5.32 };
   venues[2].media[0].alt = 'Original cover';
-  if (mode === 'venue-edit-other') venues[2].owner.name = 'AnotherHost';
+  if (mode === 'venue-edit-other' || mode === 'venue-delete-other') venues[2].owner.name = 'AnotherHost';
 }
 if (mode === 'description-html') venues[2].description = '<h2>A formatted stay</h2><p>Text with <strong>bold</strong>, <em>emphasis</em> &amp; symbols.<br>Next line.</p><ul><li>First item</li><li>Second item</li></ul><ol><li>Numbered item</li></ol><blockquote>A quiet retreat</blockquote><p><a href="https://example.com">Read more</a></p><script>document.title="UNSAFE"</script><img src="/missing-description.jpg" onerror="document.title=\'UNSAFE\'"><a href="javascript:alert(1)">Unsafe link</a><style>body{display:none}</style><p style="position:fixed;inset:0">Safe text</p>';
 if (mode === 'description-plain') venues[2].description = 'First line.\nSecond line.\n\nAnother paragraph.';
@@ -96,7 +97,7 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
     if (!fixtureUser.venueManager) return Response.json({ errors: [{ message: 'Manager access required.' }] }, { status: 403 });
     if (mode === 'venue-create-error' && venueCreates === 1) return Response.json({ errors: [{ message: 'Fixture venue rejected. Check your image URL.' }] }, { status: 400 });
     if (mode === 'venue-create-unauthorized') return Response.json({ errors: [{ message: 'Session expired' }] }, { status: 401 });
-    const venue = { ...JSON.parse(body), id: `created-venue-${venueCreates}`, created: new Date().toISOString(), rating: 0, bookings: [], owner: { ...fixtureProfile } };
+    const venue = { ...JSON.parse(body), id: `created-venue-${venueCreates}`, created: new Date().toISOString(), bookings: [], owner: { ...fixtureProfile } };
     venues.push(venue);
     if (mode === 'venue-create-uncertain') throw new TypeError('Fixture response lost after saving');
     return Response.json({ data: venue }, { status: 201 });
@@ -170,6 +171,13 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
   const id = url.pathname.split('/')[3];
   if (id && id !== 'search') {
     const venue = venues.find(item => item.id === id);
+    if (venue && method === 'DELETE') {
+      venueDeletes++;
+      if (mode === 'venue-delete-error' && venueDeletes === 1) return Response.json({ errors: [{ message: 'Fixture deletion rejected.' }] }, { status: 500 });
+      venues.splice(venues.indexOf(venue), 1);
+      if (mode === 'venue-delete-uncertain') throw new TypeError('Fixture response lost after deletion');
+      return new Response(null, { status: 204 });
+    }
     if (venue && method === 'PUT') {
       venueUpdates++;
       if (mode === 'venue-edit-error' && venueUpdates === 1) return Response.json({ errors: [{ message: 'Fixture update rejected.' }] }, { status: 400 });

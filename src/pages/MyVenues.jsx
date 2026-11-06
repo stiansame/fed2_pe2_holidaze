@@ -1,13 +1,16 @@
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getProfileVenues } from '../api/profiles.js';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import Icon from '../components/Icon.jsx';
+import DeleteVenue from '../components/venues/DeleteVenue.jsx';
 
 export default function MyVenues() {
   const { user, request } = useAuth();
+  const { state } = useLocation();
+  const [notice, setNotice] = useState(state?.notice || '');
   const [venues, setVenues] = useState(null);
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
@@ -30,6 +33,7 @@ export default function MyVenues() {
       </div>
       <Link to="/manager/venues/new" className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover"><Icon name="plus" />Create venue</Link>
     </div>
+    {notice && <p role="status" className="text-success">{notice}</p>}
     {error ? <div role="alert" className="space-y-3">
       <p>Unable to load your venues. {error}</p>
       <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
@@ -38,7 +42,10 @@ export default function MyVenues() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {venues.slice(0, count).map(venue => <div key={venue.id} className="min-w-0 space-y-2">
           <VenueCard venue={venue} />
-          <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} aria-label={`Edit ${venue.name}`} className="navigation-link gap-2"><Icon name="edit" />Edit</Link>
+          <div className="flex flex-wrap gap-2">
+            <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} aria-label={`Edit ${venue.name}`} className="navigation-link gap-2"><Icon name="edit" />Edit</Link>
+            <DeleteVenue venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice('Venue deleted.'); }} />
+          </div>
         </div>)}
       </div>
       {count < venues.length && <button type="button" className="navigation-link" onClick={() => setCount(value => value + 15)}>Load more</button>}
