@@ -36,7 +36,10 @@ export default function MyVenues() {
     </div> : !venues ? <Loading>Loading your venues…</Loading> : venues.length ? <>
       <p role="status" className="text-small text-muted">Showing {Math.min(count, venues.length)} of {venues.length} venues.</p>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {venues.slice(0, count).map(venue => <VenueCard key={venue.id} venue={venue} />)}
+        {venues.slice(0, count).map(venue => <div key={venue.id} className="min-w-0 space-y-2">
+          <VenueCard venue={venue} />
+          <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} aria-label={`Edit ${venue.name}`} className="navigation-link gap-2"><Icon name="edit" />Edit</Link>
+        </div>)}
       </div>
       {count < venues.length && <button type="button" className="navigation-link" onClick={() => setCount(value => value + 15)}>Load more</button>}
     </> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. Create your first venue to get started.</p>}

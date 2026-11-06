@@ -1,5 +1,14 @@
 # Venue browser checks
 
+## Edit venue (#26)
+
+- `/tests/browser/venues.html?path=/manager/venues/test-2/edit&signedIn=1&manager=1&mode=venue-edit`: name, description, price, guest capacity, both images, amenities, address and map position are prefilled.
+- Change text, images, amenities and coordinates, then Save changes. The updated venue opens. My venues lists it with an Edit link. Cancel returns without saving.
+- Remove the first image after changing the second image's alt text: the remaining image keeps its values. Add another image and ensure it starts empty. Remove all images and optional location fields: the saved venue must not retain old values.
+- `mode=venue-edit-error`: the first PUT fails; form values and selections remain, and retry succeeds. Saving disables repeat submissions and Cancel.
+- `mode=venue-edit-other`: the form is not shown for another host's venue. An unknown ID shows a readable error and return link. Without manager role the route redirects to Profile; without a session it redirects to login.
+- Check at 320px and desktop width, including keyboard focus and map selection. Real-account/Netlify validation remains manual; fixtures do not mutate Noroff data.
+
 ## Compact amenity pills and logo loader
 
 - `/tests/browser/venues.html?path=/manager/venues/new&signedIn=1&manager=1`: at 1280px the four amenity pills fit on one row. At 320px they wrap without horizontal overflow and retain a 44px touch height. Space toggles a focused pill and its selected colour.
