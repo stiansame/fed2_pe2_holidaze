@@ -1,6 +1,30 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
-import { filterVenues, getAllVenues, getHighlyRatedVenues, getVenue, sortVenues } from '../../src/api/venues.js';
+import { beforeEach, test } from 'node:test';
+import { clearVenueCache, filterVenues, getAllVenues, getHighlyRatedVenues, getVenue, sortVenues } from '../../src/api/venues.js';
+
+beforeEach(clearVenueCache);
+
+test('reuses complete lists for two minutes, separates query data and permits invalidation', async t => {
+  let now = 0;
+  t.mock.method(Date, 'now', () => now);
+  const fetchMock = t.mock.method(globalThis, 'fetch', async () => Response.json({ data: [{ id: 'cached' }], meta: {} }));
+  const first = await getAllVenues({ owner: true });
+  now = 119_999;
+  assert.equal(await getAllVenues({ owner: true }), first);
+  assert.equal(fetchMock.mock.callCount(), 1);
+  await getAllVenues({ owner: true, bookings: true });
+  await getAllVenues();
+  assert.equal(fetchMock.mock.callCount(), 3);
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(getAllVenues({ owner: true, signal: controller.signal }), { name: 'AbortError' });
+  now = 120_000;
+  await getAllVenues({ owner: true });
+  assert.equal(fetchMock.mock.callCount(), 4);
+  clearVenueCache();
+  await getAllVenues({ owner: true });
+  assert.equal(fetchMock.mock.callCount(), 5);
+});
 
 test('requests a bounded highest-rating pool and forwards cancellation', async t => {
   const controller = new AbortController();

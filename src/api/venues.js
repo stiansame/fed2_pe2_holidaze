@@ -2,8 +2,15 @@ import { apiRequest, ApiError } from './client.js';
 import { venueFormData } from '../utils/venueForm.js';
 import { bookedPeriods, overlaps, validDate, dateKey } from '../utils/availability.js';
 
+const venueCache = new Map();
+
+export function clearVenueCache() {
+  venueCache.clear();
+}
+
 export async function createVenue(request, form) {
   const body = venueFormData(form);
+  clearVenueCache();
   try {
     const { data } = await request('holidaze/venues', { method: 'POST', body });
     if (!data?.id) throw new ApiError('The server did not return a venue reference.');
@@ -25,6 +32,7 @@ export async function getOwnVenue(request, id, name, { signal } = {}) {
 
 export async function deleteVenue(request, id, name) {
   await getOwnVenue(request, id, name);
+  clearVenueCache();
   await request(`holidaze/venues/${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
@@ -33,6 +41,7 @@ export async function updateVenue(request, id, name, form) {
   // Send empty values explicitly so removed location fields are cleared.
   body.location = { address: '', city: '', zip: '', country: '', continent: '', lat: 0, lng: 0, ...body.location };
   await getOwnVenue(request, id, name);
+  clearVenueCache();
   const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, { method: 'PUT', body });
   if (data?.id !== id) throw new Error('The update could not be confirmed. Check My venues before saving again.');
   return data;
@@ -59,6 +68,10 @@ export const venueSorts = {
 };
 
 export async function getAllVenues({ bookings = false, owner = false, signal } = {}) {
+  signal?.throwIfAborted();
+  const key = `${Boolean(bookings)}:${Boolean(owner)}`;
+  const cached = venueCache.get(key);
+  if (cached && Date.now() - cached.savedAt < 120_000) return cached.venues;
   const venues = new Map();
   let page = 1;
   do {
@@ -69,7 +82,11 @@ export async function getAllVenues({ bookings = false, owner = false, signal } =
     for (const venue of data) venues.set(venue.id, venue);
     page = meta.nextPage;
   } while (page);
-  return [...venues.values()];
+  signal?.throwIfAborted();
+  const result = [...venues.values()];
+  // Cache only complete lists; date searches need their own booking data.
+  venueCache.set(key, { venues: result, savedAt: Date.now() });
+  return result;
 }
 
 export function sortVenues(venues, order = 'newest') {
