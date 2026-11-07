@@ -3,16 +3,18 @@ import { formatBookingDate } from '../../utils/bookings.js';
 import VenueImage from '../venues/VenueImage.jsx';
 import HostAvatar from '../HostAvatar.jsx';
 import Icon from '../Icon.jsx';
+import { navigationOrigin } from '../../utils/navigation.js';
 
 const pillClass = 'inline-flex max-w-full items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-caption text-text shadow-sm';
 
 export default function ManagerBookingCard({ booking }) {
-  const { search } = useLocation();
+  const location = useLocation();
+  const { search } = location;
   const venue = booking.venue;
   const name = venue.name?.trim() || 'Unnamed stay';
   const address = [venue.location?.city, venue.location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified';
-  return <Link to={`/manager/bookings/${encodeURIComponent(booking.id)}${search}`} className="relative block h-full min-w-0 overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[translate,box-shadow] duration-200 hover:shadow-xl focus-within:shadow-xl motion-safe:hover:-translate-y-1 motion-safe:focus-within:-translate-y-1 motion-reduce:transition-none">
+  return <Link to={`/manager/bookings/${encodeURIComponent(booking.id)}${search}`} state={navigationOrigin(location)} className="relative block h-full min-w-0 overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[translate,box-shadow] duration-200 hover:shadow-xl focus-within:shadow-xl motion-safe:hover:-translate-y-1 motion-safe:focus-within:-translate-y-1 motion-reduce:transition-none">
     <VenueImage key={venue.media?.[0]?.url} media={venue.media?.[0]} name={name} className="absolute inset-0" imageClass="object-cover" />
     <div className="relative flex min-h-60 min-w-0 flex-col justify-between gap-8 p-3">
       <div className="flex min-w-0 flex-col items-start gap-1.5">

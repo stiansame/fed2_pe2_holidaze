@@ -1,11 +1,13 @@
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getHostProfile } from '../api/profiles.js';
 import HostAvatar from '../components/HostAvatar.jsx';
 import VenueImage from '../components/venues/VenueImage.jsx';
 import Icon from '../components/Icon.jsx';
+import BackLink from '../components/BackLink.jsx';
+import { navigationOrigin } from '../utils/navigation.js';
 import { formatVenuePrice } from '../utils/venue.js';
 
 export default function PublicProfile() {
@@ -14,6 +16,7 @@ export default function PublicProfile() {
 }
 
 function HostProfile({ name }) {
+  const location = useLocation();
   const { request } = useAuth();
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -60,7 +63,7 @@ function HostProfile({ name }) {
           {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => {
             const title = venue.name?.trim() || 'Unnamed stay';
             const place = [venue.location?.city, venue.location?.country].map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified';
-            return <li key={venue.id}><Link to={`/venues/${encodeURIComponent(venue.id)}`} className="flex min-w-0 items-stretch overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md focus-visible:outline-offset-2">
+            return <li key={venue.id}><Link to={`/venues/${encodeURIComponent(venue.id)}`} state={navigationOrigin(location)} className="flex min-w-0 items-stretch overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md focus-visible:outline-offset-2">
               <VenueImage key={venue.media?.[0]?.url} media={venue.media?.[0]} name={title} className="relative w-24 shrink-0" imageClass="absolute inset-0 object-cover" />
               <div className="min-w-0 flex-1 space-y-1 p-3">
                 <h3 className="font-semibold text-primary wrap-anywhere">{title}</h3>
@@ -73,6 +76,6 @@ function HostProfile({ name }) {
         </ul> : <p className="text-muted">No venues listed yet.</p>}
       </section>
     </div>}
-    <Link to="/venues" className="navigation-link">Explore venues</Link>
+    <BackLink />
   </section>;
 }

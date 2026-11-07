@@ -4,6 +4,8 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { getVenue } from '../api/venues.js';
 import { useAuth } from '../auth/AuthContext.js';
 import Icon from '../components/Icon.jsx';
+import BackLink from '../components/BackLink.jsx';
+import { navigationOrigin } from '../utils/navigation.js';
 import HostAvatar from '../components/HostAvatar.jsx';
 import Amenities from '../components/venues/Amenities.jsx';
 import VenueGallery from '../components/venues/VenueGallery.jsx';
@@ -20,7 +22,8 @@ export default function VenueDetails() {
 }
 
 function VenueContent({ id }) {
-  const { search, state } = useLocation();
+  const routeLocation = useLocation();
+  const { search } = routeLocation;
   const { user } = useAuth();
   const [venue, setVenue] = useState(null);
   const [error, setError] = useState(null);
@@ -47,10 +50,7 @@ function VenueContent({ id }) {
   return (
     <section className="space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
       <title>{`Holidaze | ${notFound ? 'Venue not found' : venue ? name : 'Venue details'}`}</title>
-      <div className="flex flex-wrap gap-3">
-        <Link to={`/venues${search}`} className="navigation-link">← Back to venues</Link>
-        {user?.venueManager && state?.fromMyVenues && <Link to="/manager/venues" className="navigation-link">← Back to my venues</Link>}
-      </div>
+      <BackLink to={`/venues${search}`} />
       {error ? <>
         <h1 className="text-h2 font-bold">{notFound ? 'Venue not found' : 'Unable to load this stay'}</h1>
         <p role="alert">{notFound ? 'This stay may have been removed or the link is incorrect.' : error.message}</p>
@@ -58,7 +58,7 @@ function VenueContent({ id }) {
       </> : !venue ? <Loading>Loading stay…</Loading> : <>
         <VenueGallery media={venue.media} name={name}>
           {user?.venueManager && user.name === venue.owner?.name && <>
-            <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} className="navigation-link w-full gap-2 sm:w-auto"><Icon name="edit" />Edit venue</Link>
+            <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} state={navigationOrigin(routeLocation)} className="navigation-link w-full gap-2 sm:w-auto"><Icon name="edit" />Edit venue</Link>
             <DeleteVenue venue={venue} />
           </>}
         </VenueGallery>
@@ -82,7 +82,7 @@ function VenueContent({ id }) {
             </section>
             <section className="space-y-3 rounded-lg border-l-4 border-accent bg-accent/10 p-4">
               <h2 className="text-h3 font-bold">Hosted by</h2>
-              {venue.owner?.name?.trim() ? <Link to={`/profiles/${encodeURIComponent(venue.owner.name)}`} className="inline-flex min-h-12 items-center gap-3 rounded-lg font-semibold text-primary wrap-anywhere hover:underline"><HostAvatar key={venue.owner.avatar?.url} media={venue.owner.avatar} />{venue.owner.name}</Link>
+              {venue.owner?.name?.trim() ? <Link to={`/profiles/${encodeURIComponent(venue.owner.name)}`} state={navigationOrigin(routeLocation)} className="inline-flex min-h-12 items-center gap-3 rounded-lg font-semibold text-primary wrap-anywhere hover:underline"><HostAvatar key={venue.owner.avatar?.url} media={venue.owner.avatar} />{venue.owner.name}</Link>
                 : <p className="text-muted">Host information not available.</p>}
               <p className="whitespace-pre-line text-muted wrap-anywhere">{venue.owner?.bio?.trim() || 'No host bio provided.'}</p>
             </section>
@@ -93,7 +93,7 @@ function VenueContent({ id }) {
                 <Suspense fallback={<Loading>Loading map…</Loading>}>
                   <VenueLocationMap lat={location.lat} lng={location.lng} />
                 </Suspense>
-                <a href={map.full} target="_blank" rel="noopener noreferrer" className="inline-block py-2 text-small text-primary underline">View larger map · © OpenStreetMap contributors</a>
+                <a href={map.full} target="_blank" rel="noopener noreferrer" className="navigation-link text-small">View larger map · © OpenStreetMap contributors</a>
               </div>}
             </section>
           </div>

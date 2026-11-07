@@ -7,7 +7,7 @@ export default function NavigationLinks({ mobile = false, onNavigate }) {
   const links = [
     { to: '/venues', label: mobile ? 'Explore venues' : 'Explore' },
     ...(user ? [
-      { to: '/profile', label: 'My account' },
+      { to: user.venueManager ? '/manager' : '/profile', label: 'My account' },
     ] : [
       { to: '/login', label: 'Log in' },
       { to: '/register', label: mobile ? 'Create account' : 'Get started', primary: !mobile },

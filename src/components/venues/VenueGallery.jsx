@@ -29,7 +29,9 @@ export default function VenueGallery({ media = [], name, children }) {
             </button>)}
           </div>}
         </div>
-        <dialog ref={dialog} aria-label={`Photos of ${name}`} className="m-auto max-h-[94dvh] max-w-[96vw] overflow-hidden rounded-lg bg-surface p-0 text-text backdrop:bg-black/70" onKeyDown={event => {
+        <dialog ref={dialog} aria-label={`Photos of ${name}`} className="m-auto max-h-[94dvh] max-w-[96vw] overflow-hidden rounded-lg bg-surface p-0 text-text backdrop:bg-black/70" onClick={event => {
+          if (event.target === event.currentTarget) dialog.current.close();
+        }} onKeyDown={event => {
           if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
           if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
         }}>

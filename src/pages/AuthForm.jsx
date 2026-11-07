@@ -16,7 +16,7 @@ export default function AuthForm({ register = false }) {
   const destination = typeof from === 'string' && from.startsWith('/') && !from.startsWith('//')
     ? from : '/profile';
 
-  if (user) return <Navigate to={destination} replace />;
+  if (user) return <Navigate to={destination} state={location.state?.returnState} replace />;
 
   async function submit(event) {
     event.preventDefault();
@@ -34,10 +34,10 @@ export default function AuthForm({ register = false }) {
             venueManager: values.get('venueManager') === 'on',
           },
         });
-        navigate('/login', { replace: true, state: { from, registered: true } });
+        navigate('/login', { replace: true, state: { from, returnState: location.state?.returnState, registered: true } });
       } else {
         await login(credentials);
-        navigate(destination, { replace: true });
+        navigate(destination, { replace: true, state: location.state?.returnState });
       }
     } catch (error) {
       setError(error.message);
@@ -86,7 +86,7 @@ export default function AuthForm({ register = false }) {
           {pending ? 'Please wait…' : register ? 'Create account' : 'Log in'}
         </button>
       </form>
-      <Link to={register ? '/login' : '/register'} state={{ from }} className="mt-5 block py-2 text-center text-primary underline">
+      <Link to={register ? '/login' : '/register'} state={{ from, returnState: location.state?.returnState }} className="navigation-link mt-5 w-full">
         {register ? 'Already have an account? Log in' : 'Create an account'}
       </Link>
     </section>
