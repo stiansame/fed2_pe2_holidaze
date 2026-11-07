@@ -45,6 +45,7 @@ export default function MyVenues() {
           <div className="flex flex-wrap gap-2">
             <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} aria-label={`Edit ${venue.name}`} className="navigation-link gap-2"><Icon name="edit" />Edit</Link>
             <DeleteVenue venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice('Venue deleted.'); }} />
+            <Link to={`/manager/bookings?venue=${encodeURIComponent(venue.id)}`} aria-label={`View bookings for ${venue.name}`} className="navigation-link gap-2"><Icon name="calendar" />View bookings</Link>
           </div>
         </div>)}
       </div>
