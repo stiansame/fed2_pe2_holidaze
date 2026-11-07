@@ -10,6 +10,8 @@ import HostAvatar from '../components/HostAvatar.jsx';
 import Icon from '../components/Icon.jsx';
 import VenueImage from '../components/venues/VenueImage.jsx';
 import StaySummary from '../components/bookings/StaySummary.jsx';
+import BackLink from '../components/BackLink.jsx';
+import { navigationOrigin } from '../utils/navigation.js';
 
 export default function ManagerBookingDetails() {
   const { id } = useParams();
@@ -18,7 +20,7 @@ export default function ManagerBookingDetails() {
 
 function BookingDetails({ id }) {
   const { request, user } = useAuth();
-  const { search } = useLocation();
+  const location = useLocation();
   const [booking, setBooking] = useState(null);
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
@@ -42,7 +44,7 @@ function BookingDetails({ id }) {
     .map(value => value?.trim()).filter(Boolean).join(', ');
   return <section className="min-w-0 space-y-5">
     <title>Holidaze | Booking details</title>
-    <Link to={`/manager/bookings${search}`} className="navigation-link">← Back to venue bookings</Link>
+    <BackLink to="/manager/bookings" label="Back to venue bookings" />
     <h1 className="text-h3 font-bold sm:text-h2">Booking details</h1>
     {error ? <div role="alert" className="space-y-3">
       <p className="text-danger">{error}</p>
@@ -54,7 +56,7 @@ function BookingDetails({ id }) {
           <StaySummary venue={venue} stay={bookingDates(booking)} summary={{ nights: price?.nights, total: price?.total, error: !price }} />
           <p className="flex items-start gap-2 text-small text-muted"><Icon name="pin" className="mt-0.5 size-4 shrink-0 text-success" /><span className="min-w-0 wrap-anywhere">{address || 'Location not specified'}</span></p>
           <p className="text-small text-muted">Prices are estimates based on the venue’s current nightly rate.</p>
-          <Link to={`/venues/${encodeURIComponent(venue.id)}`} className="navigation-link">View venue</Link>
+          <Link to={`/venues/${encodeURIComponent(venue.id)}`} state={navigationOrigin(location)} className="navigation-link">View venue</Link>
         </div>
       </section>
       <section aria-label="Booking and guest" className="min-w-0 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-5">
@@ -64,7 +66,7 @@ function BookingDetails({ id }) {
           <p className="min-w-0 font-semibold wrap-anywhere">{guest?.name?.trim() || 'Guest name unavailable'}</p>
         </div>
         {guest?.bio?.trim() && <p className="whitespace-pre-line text-muted wrap-anywhere">{guest.bio}</p>}
-        {guest?.name && <Link to={`/profiles/${encodeURIComponent(guest.name)}`} className="navigation-link">View guest profile</Link>}
+        {guest?.name && <Link to={`/profiles/${encodeURIComponent(guest.name)}`} state={navigationOrigin(location)} className="navigation-link">View guest profile</Link>}
         <dl className="space-y-3 border-t border-border pt-4">
           {[['Booking reference', booking.id], ['Booked on', formatBookingDate(booking.created)]].map(([label, value]) => <div key={label}><dt className="text-small text-muted">{label}</dt><dd className="wrap-anywhere">{value}</dd></div>)}
         </dl>

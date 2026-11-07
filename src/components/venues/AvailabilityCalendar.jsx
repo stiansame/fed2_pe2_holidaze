@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Icon from '../Icon.jsx';
 import GuestSelect from '../GuestSelect.jsx';
+import { navigationOrigin } from '../../utils/navigation.js';
 import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, validateStay, validDate } from '../../utils/availability.js';
 
 const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
@@ -10,7 +11,8 @@ const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone:
 export default function AvailabilityCalendar({ bookings, maxGuests, initialStay, onReserve, actionLabel = 'Reserve', readOnly = false }) {
   const today = dateKey();
   const { id } = useParams();
-  const { search } = useLocation();
+  const location = useLocation();
+  const { search } = location;
   const navigate = useNavigate();
   const initial = initialStay ?? stayFromSearch(search);
   const [month, setMonth] = useState(validDate(initial.from) && (readOnly || initial.from >= today) ? initial.from.slice(0, 7) : today.slice(0, 7));
@@ -78,7 +80,7 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
         if (onReserve) return onReserve({ from, to, guests });
         const params = new URLSearchParams(search);
         for (const [key, value] of Object.entries({ from, to, guests })) params.set(key, value);
-        navigate(`/venues/${encodeURIComponent(id)}/reserve?${params}`);
+        navigate(`/venues/${encodeURIComponent(id)}/reserve?${params}`, { state: navigationOrigin(location) });
       }}>
         <label className="block text-small">Guests<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={inputClass} /></label>
         <button disabled={!reliable || !from || !to || !Number.isInteger(maxGuests) || maxGuests < 1} className="min-h-12 w-full rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{actionLabel}</button>

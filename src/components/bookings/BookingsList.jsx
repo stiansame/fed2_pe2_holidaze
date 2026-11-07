@@ -7,6 +7,7 @@ import { bookingPrice, bookingStatus, formatBookingDate, groupBookings } from '.
 import { formatPrice, formatVenuePrice } from '../../utils/venue.js';
 import Icon from '../Icon.jsx';
 import VenueImage from '../venues/VenueImage.jsx';
+import { navigationOrigin } from '../../utils/navigation.js';
 
 export default function BookingsList({ upcomingOnly = false }) {
   const { user, request } = useAuth();
@@ -58,6 +59,7 @@ function BookingGroup({ title, bookings, manage, allLink, initialExpanded, onCan
 }
 
 function BookingCard({ booking, manage, onCancelled }) {
+  const routeLocation = useLocation();
   const { user, request } = useAuth();
   const [confirming, setConfirming] = useState(false);
   const [pending, setPending] = useState(false);
@@ -93,7 +95,7 @@ function BookingCard({ booking, manage, onCancelled }) {
     <div className="min-w-0 flex-1 space-y-3 p-4">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
       <div className="min-w-0 flex-1 space-y-2">
-        <h3 className="font-semibold wrap-anywhere">{venueLink ? <Link to={venueLink} className="text-primary hover:underline">{name}</Link> : name}</h3>
+        <h3 className="font-semibold wrap-anywhere">{venueLink ? <Link to={venueLink} state={navigationOrigin(routeLocation)} className="text-primary hover:underline">{name}</Link> : name}</h3>
         <p className="flex items-start gap-2 text-small text-muted wrap-anywhere"><Icon name="pin" className="size-4 shrink-0 text-success" />{address}</p>
         <p className="text-small text-muted wrap-anywhere">{formatBookingDate(booking.dateFrom)} – {formatBookingDate(booking.dateTo)}</p>
         <p className="text-small">{booking.guests} {booking.guests === 1 ? 'guest' : 'guests'}{status === 'current' && <span className="ml-2 rounded-full bg-accent/15 px-2 py-1 text-caption text-success">Current stay</span>}</p>
@@ -103,7 +105,7 @@ function BookingCard({ booking, manage, onCancelled }) {
         </div>
       </div>
     {manage && editable && <div className="flex shrink-0 flex-col gap-2 sm:w-40">
-      {venueLink && !pending && <Link to={`/bookings/${encodeURIComponent(booking.id)}/edit`} className="inline-flex min-h-12 items-center justify-center rounded-lg bg-primary px-3 text-small font-semibold text-surface hover:bg-primary-hover">Change booking</Link>}
+      {venueLink && !pending && <Link to={`/bookings/${encodeURIComponent(booking.id)}/edit`} state={navigationOrigin(routeLocation)} className="inline-flex min-h-12 items-center justify-center rounded-lg bg-primary px-3 text-small font-semibold text-surface hover:bg-primary-hover">Change booking</Link>}
       {!confirming && <button type="button" onClick={() => setConfirming(true)} className="min-h-12 rounded-lg border border-danger px-3 text-small font-semibold text-danger hover:bg-danger/10">Cancel booking</button>}
     </div>}
     </div>

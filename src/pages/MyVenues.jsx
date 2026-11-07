@@ -6,10 +6,12 @@ import { getProfileVenues } from '../api/profiles.js';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import Icon from '../components/Icon.jsx';
 import DeleteVenue from '../components/venues/DeleteVenue.jsx';
+import { navigationOrigin } from '../utils/navigation.js';
 
 export default function MyVenues() {
   const { user, request } = useAuth();
-  const { state } = useLocation();
+  const location = useLocation();
+  const { state } = location;
   const [notice, setNotice] = useState(state?.notice || '');
   const [venues, setVenues] = useState(null);
   const [error, setError] = useState('');
@@ -31,7 +33,7 @@ export default function MyVenues() {
         <h1 className="text-h3 font-bold sm:text-h2">My venues</h1>
         <p className="text-muted">Your listed places, newest first.</p>
       </div>
-      <Link to="/manager/venues/new" className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover"><Icon name="plus" />Create venue</Link>
+      <Link to="/manager/venues/new" state={navigationOrigin(location)} className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover"><Icon name="plus" />Create venue</Link>
     </div>
     {notice && <p role="status" className="text-success">{notice}</p>}
     {error ? <div role="alert" className="space-y-3">
@@ -42,10 +44,10 @@ export default function MyVenues() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {venues.slice(0, count).map(venue => <div key={venue.id} className="min-w-0 space-y-2">
           <VenueCard venue={venue} />
-          <div className="flex flex-wrap gap-2">
-            <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} aria-label={`Edit ${venue.name}`} className="navigation-link gap-2"><Icon name="edit" />Edit</Link>
-            <DeleteVenue venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice('Venue deleted.'); }} />
-            <Link to={`/manager/bookings?venue=${encodeURIComponent(venue.id)}`} aria-label={`View bookings for ${venue.name}`} className="navigation-link gap-2"><Icon name="calendar" />View bookings</Link>
+          <div className="grid grid-cols-3 gap-2">
+            <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} state={navigationOrigin(location)} aria-label={`Edit ${venue.name}`} className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-lg border border-border bg-surface px-1 text-small font-semibold text-primary hover:bg-tint"><Icon name="edit" className="size-4 shrink-0" />Edit</Link>
+            <DeleteVenue compact venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice('Venue deleted.'); }} />
+            <Link to={`/manager/bookings?venue=${encodeURIComponent(venue.id)}`} state={navigationOrigin(location)} aria-label={`View bookings for ${venue.name}`} className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-lg border border-border bg-surface px-1 text-small font-semibold text-primary hover:bg-tint"><Icon name="calendar" className="size-4 shrink-0" />Bookings</Link>
           </div>
         </div>)}
       </div>

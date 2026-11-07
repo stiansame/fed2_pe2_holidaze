@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getOwnVenue, updateVenue } from '../api/venues.js';
 import Loading from '../components/Loading.jsx';
 import VenueForm from '../components/venues/VenueForm.jsx';
+import BackLink from '../components/BackLink.jsx';
+import { backDestination } from '../utils/navigation.js';
 
 export default function EditVenue() {
   const { id } = useParams();
@@ -11,6 +13,8 @@ export default function EditVenue() {
 }
 
 function VenueEditor({ id }) {
+  const location = useLocation();
+  const back = backDestination(location.state, '/manager/venues', 'Back to my venues');
   const { user, request } = useAuth();
   const navigate = useNavigate();
   const [venue, setVenue] = useState(null);
@@ -33,10 +37,10 @@ function VenueEditor({ id }) {
     {error ? <div role="alert" className="space-y-3">
       <p className="text-danger">{error}</p>
       <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
-      <Link to="/manager/venues" className="navigation-link">Back to my venues</Link>
-    </div> : venue ? <VenueForm venue={venue} onCancel={() => navigate('/manager/venues')} onSave={async form => {
+      <BackLink to="/manager/venues" label="Back to my venues" />
+    </div> : venue ? <VenueForm venue={venue} onCancel={() => navigate(back.to, { state: location.state?.backState })} onSave={async form => {
       const updated = await updateVenue(request, id, user.name, form);
-      if (active.current) navigate(`/venues/${encodeURIComponent(updated.id)}`, { replace: true });
+      if (active.current) navigate(`/venues/${encodeURIComponent(updated.id)}`, { replace: true, state: location.state?.backState });
     }} /> : <Loading>Loading your venue…</Loading>}
   </section>;
 }

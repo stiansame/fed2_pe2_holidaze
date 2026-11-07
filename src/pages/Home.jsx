@@ -48,10 +48,10 @@ export default function Home() {
       <section aria-labelledby="discover-heading" className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="discover-heading" className="text-h3 font-bold sm:text-h2">Highly rated stays</h2>
-          <Link to="/venues" className="inline-flex min-h-12 items-center gap-2 font-semibold text-primary hover:underline">View all venues<Icon name="right" /></Link>
+          <Link to="/venues" className="navigation-link gap-2">View all venues<Icon name="right" /></Link>
         </div>
         {loading ? <Loading>Loading stays…</Loading> : error ? <div role="alert" className="space-y-3"><p>Unable to load stays. {error}</p><button type="button" onClick={() => { setError(''); setLoading(true); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint">Try again</button></div>
-          : highlyRated.length ? <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{highlyRated.slice(0, 6).map(venue => <VenueCard key={venue.id} venue={venue} onImageError={id => setHighlyRated(previous => previous.filter(item => item.id !== id))} />)}</div>
+          : highlyRated.length ? <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{highlyRated.slice(0, 12).map(venue => <VenueCard key={venue.id} venue={venue} onImageError={id => setHighlyRated(previous => previous.filter(item => item.id !== id))} />)}</div>
           : <p>No highly rated stays with multiple photos are available right now. Explore all venues to find your next stay.</p>}
       </section>
     </div>

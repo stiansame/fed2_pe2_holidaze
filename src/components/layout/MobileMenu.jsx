@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import NavigationLinks from './NavigationLinks.jsx';
+import Icon from '../Icon.jsx';
 
 export default function MobileMenu({ onClose }) {
   const menuRef = useRef(null);
@@ -18,11 +19,13 @@ export default function MobileMenu({ onClose }) {
         if (event.key === 'Escape') onClose();
       }}
     >
-      <h2 className="text-h3 font-semibold">Menu</h2>
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-h3 font-semibold">Menu</h2>
+        <button type="button" aria-label="Close menu" onClick={onClose} className="flex size-12 items-center justify-center rounded-lg border border-border bg-surface text-primary hover:bg-tint">
+          <Icon name="close" />
+        </button>
+      </div>
       <NavigationLinks mobile onNavigate={onClose} />
-      <button type="button" onClick={onClose} className="min-h-12 w-full rounded-lg border border-border bg-surface px-4 text-small font-semibold text-primary hover:bg-tint">
-        Close menu
-      </button>
     </nav>
   );
 }

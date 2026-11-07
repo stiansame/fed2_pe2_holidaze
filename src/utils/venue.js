@@ -21,7 +21,7 @@ export function selectHighlyRatedVenues(venues, random = Math.random) {
   const eligible = venues.filter(venue => venue.rating >= 4
     && new Set((venue.media ?? []).map(photo => photo?.url?.trim()).filter(isPhotoUrl)).size >= 2);
   const pool = shuffleVenuesWithPhotos(eligible, random);
-  // Reserve half the visible places for map data without fixing all six choices.
+  // Prioritise up to three mapped venues without fixing the remaining choices.
   const preferred = pool.filter(venue => venueMapLinks(venue.location)).slice(0, 3);
   return [...preferred, ...pool.filter(venue => !preferred.includes(venue))];
 }

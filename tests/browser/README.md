@@ -1,5 +1,15 @@
 # Venue browser checks
 
+## Navigation cleanup
+
+- My venues: Edit, Delete and Bookings share one row at mobile and desktop widths. Delete retains its confirmation dialog.
+- My account opens Dashboard for managers and Profile for other users. Dashboard is first in the manager menu and absent for other users.
+- Open a booking from Dashboard: the summary shows Back to dashboard. Open it from a filtered Venue bookings list: Back to venue bookings restores that filter.
+- Follow summary → venue → host profile and return through the links: each return restores the preceding page and its navigation context. Direct detail URLs use a sensible fallback.
+- Open Edit venue from My venues and from venue details. Cancel returns to the corresponding source without saving. Saving still opens the updated venue.
+- Check boxed navigation actions, visible keyboard focus and all three My venues actions at 320px, 390px and desktop.
+- Home shows up to twelve highly rated stays when enough qualifying venues exist; a fresh load still randomises the selection.
+
 ## Venue bookings (#28)
 
 - Booking summary includes the shared venue calendar in read-only mode. It opens on this reservation's month (including past stays), highlights its nights in green with checkout excluded, and shows other booked nights in red. Month navigation works in both directions; no guest selector, date selection or Reserve form appears. Missing availability produces the existing error. The original public booking calendar must still support date selection and Reserve.

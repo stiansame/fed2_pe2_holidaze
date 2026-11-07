@@ -1,6 +1,7 @@
 import Loading from '../components/Loading.jsx';
+import BackLink from '../components/BackLink.jsx';
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getOwnBooking, updateBooking } from '../api/bookings.js';
 import { getVenue } from '../api/venues.js';
@@ -39,7 +40,7 @@ function EditLoader({ id }) {
     {!data && !error && <Loading>Loading your booking…</Loading>}
     {data && <BookingEditor booking={data.booking} initialVenue={data.venue} />}
     {error && <><p role="alert" className="text-danger">{error}</p><button type="button" onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Try again</button></>}
-    <Link to="/bookings" className="inline-block py-2 text-primary underline">Back to my bookings</Link>
+    <BackLink to="/bookings" label="Back to my bookings" />
   </section>;
 }
 
