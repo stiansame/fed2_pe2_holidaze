@@ -25,6 +25,16 @@ export async function getOwnBooking(request, id, name, { signal } = {}) {
   return data;
 }
 
+export async function getVenueBooking(request, id, name, { signal } = {}) {
+  const { data } = await request(`holidaze/bookings/${encodeURIComponent(id)}`, {
+    query: { _venue: true, _customer: true }, signal,
+  });
+  if (!name || data?.venue?.owner?.name?.toLowerCase() !== name.toLowerCase()) {
+    throw new ApiError('This booking is not available for your venues.', 403);
+  }
+  return data;
+}
+
 async function getEditableBooking(request, id, name) {
   const booking = await getOwnBooking(request, id, name);
   if (bookingStatus(booking) !== 'upcoming') throw new ApiError('Only stays that have not started can be changed or cancelled.', 400);

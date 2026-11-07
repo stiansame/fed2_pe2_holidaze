@@ -111,8 +111,13 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
       const all = mode === 'host-empty' || mode === 'manager-empty' ? [] : ownManager ? (mode === 'manager-list' ? venues : venues.slice(2, 8)).map((venue, i) => ({
         ...venue,
         bookings: mode === 'manager-missing' ? undefined : [
-          { id: `manager-${i}`, dateFrom: addDays(dateKey(), i + 2), dateTo: addDays(dateKey(), i + 4), guests: i + 1, customer: { name: `Guest ${i + 1}` } },
+          { id: `manager-${i}`, dateFrom: addDays(dateKey(), i + 2), dateTo: addDays(dateKey(), i + 4), guests: i + 1, customer: { name: `Guest ${i + 1}`, avatar: { url: i === 0 ? photo : `${location.origin}/missing-guest-avatar.jpg` } } },
           { id: `manager-past-${i}`, dateFrom: addDays(dateKey(), -10), dateTo: addDays(dateKey(), -8), guests: 2 },
+          ...(mode === 'manager-bookings' && i === 0 ? [
+            { id: 'manager-current', dateFrom: addDays(dateKey(), -1), dateTo: addDays(dateKey(), 1), guests: 2 },
+            { id: 'manager-invalid', dateFrom: 'invalid', dateTo: 'invalid' },
+            ...Array.from({ length: 4 }, (_, index) => ({ id: `manager-extra-${index}`, dateFrom: addDays(dateKey(), index + 20), dateTo: addDays(dateKey(), index + 22), guests: 3, customer: { name: `Extra guest ${index}` } })),
+          ] : []),
         ],
       })) : venues.filter(venue => venue.owner?.name === profileName);
       const page = Number(url.searchParams.get('page')) || 1;
@@ -151,7 +156,12 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
       return Response.json({ data: booking }, { status: 201 });
     }
     if (mode === 'confirmation-error' && ++confirmationRequests === 1) return Response.json({ errors: [{ message: 'Fixture confirmation unavailable.' }] }, { status: 503 });
-    const booking = savedBookings.get(url.pathname.split('/')[3]);
+    const bookingId = url.pathname.split('/')[3];
+    const booking = savedBookings.get(bookingId) ?? (mode.startsWith('manager-') && bookingId?.startsWith('manager-') ? {
+      id: bookingId, dateFrom: addDays(dateKey(), 2), dateTo: addDays(dateKey(), 4), guests: 2, created: dateKey(),
+      venue: { ...venues[2], owner: { name: mode === 'manager-other' ? 'AnotherHost' : fixtureUser.name } },
+      customer: { name: 'Guest 1', avatar: { url: photo }, bio: 'Looking forward to my stay.' },
+    } : null);
     if (booking && ['PUT', 'DELETE'].includes(method)) {
       if (mode === 'own-save-error') return Response.json({ errors: [{ message: 'Fixture change rejected.' }] }, { status: 400 });
       const venue = venues.find(item => item.id === booking.venue.id);

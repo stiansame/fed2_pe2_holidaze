@@ -1,7 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import NotFound from './pages/NotFound.jsx';
-import ComingSoon from './pages/ComingSoon.jsx';
+import VenueBookings from './pages/VenueBookings.jsx';
+import ManagerBookingDetails from './pages/ManagerBookingDetails.jsx';
 import Layout from './components/layout/Layout.jsx';
 import AuthForm from './pages/AuthForm.jsx';
 import RequireAuth from './auth/RequireAuth.jsx';
@@ -41,7 +42,8 @@ export default function App() {
               <Route path="/manager/venues" element={<MyVenues />} />
               <Route path="/manager/venues/new" element={<CreateVenue />} />
               <Route path="/manager/venues/:id/edit" element={<EditVenue />} />
-              <Route path="/manager/bookings" element={<ComingSoon title="Venue bookings" />} />
+              <Route path="/manager/bookings" element={<VenueBookings />} />
+              <Route path="/manager/bookings/:id" element={<ManagerBookingDetails />} />
             </Route>
           </Route>
         </Route>

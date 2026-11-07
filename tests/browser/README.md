@@ -1,5 +1,26 @@
 # Venue browser checks
 
+## Venue bookings (#28)
+
+- Booking summary includes the shared venue calendar in read-only mode. It opens on this reservation's month (including past stays), highlights its nights in green with checkout excluded, and shows other booked nights in red. Month navigation works in both directions; no guest selector, date selection or Reserve form appears. Missing availability produces the existing error. The original public booking calendar must still support date selection and Reserve.
+- Booking cards use the same lift/shadow hover and focus effect as venue cards and respect reduced motion. Pills use smaller caption text, padding and 24px avatars. Check readable contrast and long text at narrow widths.
+
+- Booking cards now open `/manager/bookings/:id`, including dashboard cards. The details page rechecks the venue owner before showing guest/booking data. `mode=manager-other` rejects another host's booking, including direct URLs.
+- Open a card from a filtered list: Back to venue bookings preserves the venue query. Reload/direct details links work; View venue and View guest profile open the correct public pages. Reference, booking creation date, stay dates, guests and current-rate estimate are shown; no editing/cancellation actions exist.
+- Booking cards use the venue image across the entire background at every width, with white pills for venue name/address, guest avatar/name, dates and guest count. Both the dashboard and overview use one column on mobile, two from 640px and three from 1280px. Long content grows the card instead of overlapping or being cut off. Check long values, fallbacks and keyboard focus at 320/390px and desktop. Account navigation highlights Bookings on nested manager booking URLs and My venues on Edit venue.
+- Manager booking cards share one component between the dashboard and overview. Verify full-image booking cards and white overlay pills at all widths, including guest name/avatar and the venue address. Missing images/avatars use existing fallbacks; long names and addresses wrap.
+- Dashboard has separate Current stays and Upcoming stays sections with up to three each. `mode=manager-bookings` exercises both; the Upcoming bookings statistic still excludes current stays. Each card opens the correct booking summary.
+- Manager cancellation is unavailable: Noroff's deleteBookingHandler authorises only the booking's customerName, not the venue owner. Keep these cards read-only.
+
+- `/tests/browser/venues.html?path=/manager/bookings&signedIn=1&manager=1&mode=manager-data`: loads all six own venues across two pages and shows six upcoming and six past bookings. Each group starts with three; Show all and Show less work independently.
+- Select one venue: only its bookings remain. All venues restores the complete list. The selection survives reload and browser back/forward navigation. Filtering and expansion must not request more pages.
+- Add `venue=test-2` to the path value (`path=/manager/bookings%3Fvenue=test-2`): the matching venue is preselected. An unknown/another owner's ID shows Unavailable venue and no booking rows; All venues recovers.
+- Start from `/manager` in manager-data mode: View all bookings opens the complete overview; an upcoming booking opens its booking summary. My venues has a View bookings action with the same filter.
+- `mode=manager-bookings`: includes a current stay and invalid dates, plus more than three upcoming bookings for the first venue. Current stays are separate from upcoming; invalid dates appear in Dates unavailable. Missing customer/guest information has readable fallbacks.
+- `mode=manager-empty`: helpful guidance and Create venue. `mode=manager-error`: Try again recovers. `mode=manager-missing`: an error appears instead of a misleading zero count. Refresh bookings reloads the complete data while retaining the venue selection.
+- Remove manager=1: Profile redirect. Remove signedIn=1: login redirect. No edit/cancel/delete booking actions appear in this manager overview.
+- Manual checks remain: 320px, 390px and desktop without horizontal overflow; keyboard focus, independently expanded groups, menu highlight and Holidaze | Venue bookings title. Local browser access was unavailable during implementation; real-account and Netlify validation also remain manual.
+
 ## Rating in the shared venue form
 
 - Create venue defaults Rating (0–5) to zero; Edit venue prefills the saved rating. Decimals such as 4.5 are accepted. Blank means zero; negative values and values above five must be rejected.

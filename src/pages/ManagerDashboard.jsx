@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getProfileVenues } from '../api/profiles.js';
 import { managerSummary } from '../utils/manager.js';
-import { formatBookingDate } from '../utils/bookings.js';
+import ManagerBookingCard from '../components/bookings/ManagerBookingCard.jsx';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import Icon from '../components/Icon.jsx';
 
@@ -56,24 +56,18 @@ export default function ManagerDashboard() {
           {data.venues.slice(0, 3).map(venue => <VenueCard key={venue.id} venue={venue} />)}
         </div> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. Create your first venue to get started.</p>}
       </section>
-      <section className="space-y-4" aria-labelledby="manager-bookings-heading">
+      {[
+        ['current', 'Current stays', data.current],
+        ['upcoming', 'Upcoming stays', data.upcoming],
+      ].map(([status, title, bookings]) => <section key={status} className="space-y-4" aria-labelledby={`manager-${status}-heading`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="manager-bookings-heading" className="text-h3 font-bold">Upcoming bookings</h2>
+          <h2 id={`manager-${status}-heading`} className="text-h3 font-bold">{title}</h2>
           <Link to="/manager/bookings" className="navigation-link">View all bookings<Icon name="right" /></Link>
         </div>
-        {data.upcoming.length ? <ul className="space-y-3">
-          {data.upcoming.slice(0, 3).map(booking => <li key={booking.id} className="grid min-w-0 gap-2 rounded-xl border border-border bg-surface p-4 text-small sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div className="min-w-0 space-y-1">
-              <Link to={`/venues/${encodeURIComponent(booking.venue.id)}`} className="font-semibold text-primary wrap-anywhere hover:underline">{booking.venue.name?.trim() || 'Unnamed stay'}</Link>
-              <p className="text-muted wrap-anywhere">{booking.customer?.name?.trim() || 'Guest name unavailable'}</p>
-            </div>
-            <div className="space-y-1">
-              <p>{formatBookingDate(booking.dateFrom)} – {formatBookingDate(booking.dateTo)}</p>
-              <p className="text-muted">{Number.isInteger(booking.guests) && booking.guests > 0 ? `${booking.guests} ${booking.guests === 1 ? 'guest' : 'guests'}` : 'Guest count unavailable'}</p>
-            </div>
-          </li>)}
-        </ul> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">No upcoming bookings for your venues.</p>}
-      </section>
+        {bookings.length ? <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {bookings.slice(0, 3).map(booking => <li key={booking.id} className="min-w-0"><ManagerBookingCard booking={booking} /></li>)}
+        </ul> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">No {title.toLowerCase()} for your venues.</p>}
+      </section>)}
     </>}
   </section>;
 }
