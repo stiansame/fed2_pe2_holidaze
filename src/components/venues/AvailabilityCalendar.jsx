@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Icon from '../Icon.jsx';
 import GuestSelect from '../GuestSelect.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, validateStay, validDate } from '../../utils/availability.js';
+import { formatPrice, formatVenuePrice } from '../../utils/venue.js';
+import { staySummary } from '../../utils/availability.js';
 
 const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
 const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'UTC' });
 
-export default function AvailabilityCalendar({ bookings, maxGuests, initialStay, onReserve, actionLabel = 'Reserve', readOnly = false }) {
+export default function AvailabilityCalendar({ bookings, maxGuests, initialStay, onReserve, onStayChange, formId, price, compact = false, actionLabel = 'Reserve', readOnly = false }) {
   const today = dateKey();
   const { id } = useParams();
   const location = useLocation();
@@ -20,6 +22,8 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
   const [to, setTo] = useState(initial.to);
   const [guests, setGuests] = useState(initial.guests);
   const [checked, setChecked] = useState(false);
+  useEffect(() => { onStayChange?.({ from, to, guests }); }, [from, to, guests, onStayChange]);
+  const summary = price === undefined ? null : staySummary({ bookings, maxGuests, price }, { from, to, guests });
   const { periods, reliable } = bookedPeriods(bookings, readOnly ? '0001-01-01' : today);
   const error = validateStay({ from, to, guests, maxGuests, periods: reliable ? periods : null, today });
   const start = `${month}-01`;
@@ -43,8 +47,12 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
     }
   }
 
-  return <section className="space-y-4 border-t border-border p-4" aria-label="Availability">
-    <h2 className="text-h3 font-bold">{readOnly ? 'Venue calendar' : 'Select dates'}</h2>
+  const dates = <dl className={`grid min-w-0 ${compact ? 'grid-cols-[auto_auto] justify-start gap-x-6 lg:grid-cols-2' : 'grid-cols-2'} gap-2 text-left text-small`} aria-live="polite">
+    {[['Check-in', from], ['Check-out', to]].map(([label, date]) => <div key={label} className="min-w-0"><dt className="text-muted">{label}</dt><dd className="font-semibold">{date ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', ...(compact ? {} : { year: 'numeric' }), timeZone: 'UTC' }) : 'Not selected'}</dd></div>)}
+  </dl>;
+
+  return <section className={`${compact ? 'compact-calendar space-y-2 p-3 lg:space-y-4 lg:p-4' : 'space-y-4 p-4'} border-t border-border`} aria-label="Availability">
+    <h2 className={`${compact ? 'sr-only lg:not-sr-only ' : ''}text-h3 font-bold`}>{readOnly ? 'Venue calendar' : 'Select dates'}</h2>
     {periods === null ? <p role="alert" className="text-small text-danger">Availability is unavailable. Please try again later.</p> : <>
       {!reliable && <p role="alert" className="text-small text-danger">Some booking dates are invalid. Known bookings are shown, but availability cannot be confirmed.</p>}
       <div className="flex items-center justify-between gap-1">
@@ -69,11 +77,9 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
           return <button type="button" key={date} disabled={readOnly || disabled} onClick={() => selectDate(date)} aria-pressed={selected} aria-label={`${fullDate.format(new Date(date))}: ${readOnly && selected ? 'This booking' : past ? 'Past, unavailable' : booked ? 'Booked night' : disabled ? 'Unavailable for this stay' : 'Available night'}${!readOnly && choosingEnd && !disabled ? ', checkout available' : ''}`} aria-current={date === today ? 'date' : undefined} className={`flex min-h-11 items-center justify-center rounded ${readOnly ? 'disabled:cursor-default' : 'disabled:cursor-not-allowed'} ${stateClass} ${readOnly ? selected ? 'ring-1 ring-success' : '' : date === from || date === to ? 'ring-2 ring-success' : ''}`}>{i + 1}</button>;
         })}
       </div>
-      <p className="text-caption text-muted">{readOnly ? 'Green: this booking · Red: other bookings · Grey: past. Check-out dates are not included in booked nights.' : 'Grey: past · Red: booked nights · Green: selected. Checkout is allowed on the next booking’s check-in date.'}</p>
-      <dl className="grid grid-cols-2 gap-2 text-small" aria-live="polite">
-        {[['Check-in', from], ['Check-out', to]].map(([label, date]) => <div key={label}><dt className="text-muted">{label}</dt><dd className="font-semibold">{date ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'Not selected'}</dd></div>)}
-      </dl>
-      {!readOnly && <form className="space-y-3" onChange={() => setChecked(false)} onSubmit={event => {
+      <p className={`${compact ? 'hidden lg:block ' : ''}text-caption text-muted`}>{readOnly ? 'Green: this booking · Red: other bookings · Grey: past. Check-out dates are not included in booked nights.' : 'Grey: past · Red: booked nights · Green: selected. Checkout is allowed on the next booking’s check-in date.'}</p>
+      {readOnly && dates}
+      {!readOnly && <form id={formId} className="space-y-3" onChange={() => setChecked(false)} onSubmit={event => {
         event.preventDefault();
         setChecked(true);
         if (error) return;
@@ -82,8 +88,15 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
         for (const [key, value] of Object.entries({ from, to, guests })) params.set(key, value);
         navigate(`/venues/${encodeURIComponent(id)}/reserve?${params}`, { state: navigationOrigin(location) });
       }}>
-        <label className="block text-small">Guests<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={inputClass} /></label>
-        <button disabled={!reliable || !from || !to || !Number.isInteger(maxGuests) || maxGuests < 1} className="min-h-12 w-full rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{actionLabel}</button>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 gap-y-3">
+          <div className="col-span-2 min-w-0">{dates}</div>
+          <label className={`${compact ? 'flex items-center justify-start gap-3 lg:block' : 'block'} min-w-0 text-left text-small`}>{compact ? <strong className="shrink-0">Who’s coming?</strong> : 'Guests'}<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={compact ? 'min-h-11 w-36 min-w-0 rounded-lg border border-border bg-surface px-2 lg:mt-1 lg:min-h-12 lg:w-full' : inputClass} /></label>
+          <button type="button" aria-label="Reset selection" title="Reset selection" disabled={!from && !to} onClick={() => { setFrom(''); setTo(''); setChecked(false); }} className={`inline-flex ${compact ? 'size-11 lg:size-12' : 'size-12'} items-center justify-center rounded-lg border border-border bg-surface text-primary hover:bg-tint disabled:opacity-40`}><Icon name="reset" /></button>
+        </div>
+        <div className={compact ? 'flex items-center justify-between gap-2 lg:block' : ''}>
+          {summary && <p className="accent-box min-w-0 text-small lg:hidden" aria-live="polite">{summary.error ? formatVenuePrice(price) : <><strong>{formatPrice(summary.total)} total</strong><span className="block text-caption">{summary.nights} {summary.nights === 1 ? 'night' : 'nights'}</span></>}</p>}
+          <button disabled={!reliable || !from || !to || !Number.isInteger(maxGuests) || maxGuests < 1} className={`min-h-12 ${compact ? 'shrink-0 lg:w-full' : 'w-full'} rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60`}>{actionLabel}</button>
+        </div>
         {checked && error && <p role="alert" className="text-small text-danger">{error}</p>}
       </form>}
     </>}

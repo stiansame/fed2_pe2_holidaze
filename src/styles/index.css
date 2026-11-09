@@ -46,6 +46,10 @@
 }
 
 @layer components {
+  .accent-box {
+    @apply rounded-lg bg-accent/20 px-3 py-2 font-semibold text-text;
+  }
+
   .navigation-link {
     @apply inline-flex min-h-12 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint;
   }
@@ -68,6 +72,41 @@
 }
 
 /* A restrained boost for listing and hero photos; text and badges stay unchanged. */
+.venue-booking-panel {
+  position: fixed;
+  inset: auto 0 0;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  max-height: calc(100dvh - 1rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 1rem 1rem 0 0;
+  padding: 0 0 max(1rem, env(safe-area-inset-bottom));
+}
+.venue-booking-bar { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+@media (width < 64rem) {
+  .compact-calendar [aria-label='Night availability'] { gap: 2px; }
+  .compact-calendar [aria-label='Night availability'] > span { padding-block: 2px; }
+  .compact-calendar [aria-label='Night availability'] > button {
+    min-height: clamp(24px, 5dvh, 36px);
+  }
+  .compact-calendar button:is([aria-label='Previous month'], [aria-label='Next month']) {
+    width: 36px;
+    height: 36px;
+  }
+}
+@media (width >= 64rem) {
+  .venue-booking-panel {
+    display: block;
+    position: static;
+    max-height: none;
+    overflow: visible;
+    border-radius: 0;
+    padding: 0;
+  }
+}
+
 .venue-photo {
   filter: saturate(1.08) contrast(1.04);
 }

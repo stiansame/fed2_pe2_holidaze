@@ -14,7 +14,7 @@ export default function MobileMenu({ onClose }) {
       id="mobile-menu"
       ref={menuRef}
       aria-label="Mobile navigation"
-      className="space-y-8 bg-background p-6 md:hidden"
+      className="space-y-8 bg-background p-6 lg:hidden"
       onKeyDown={event => {
         if (event.key === 'Escape') onClose();
       }}
