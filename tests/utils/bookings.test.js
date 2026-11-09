@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { bookingDates, bookingPrice, bookingStatus, formatBookingDate, groupBookings } from '../../src/utils/bookings.js';
+import { bookingDates, bookingPrice, bookingStatus, formatBookingDate, formatBookingRange, groupBookings } from '../../src/utils/bookings.js';
+
+test('short booking ranges retain the month and year when crossing boundaries', () => {
+  assert.equal(formatBookingRange({ dateFrom: '2030-11-13', dateTo: '2030-11-16' }), '13–16 Nov 2030');
+  assert.equal(formatBookingRange({ dateFrom: '2030-11-30', dateTo: '2030-12-02' }), '30 Nov–2 Dec 2030');
+  assert.equal(formatBookingRange({ dateFrom: '2030-12-30', dateTo: '2031-01-02' }), '30 Dec 2030–2 Jan 2031');
+  assert.equal(formatBookingRange({ dateFrom: null, dateTo: '2031-01-02' }), 'Dates unavailable');
+});
 
 test('estimates full-stay price for past and future bookings using whole UTC nights', () => {
   const booking = { dateFrom: '2020-03-28T00:00:00Z', dateTo: '2020-03-31T00:00:00Z', venue: { price: 1490.25 } };
