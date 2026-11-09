@@ -64,11 +64,11 @@ function HostProfile({ name }) {
             const title = venue.name?.trim() || 'Unnamed stay';
             const place = [venue.location?.city, venue.location?.country].map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified';
             return <li key={venue.id}><Link to={`/venues/${encodeURIComponent(venue.id)}`} state={navigationOrigin(location)} className="flex min-w-0 items-stretch overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md focus-visible:outline-offset-2">
-              <VenueImage key={venue.media?.[0]?.url} media={venue.media?.[0]} name={title} className="relative w-24 shrink-0" imageClass="absolute inset-0 object-cover" />
+              <VenueImage key={venue.media?.[0]?.url} media={venue.media?.[0]} name={title} className="relative w-16 shrink-0 sm:w-24" imageClass="absolute inset-0 object-cover" />
               <div className="min-w-0 flex-1 space-y-1 p-3">
-                <h3 className="font-semibold text-primary wrap-anywhere">{title}</h3>
-                <p className="flex items-start gap-1 text-small text-muted wrap-anywhere"><Icon name="pin" className="size-4 shrink-0 text-success" />{place}</p>
-                <p className="text-small font-semibold">{formatVenuePrice(venue.price)}</p>
+                <h3 title={title} className="truncate font-semibold text-primary lg:whitespace-normal lg:wrap-anywhere">{title}</h3>
+                <p title={place} className="flex min-w-0 items-start gap-1 text-small text-muted"><Icon name="pin" className="size-4 shrink-0 text-success" /><span className="truncate lg:whitespace-normal lg:wrap-anywhere">{place}</span></p>
+                <p title={formatVenuePrice(venue.price)} className="truncate text-caption font-semibold sm:text-small">{formatVenuePrice(venue.price)}</p>
               </div>
               <span aria-hidden="true" className="flex items-center pr-3 text-primary">›</span>
             </Link></li>;

@@ -24,12 +24,12 @@ export default function VenueCard({ venue, onImageError }) {
           <Amenities meta={venue.meta} />
         </div>
       </div>
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 p-4">
+      <div className="grid items-start gap-2 p-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-3">
         <div className="min-w-0 space-y-2">
-          <h2 className="line-clamp-2 text-h3 font-semibold wrap-anywhere" title={name}>{name}</h2>
-          <p className="flex items-center gap-2 text-small text-muted wrap-anywhere"><Icon name="pin" className="size-4 shrink-0 text-success" />{location}</p>
+          <h2 className="truncate text-h3 font-semibold lg:line-clamp-2 lg:whitespace-normal lg:wrap-anywhere" title={name}>{name}</h2>
+          <p title={location} className="flex min-w-0 items-center gap-2 text-small text-muted"><Icon name="pin" className="size-4 shrink-0 text-success" /><span className="truncate lg:whitespace-normal lg:wrap-anywhere">{location}</span></p>
         </div>
-        <p className="max-w-28 text-right text-small font-semibold wrap-anywhere">{formatVenuePrice(venue.price).split(' / night')[0]}{Number.isFinite(venue.price) && <span className="mt-1 block text-caption font-normal text-muted">/ night</span>}</p>
+        <p className="text-small font-semibold wrap-anywhere lg:max-w-28 lg:text-right">{formatVenuePrice(venue.price).split(' / night')[0]}{Number.isFinite(venue.price) && <span className="ml-1 text-caption font-normal text-muted lg:ml-0 lg:mt-1 lg:block">/ night</span>}</p>
       </div>
       </Link>
     </article>

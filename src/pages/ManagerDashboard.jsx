@@ -38,7 +38,7 @@ export default function ManagerDashboard() {
       <p>Unable to load your dashboard. {error}</p>
       <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
     </div> : !data ? <Loading>Loading your dashboard…</Loading> : <>
-      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {[
           ['My venues', data.venues.length, 'home'],
           ['Total bookings', data.totalBookings, 'calendar'],

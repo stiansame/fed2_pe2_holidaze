@@ -69,17 +69,16 @@ export default function Venues() {
     <section aria-labelledby="venues-heading">
       <h1 id="venues-heading" className="text-h3 font-bold sm:text-h2">Explore venues</h1>
       <p className="mt-2 text-small text-muted sm:text-body">Find somewhere worth staying.</p>
-      <form role="search" className="mt-4 grid min-w-0 gap-3 sm:mt-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1.6fr)_minmax(0,0.8fr)]" onSubmit={event => event.preventDefault()}>
+      <form role="search" className="mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 sm:mt-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1.6fr)_minmax(0,0.8fr)]" onSubmit={event => event.preventDefault()}>
         <label className={`${pillClass} min-w-0 lg:order-2`}>
           <span className="sr-only">Search venues</span><Icon name="search" />
           <input name="q" type="search" value={search.value} onChange={event => setSearch({ value: event.target.value, url: q })} aria-describedby="search-hint" placeholder="Search venues, locations or hosts" className="min-h-12 w-full min-w-0 bg-transparent outline-none!" />
         </label>
-        <button type="button" aria-expanded={filtersOpen} aria-controls="venue-filters" onClick={() => setFiltersOpen(value => !value)} className={`${pillClass} justify-self-start font-semibold text-primary lg:hidden`}>
-          <Icon name="sort" />Filters &amp; sort
-          {activeFilters > 0 && <span className="rounded-full bg-primary px-2 py-0.5 text-caption text-surface">{activeFilters}<span className="sr-only"> active</span></span>}
-          <span aria-hidden="true">{filtersOpen ? '−' : '+'}</span>
+        <button type="button" aria-label={`Filters and sort${activeFilters ? `, ${activeFilters} active` : ''}`} aria-expanded={filtersOpen} aria-controls="venue-filters" onClick={() => setFiltersOpen(value => !value)} className={`${pillClass} relative justify-self-start font-semibold text-primary lg:hidden`}>
+          <Icon name="filter" />
+          {activeFilters > 0 && <span aria-hidden="true" className="absolute -right-1 -top-2 rounded-full bg-primary px-1.5 py-0.5 text-caption text-surface">{activeFilters}</span>}
         </button>
-        <div id="venue-filters" className={`${filtersOpen ? 'grid' : 'hidden'} min-w-0 gap-3 rounded-xl border border-border bg-surface/60 p-3 lg:contents`}>
+        <div id="venue-filters" className={`${filtersOpen ? 'grid' : 'hidden'} col-span-2 min-w-0 gap-3 rounded-xl border border-border bg-surface/60 p-3 lg:contents`}>
           <div className="flex flex-wrap items-center gap-2 lg:order-1 lg:col-span-3">
             <label className={`${pillClass} min-w-0 max-w-full`}>
               <span className="sr-only">Sort by</span><Icon name="sort" />
@@ -110,8 +109,8 @@ export default function Venues() {
             <GuestSelect value={guests} onChange={value => update('guests', value || '')} allowAny className={selectClass} />
           </label>
         </div>
-        <p id="search-hint" role="status" className="text-caption text-muted lg:order-5 lg:col-span-3">{tooShort ? 'Enter at least 3 characters.' : 'Search updates automatically · min. 3 characters.'}</p>
-        <p id="date-hint" role="status" className="text-small text-danger lg:order-6 lg:col-span-3">{dateError}</p>
+        <p id="search-hint" role="status" className={tooShort ? 'col-span-2 text-caption text-muted lg:order-5 lg:col-span-3' : 'sr-only'}>{tooShort ? 'Enter at least 3 characters.' : ''}</p>
+        <p id="date-hint" role="status" className="col-span-2 text-small text-danger lg:order-6 lg:col-span-3">{dateError}</p>
       </form>
       {!dateError && <VenueResults key={String(datesSelected)} order={order} filters={{ q, guests, amenities, from, to }} waiting={waiting} tooShort={tooShort} />}
 

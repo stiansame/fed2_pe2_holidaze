@@ -33,3 +33,12 @@ export function formatBookingDate(value) {
   const date = value?.slice(0, 10);
   return validDate(date) ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'Date unavailable';
 }
+
+export function formatBookingRange(booking) {
+  const from = formatBookingDate(booking.dateFrom);
+  const to = formatBookingDate(booking.dateTo);
+  if (from === 'Date unavailable' || to === 'Date unavailable') return 'Dates unavailable';
+  const sameYear = booking.dateFrom.slice(0, 4) === booking.dateTo.slice(0, 4);
+  const sameMonth = sameYear && booking.dateFrom.slice(0, 7) === booking.dateTo.slice(0, 7);
+  return `${sameMonth ? from.split(' ')[0] : sameYear ? from.replace(/ \d{4}$/, '') : from}–${to}`;
+}
