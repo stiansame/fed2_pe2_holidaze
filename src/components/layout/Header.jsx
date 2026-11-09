@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../Logo.jsx';
 import MobileMenu from './MobileMenu.jsx';
 import NavigationLinks from './NavigationLinks.jsx';
+import Icon from '../Icon.jsx';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,18 +20,19 @@ export default function Header() {
         <Link to="/" aria-label="Holidaze home" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
           <Logo />
         </Link>
-        <nav aria-label="Main navigation" className="hidden gap-4 md:flex">
+        <nav aria-label="Main navigation" className="hidden gap-4 lg:flex">
           <NavigationLinks />
         </nav>
         <button
           ref={menuButton}
           type="button"
           aria-expanded={menuOpen}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-controls={menuOpen ? 'mobile-menu' : undefined}
           onClick={() => menuOpen ? closeMenu() : setMenuOpen(true)}
-          className="min-h-12 min-w-20 rounded-lg border border-border px-4 text-small font-semibold text-primary hover:bg-tint md:hidden"
+          className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-border text-primary hover:bg-tint lg:hidden"
         >
-          Menu
+          <Icon name={menuOpen ? 'close' : 'menu'} />
         </button>
       </div>
       {menuOpen && <MobileMenu onClose={closeMenu} />}

@@ -9,6 +9,7 @@ export default function VenueGallery({ media = [], name, children }) {
   const photos = (media ?? []).filter(photo => typeof photo?.url === 'string' && photo.url.trim());
   const [active, setActive] = useState(0);
   const dialog = useRef(null);
+  const strip = useRef(null);
   const photo = photos[active];
 
   function move(step) {
@@ -18,7 +19,15 @@ export default function VenueGallery({ media = [], name, children }) {
   return (
     <section aria-label="Venue photos" className="space-y-4">
       {photos.length ? <>
-        <div className={`grid gap-3 ${photos.length > 1 ? 'sm:h-90 sm:grid-cols-[1.8fr_1fr]' : ''}`}>
+        <div className="relative lg:hidden">
+          <div ref={strip} onScroll={event => setActive(Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth))} className="flex snap-x snap-mandatory overflow-x-auto rounded-lg motion-safe:scroll-smooth [scrollbar-width:none]" aria-label="Swipe venue photos">
+            {photos.map((item, index) => <button key={`${item.url}-${index}`} type="button" aria-label={`Open photo ${index + 1} of ${photos.length}`} onClick={() => { setActive(index); dialog.current.showModal(); }} className="w-full shrink-0 snap-center rounded-lg focus-visible:-outline-offset-4">
+              <VenueImage media={item} name={item.alt || `${name}, photo ${index + 1}`} loading={index ? 'lazy' : 'eager'} className="relative aspect-video w-full rounded-lg" imageClass="absolute inset-0 object-cover" />
+            </button>)}
+          </div>
+          <p aria-live="polite" className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-text/80 px-3 py-1 text-small text-surface">{active + 1} / {photos.length}</p>
+        </div>
+        <div className={`hidden gap-3 lg:grid ${photos.length > 1 ? 'sm:h-90 sm:grid-cols-[1.8fr_1fr]' : ''}`}>
           <button type="button" aria-label="Open photo gallery" onClick={() => { setActive(0); dialog.current.showModal(); }} className="min-h-0 min-w-0 rounded-lg">
             <VenueImage media={photos[0]} name={name} loading="eager" className={`h-64 rounded-lg ${photos.length > 1 ? 'sm:h-full' : 'sm:h-90'}`} />
           </button>
@@ -29,7 +38,7 @@ export default function VenueGallery({ media = [], name, children }) {
             </button>)}
           </div>}
         </div>
-        <dialog ref={dialog} aria-label={`Photos of ${name}`} className="m-auto max-h-[94dvh] max-w-[96vw] overflow-hidden rounded-lg bg-surface p-0 text-text backdrop:bg-black/70" onClick={event => {
+        <dialog ref={dialog} onClose={() => strip.current?.scrollTo({ left: active * strip.current.clientWidth, behavior: 'instant' })} aria-label={`Photos of ${name}`} className="m-auto max-h-[94dvh] max-w-[96vw] overflow-hidden rounded-lg bg-surface p-0 text-text backdrop:bg-black/70" onClick={event => {
           if (event.target === event.currentTarget) dialog.current.close();
         }} onKeyDown={event => {
           if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
@@ -43,9 +52,9 @@ export default function VenueGallery({ media = [], name, children }) {
             <button type="button" aria-label="Next photo" onClick={() => move(1)} className={`${galleryControl} right-2 top-1/2 -translate-y-1/2`}><Icon name="right" /></button>
           </>}
         </dialog>
-      </> : <VenueImage name={name} className="h-64 rounded-lg sm:h-90" />}
+      </> : <VenueImage name={name} className="aspect-video w-full rounded-lg lg:aspect-auto lg:h-90" />}
       {(photos.length > 0 || children) && <div className="flex flex-wrap gap-3">
-        {photos.length > 0 && <button type="button" onClick={() => dialog.current.showModal()} className={`${controlClass} w-full sm:w-auto`}>View all photos ({photos.length})</button>}
+        {photos.length > 0 && <button type="button" onClick={() => dialog.current.showModal()} className={`${controlClass} hidden lg:block`}>View all photos ({photos.length})</button>}
         {children}
       </div>}
     </section>

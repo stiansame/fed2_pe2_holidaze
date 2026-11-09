@@ -9,10 +9,10 @@ import { navigationOrigin } from '../utils/navigation.js';
 import HostAvatar from '../components/HostAvatar.jsx';
 import Amenities from '../components/venues/Amenities.jsx';
 import VenueGallery from '../components/venues/VenueGallery.jsx';
-import DeleteVenue from '../components/venues/DeleteVenue.jsx';
 import VenueDescription from '../components/venues/VenueDescription.jsx';
-import AvailabilityCalendar from '../components/venues/AvailabilityCalendar.jsx';
-import { formatVenuePrice, venueMapLinks } from '../utils/venue.js';
+import VenueBooking from '../components/venues/VenueBooking.jsx';
+import VenueOwnerActions from '../components/venues/VenueOwnerActions.jsx';
+import { venueMapLinks } from '../utils/venue.js';
 
 const VenueLocationMap = lazy(() => import('../components/venues/VenueLocationMap.jsx'));
 
@@ -41,6 +41,7 @@ function VenueContent({ id }) {
   }, [id, attempt]);
 
   const name = venue?.name?.trim() || 'Unnamed stay';
+  const isOwner = user?.venueManager && user.name === venue?.owner?.name;
   const notFound = error && [400, 404].includes(error.status);
   const map = venueMapLinks(venue?.location);
   const location = venue?.location;
@@ -48,62 +49,57 @@ function VenueContent({ id }) {
   const address = [location?.address, location?.zip, location?.city, location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ');
   return (
-    <section className="space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
+    <section className="space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(7rem+env(safe-area-inset-bottom))] lg:p-8">
       <title>{`Holidaze | ${notFound ? 'Venue not found' : venue ? name : 'Venue details'}`}</title>
-      <BackLink to={`/venues${search}`} />
+      <div className="flex items-center justify-between gap-2">
+        <BackLink to={`/venues${search}`} />
+        {venue && <span className="shrink-0 rounded-full bg-tint px-3 py-2 text-small font-semibold text-primary lg:hidden">{venue.rating > 0 ? `★ ${venue.rating}` : 'New'}</span>}
+      </div>
       {error ? <>
         <h1 className="text-h2 font-bold">{notFound ? 'Venue not found' : 'Unable to load this stay'}</h1>
         <p role="alert">{notFound ? 'This stay may have been removed or the link is incorrect.' : error.message}</p>
         {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Try again</button>}
       </> : !venue ? <Loading>Loading stay…</Loading> : <>
         <VenueGallery media={venue.media} name={name}>
-          {user?.venueManager && user.name === venue.owner?.name && <>
-            <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} state={navigationOrigin(routeLocation)} className="navigation-link w-full gap-2 sm:w-auto"><Icon name="edit" />Edit venue</Link>
-            <DeleteVenue venue={venue} />
-          </>}
+          {isOwner && <VenueOwnerActions venue={venue} className="hidden lg:block" />}
         </VenueGallery>
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-6">
             <div className="space-y-3 border-b border-border pb-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <h1 className="min-w-0 flex-1 text-h3 font-bold wrap-anywhere sm:text-h2">{name}</h1>
-                <span className="rounded-full bg-tint px-3 py-2 text-small font-semibold text-primary">{venue.rating > 0 ? `★ ${venue.rating}` : 'New'}</span>
+              <div className="flex items-center justify-between gap-3 lg:items-start lg:justify-start">
+                <h1 title={name} className="min-w-0 flex-1 truncate text-h3 font-bold sm:text-h2 lg:flex-initial lg:whitespace-normal lg:wrap-anywhere">{name}</h1>
+                <span className="hidden shrink-0 rounded-full bg-tint px-3 py-2 text-small font-semibold text-primary lg:inline">{venue.rating > 0 ? `★ ${venue.rating}` : 'New'}</span>
+                {isOwner && <VenueOwnerActions venue={venue} className="lg:hidden" />}
               </div>
-              <p className="flex items-center gap-2 text-small text-muted wrap-anywhere"><Icon name="pin" className="size-5 shrink-0 text-success" />{place || 'Location not specified'}</p>
+              <div className="flex items-center gap-3 text-small">
+                <p title={place} className="flex min-w-0 flex-1 items-center gap-1 text-muted lg:gap-2"><Icon name="pin" className="size-4 shrink-0 text-success lg:size-5" /><span className="truncate lg:whitespace-normal lg:wrap-anywhere">{place || 'Location not specified'}</span></p>
+                <p className="accent-box ml-auto inline-flex shrink-0 items-center gap-1 text-caption lg:gap-2 lg:text-small"><Icon name="user" className="size-4 shrink-0 lg:size-5" />{venue.maxGuests > 0 ? `${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Capacity unknown'}</p>
+              </div>
+              <div>{Object.values(venue.meta ?? {}).some(value => value === true) ? <Amenities meta={venue.meta} compact /> : <p className="text-small text-muted">No amenities listed.</p>}</div>
             </div>
             <section className="space-y-3">
               <h2 className="text-body font-semibold text-primary">About this stay</h2>
               <VenueDescription description={venue.description} />
-              <p className="inline-flex items-center gap-2 rounded-lg bg-accent/20 px-3 py-2 text-small font-semibold text-text"><Icon name="user" />{venue.maxGuests > 0 ? `Up to ${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Guest capacity not specified'}</p>
             </section>
-            <section className="space-y-3">
-              <h2 className="text-h3 font-bold">Amenities</h2>
-              {Object.values(venue.meta ?? {}).some(value => value === true) ? <Amenities meta={venue.meta} /> : <p className="text-muted">No amenities listed.</p>}
-            </section>
-            <section className="space-y-3 rounded-lg border-l-4 border-accent bg-accent/10 p-4">
-              <h2 className="text-h3 font-bold">Hosted by</h2>
-              {venue.owner?.name?.trim() ? <Link to={`/profiles/${encodeURIComponent(venue.owner.name)}`} state={navigationOrigin(routeLocation)} className="inline-flex min-h-12 items-center gap-3 rounded-lg font-semibold text-primary wrap-anywhere hover:underline"><HostAvatar key={venue.owner.avatar?.url} media={venue.owner.avatar} />{venue.owner.name}</Link>
-                : <p className="text-muted">Host information not available.</p>}
-              <p className="whitespace-pre-line text-muted wrap-anywhere">{venue.owner?.bio?.trim() || 'No host bio provided.'}</p>
+            <section className="space-y-2 rounded-lg border-l-4 border-accent bg-accent/10 p-3 lg:p-4">
+              <h2 className="flex min-w-0 items-center gap-2 text-small font-bold lg:text-body"><span className="shrink-0">Hosted by</span>{venue.owner?.name?.trim() && <Link title={venue.owner.name} to={`/profiles/${encodeURIComponent(venue.owner.name)}`} state={navigationOrigin(routeLocation)} className="min-w-0 truncate rounded text-primary hover:underline">{venue.owner.name}</Link>}</h2>
+              <div className="flex items-start gap-3">
+                {venue.owner?.name?.trim() && <Link aria-label={`View ${venue.owner.name}'s profile`} to={`/profiles/${encodeURIComponent(venue.owner.name)}`} state={navigationOrigin(routeLocation)} className="shrink-0 rounded-full"><HostAvatar key={venue.owner.avatar?.url} media={venue.owner.avatar} /></Link>}
+                <p className="min-w-0 whitespace-pre-line text-small text-muted wrap-anywhere">{venue.owner?.name?.trim() ? venue.owner.bio?.trim() || 'No host bio provided.' : 'Host information not available.'}</p>
+              </div>
             </section>
             <section className="space-y-3 border-t border-border pt-5">
               <h2 className="text-h3 font-bold">Location</h2>
               <p className="flex items-center gap-2 text-muted wrap-anywhere"><Icon name="pin" className="size-5 shrink-0 text-success" />{address || 'Location not specified'}</p>
               {map && <div className="max-w-155 space-y-2">
                 <Suspense fallback={<Loading>Loading map…</Loading>}>
-                  <VenueLocationMap lat={location.lat} lng={location.lng} />
+                  <VenueLocationMap lat={location.lat} lng={location.lng} compact />
                 </Suspense>
                 <a href={map.full} target="_blank" rel="noopener noreferrer" className="navigation-link text-small">View larger map · © OpenStreetMap contributors</a>
               </div>}
             </section>
           </div>
-          <aside aria-label="Stay summary" className="overflow-hidden rounded-xl border border-border bg-surface lg:sticky lg:top-6">
-            <div className="bg-primary p-6 text-surface">
-              <p className="text-small font-semibold">Your stay</p>
-              <p className="mt-2 text-h3 font-semibold">{formatVenuePrice(venue.price)}</p>
-            </div>
-            <AvailabilityCalendar bookings={venue.bookings} maxGuests={venue.maxGuests} />
-          </aside>
+          <VenueBooking venue={venue} />
         </div>
       </>}
     </section>

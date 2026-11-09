@@ -1,4 +1,4 @@
-const priceFormat = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 2 });
+const priceFormat = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 function isPhotoUrl(url) {
   return /^https?:\/\/\S+$/i.test(url?.trim() ?? '');
@@ -31,7 +31,7 @@ export function formatVenuePrice(price) {
 }
 
 export function formatPrice(price) {
-  return `NOK ${priceFormat.format(price)}`;
+  return `NOK ${priceFormat.format(price).replace(/,00$/, ',-')}`;
 }
 
 export function venueMapLinks(location) {

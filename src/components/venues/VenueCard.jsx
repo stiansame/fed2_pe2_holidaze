@@ -21,7 +21,7 @@ export default function VenueCard({ venue, onImageError }) {
           <span className="shrink-0 rounded-full bg-surface px-2.5 py-1.5 text-caption font-semibold text-primary shadow-sm">{venue.rating > 0 ? <><span aria-hidden="true">★ </span><span className="sr-only">Rating: </span>{venue.rating}</> : 'New'}</span>
         </div>
         <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/45 to-transparent px-3 pt-8 pb-3">
-          <Amenities meta={venue.meta} overlay />
+          <Amenities meta={venue.meta} />
         </div>
       </div>
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 p-4">

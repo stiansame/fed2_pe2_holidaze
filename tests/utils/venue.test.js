@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { formatVenuePrice, selectHighlyRatedVenues, shuffleVenuesWithPhotos, venueMapLinks } from '../../src/utils/venue.js';
+import { formatPrice, formatVenuePrice, selectHighlyRatedVenues, shuffleVenuesWithPhotos, venueMapLinks } from '../../src/utils/venue.js';
 
 test('varies highly rated choices with two distinct photos and prioritises usable map data', () => {
   const media = [{ url: 'https://example.com/a.jpg' }, { url: 'https://example.com/b.jpg' }];
@@ -42,8 +42,10 @@ test('shuffles a separate pool with usable photo URLs and preserves venue data',
 });
 
 test('formats NOK prices including zero and handles missing prices', () => {
-  assert.equal(formatVenuePrice(1490), 'NOK 1,490 / night');
-  assert.equal(formatVenuePrice(0), 'NOK 0 / night');
+  assert.equal(formatVenuePrice(1490), 'NOK 1\u00a0490,- / night');
+  assert.equal(formatVenuePrice(0), 'NOK 0,- / night');
+  assert.equal(formatPrice(1250000), 'NOK 1\u00a0250\u00a0000,-');
+  assert.equal(formatPrice(1490.5), 'NOK 1\u00a0490,50');
   assert.equal(formatVenuePrice(null), 'Price not specified');
 });
 

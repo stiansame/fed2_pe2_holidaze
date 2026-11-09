@@ -11,7 +11,7 @@ const icon = L.icon({
   iconSize: [25, 41], iconAnchor: [12, 41], shadowSize: [41, 41],
 });
 
-export default function VenueLocationMap({ lat, lng, onChange, disabled }) {
+export default function VenueLocationMap({ lat, lng, onChange, disabled, compact = false }) {
   const container = useRef(null);
   const map = useRef(null);
   const marker = useRef(null);
@@ -47,7 +47,7 @@ export default function VenueLocationMap({ lat, lng, onChange, disabled }) {
   }, [lat, lng]);
 
   return <div className="min-w-0 space-y-2">
-    <div ref={container} role="region" aria-label={onChange ? 'Choose venue location' : 'Venue location'} aria-describedby={onChange ? 'venue-map-help' : undefined} className="relative isolate z-0 h-72 w-full rounded-lg border border-border sm:h-80" />
+    <div ref={container} role="region" aria-label={onChange ? 'Choose venue location' : 'Venue location'} aria-describedby={onChange ? 'venue-map-help' : undefined} className={`relative isolate z-0 w-full rounded-lg border border-border ${compact ? 'h-44 lg:h-80' : 'h-72 sm:h-80'}`} />
     {onChange && <>
       <p id="venue-map-help" className="text-small text-muted">Click the map to set coordinates. Enter the address manually.</p>
       <button type="button" disabled={disabled} className="navigation-link" onClick={() => {
