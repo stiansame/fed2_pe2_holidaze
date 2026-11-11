@@ -22,7 +22,7 @@ export default function Layout() {
   const isAccount = /^\/(profile|bookings|manager)(\/|$)/.test(pathname);
   const title = titles[pathname.replace(/\/+$/, '') || '/'] || messages.pageNotFound;
   return (
-    <div className="flex min-h-dvh flex-col bg-linear-to-br from-accent/10 via-background to-tint/40">
+    <div className="site-shell flex min-h-dvh flex-col bg-linear-to-br from-accent/10 via-background to-tint/40">
       {!isVenueDetails && <title>{`Holidaze | ${title}`}</title>}
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:rounded-lg focus:bg-surface focus:p-4">
         Skip to content

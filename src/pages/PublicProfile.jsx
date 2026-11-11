@@ -59,7 +59,7 @@ function HostProfile({ name }) {
         </div>
         {data.venues.length ? <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => <li key={venue.id} className="min-w-0"><VenueCard venue={venue} /></li>)}
-        </ul> : <p className="text-muted">No venues listed yet.</p>}
+        </ul> : <p className="empty-state text-muted">No venues listed yet.</p>}
       </section>
     </div>}
     <BackLink />

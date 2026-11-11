@@ -52,7 +52,7 @@ function BookingGroup({ title, bookings, manage, allLink, initialExpanded, onCan
   const [expanded, setExpanded] = useState(initialExpanded && !allLink);
   return <section aria-label={title} className="space-y-4">
     <h2 className="text-h3 font-bold">{title} <span className="text-small font-normal text-muted">({bookings.length})</span></h2>
-    {bookings.length === 0 ? <p className="text-muted">No {title.toLowerCase()} yet.</p> : <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    {bookings.length === 0 ? <p className="empty-state text-muted">No {title.toLowerCase()} yet.</p> : <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {(expanded ? bookings : bookings.slice(0, 3)).map(booking => <li key={booking.id} className="min-w-0"><BookingCard booking={booking} manage={manage} onCancelled={onCancelled} /></li>)}
     </ul>}
     {bookings.length > 3 && (allLink ? <Link to={allLink} className="inline-flex min-h-12 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint">Show all ({bookings.length})</Link>
@@ -90,7 +90,7 @@ function BookingCard({ booking, manage, onCancelled }) {
 
   return <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-surface" aria-label={name}>
     <div className="relative shrink-0">
-      <VenueImage key={booking.venue?.media?.[0]?.url} media={booking.venue?.media?.[0]} name={name} className="relative aspect-video" imageClass="absolute inset-0 object-cover" />
+      <VenueImage key={booking.venue?.media?.[0]?.url} media={booking.venue?.media?.[0]} name={name} className="relative aspect-video" imageClass={`absolute inset-0 object-cover ${status === 'past' ? 'saturate-25' : ''}`} />
       {manage && editable && <div className="absolute bottom-3 right-3 z-10"><EditMenu label="Manage booking">
         {venueLink && !pending && <Link to={`/bookings/${encodeURIComponent(booking.id)}/edit`} state={navigationOrigin(routeLocation)} className="edit-menu-item"><Icon name="edit" />Change booking</Link>}
         <button type="button" disabled={pending} onClick={event => { setConfirming(true); event.currentTarget.closest('details').open = false; }} className="edit-menu-item edit-menu-danger"><Icon name="trash" />Cancel booking</button>

@@ -4,9 +4,11 @@ import Logo from '../Logo.jsx';
 import MobileMenu from './MobileMenu.jsx';
 import NavigationLinks from './NavigationLinks.jsx';
 import Icon from '../Icon.jsx';
+import { toggleSunnyMode } from '../../utils/theme.js';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sunny, setSunny] = useState(() => typeof document !== 'undefined' && document.documentElement.dataset.theme === 'sunny');
   const menuButton = useRef(null);
 
   function closeMenu() {
@@ -20,9 +22,13 @@ export default function Header() {
         <Link to="/" aria-label="Holidaze home" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
           <Logo />
         </Link>
+        <div className="flex items-center gap-2 sm:gap-4">
         <nav aria-label="Main navigation" className="hidden gap-4 lg:flex">
           <NavigationLinks />
         </nav>
+        <button type="button" aria-label="Sunny mode" aria-pressed={sunny} title={sunny ? 'Switch to standard theme' : 'Switch to Sunny mode'} onClick={() => setSunny(toggleSunnyMode())} className="theme-toggle flex size-12 shrink-0 items-center justify-center rounded-full text-primary hover:bg-tint">
+          <Icon name="sun" />
+        </button>
         <button
           ref={menuButton}
           type="button"
@@ -34,6 +40,7 @@ export default function Header() {
         >
           <Icon name={menuOpen ? 'close' : 'menu'} />
         </button>
+        </div>
       </div>
       {menuOpen && <MobileMenu onClose={closeMenu} />}
     </header>

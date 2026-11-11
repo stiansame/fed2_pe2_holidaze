@@ -50,7 +50,7 @@ function VenueContent({ id }) {
   const address = [location?.address, location?.zip, location?.city, location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ');
   return (
-    <section className="space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(7rem+env(safe-area-inset-bottom))] lg:p-8">
+    <section className="venue-details space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(7rem+env(safe-area-inset-bottom))] lg:p-8">
       <title>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : 'Venue details'}`}</title>
       <div className="flex items-center justify-between gap-2">
         <BackLink to={`/venues${search}`} />

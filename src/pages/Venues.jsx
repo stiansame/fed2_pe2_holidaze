@@ -152,7 +152,7 @@ function VenueMatches({ venues }) {
   const visible = venues.slice(0, count);
   return (
     <>
-      <p role="status" className="mt-6 text-small text-muted">
+      <p role="status" className={`mt-6 text-small text-muted ${venues.length ? '' : 'empty-state'}`}>
         {venues.length ? `Showing ${visible.length} of ${venues.length} matching stays.` : 'No stays match your search and filters. Try adjusting them.'}
       </p>
       {visible.length > 0 && <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

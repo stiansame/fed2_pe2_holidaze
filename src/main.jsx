@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import AuthProvider from './auth/AuthProvider.jsx';
 import './styles/index.css';
+import './styles/sunny.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

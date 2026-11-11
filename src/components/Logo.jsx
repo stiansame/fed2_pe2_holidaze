@@ -1,8 +1,6 @@
-import mark from '../assets/holidaze-mark.svg';
-
 export default function Logo() {
   return <span className="inline-flex items-center gap-2">
-    <img src={mark} alt="" width="48" height="36" />
-    <span className="text-h3 font-bold">Holidaze</span>
+    <svg aria-hidden="true" width="48" height="36" viewBox="0 0 96 72" fill="none"><path fill="var(--color-primary)" fillRule="evenodd" d="M2 13 24 3q2-1 2 2v54q0 2-2 3L3 71q-3 1-3-2V16q0-2 2-3ZM30 3q0-3 3-2l27 10q2 1 2 3v55q0 3-3 2l-3-1V42a8 8 0 0 0-16 0v22l-8-3q-2-1-2-3V3ZM68 12 92 2q4-2 4 3v54q0 2-2 3L70 72q-4 1-4-3V15q0-2 2-3Z" clipRule="evenodd"/><path fill="var(--color-accent)" fillRule="evenodd" d="M81 21a10 10 0 0 1 10 10c0 7-10 19-10 19S71 38 71 31a10 10 0 0 1 10-10Zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z" clipRule="evenodd"/></svg>
+    <span className="brand-name text-h3 font-bold">Holidaze</span>
   </span>;
 }

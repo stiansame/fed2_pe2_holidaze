@@ -1,10 +1,12 @@
 import { messages } from '../constants/messages.js';
 import { Link } from 'react-router-dom';
+import Icon from '../components/Icon.jsx';
 
 export default function NotFound() {
   return (
-    <section className="mx-auto max-w-xl rounded-xl border border-border bg-surface p-6 sm:p-8">
+    <section className="empty-state mx-auto max-w-xl rounded-xl border border-border bg-surface p-6 sm:p-8">
       <title>{`Holidaze | ${messages.pageNotFound}`}</title>
+      <Icon name="sun" className="sunny-state-icon mb-4 hidden size-12" />
       <p className="mb-4 font-semibold text-muted">404</p>
       <h1 className="text-h2 font-bold">{messages.pageNotFound}</h1>
       <p className="mt-4 text-muted">{messages.pageNotFoundDescription}</p>
