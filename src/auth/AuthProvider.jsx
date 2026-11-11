@@ -52,12 +52,10 @@ export default function AuthProvider({ children }) {
     if (!user) return;
     const timer = setInterval(() => {
       if (sessionExpiresAt(user) > Date.now()) return;
-      localStorage.removeItem(SESSION_KEY);
-      setUser(null);
-      setNotice('Your session has expired. Please log in again.');
+      logout('Your session has expired. Please log in again.');
     }, 1000);
     return () => clearInterval(timer);
-  }, [user]);
+  }, [user, logout]);
 
   return <AuthContext.Provider value={{ user, notice, login, logout, request, becomeManager }}>{children}</AuthContext.Provider>;
 }

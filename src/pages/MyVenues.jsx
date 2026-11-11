@@ -5,7 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { getProfileVenues } from '../api/profiles.js';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import Icon from '../components/Icon.jsx';
-import DeleteVenue from '../components/venues/DeleteVenue.jsx';
+import VenueOwnerActions from '../components/venues/VenueOwnerActions.jsx';
 import { navigationOrigin } from '../utils/navigation.js';
 
 export default function MyVenues() {
@@ -42,14 +42,7 @@ export default function MyVenues() {
     </div> : !venues ? <Loading>Loading your venues…</Loading> : venues.length ? <>
       <p role="status" className="text-small text-muted">Showing {Math.min(count, venues.length)} of {venues.length} venues.</p>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {venues.slice(0, count).map(venue => <div key={venue.id} className="min-w-0 space-y-2">
-          <VenueCard venue={venue} />
-          <div className="grid grid-cols-3 gap-2">
-            <Link to={`/manager/venues/${encodeURIComponent(venue.id)}/edit`} state={navigationOrigin(location)} aria-label={`Edit ${venue.name}`} className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-lg border border-border bg-surface px-1 text-small font-semibold text-primary hover:bg-tint"><Icon name="edit" className="size-4 shrink-0" />Edit</Link>
-            <DeleteVenue compact venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice('Venue deleted.'); }} />
-            <Link to={`/manager/bookings?venue=${encodeURIComponent(venue.id)}`} state={navigationOrigin(location)} aria-label={`View bookings for ${venue.name}`} className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-lg border border-border bg-surface px-1 text-small font-semibold text-primary hover:bg-tint"><Icon name="calendar" className="size-4 shrink-0" />Bookings</Link>
-          </div>
-        </div>)}
+        {venues.slice(0, count).map(venue => <VenueCard key={venue.id} venue={venue} actions={<VenueOwnerActions card venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice('Venue deleted.'); }} />} />)}
       </div>
       {count < venues.length && <button type="button" className="navigation-link" onClick={() => setCount(value => value + 15)}>Load more</button>}
     </> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. Create your first venue to get started.</p>}

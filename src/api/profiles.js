@@ -5,17 +5,10 @@ export async function getHostProfile(request, name, { signal } = {}) {
   return { profile, venues };
 }
 
-export async function getProfileVenues(request, name, { bookings = false, signal } = {}) {
-  const path = `holidaze/profiles/${encodeURIComponent(name)}/venues`;
-  const venues = new Map();
-  let page = 1;
-  do {
-    signal?.throwIfAborted();
-    const { data, meta } = await request(path, {
-      query: { page, limit: 100, sort: 'created', sortOrder: 'desc', ...(bookings && { _bookings: true }) }, signal,
-    });
-    for (const venue of data) venues.set(venue.id, venue);
-    page = meta?.nextPage;
-  } while (page);
-  return [...venues.values()];
+export function getProfileVenues(request, name, { bookings = false, signal } = {}) {
+  return getAllPages(request, `holidaze/profiles/${encodeURIComponent(name)}/venues`, {
+    query: { sort: 'created', sortOrder: 'desc', ...(bookings && { _bookings: true }) }, signal,
+  });
 }
+import { getAllPages } from './client.js';
+

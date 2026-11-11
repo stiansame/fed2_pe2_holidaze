@@ -1,4 +1,4 @@
-import { dateKey, validDate } from './availability.js';
+import { dateKey, validDate, stayPrice } from './availability.js';
 
 export function bookingDates(booking) {
   return { from: booking.dateFrom?.slice(0, 10) ?? '', to: booking.dateTo?.slice(0, 10) ?? '', guests: booking.guests };
@@ -12,10 +12,7 @@ export function bookingStatus(booking, today = dateKey()) {
 
 export function bookingPrice(booking) {
   const { from, to } = bookingDates(booking);
-  const price = booking.venue?.price;
-  if (!validDate(from) || !validDate(to) || to <= from || !Number.isFinite(price) || price < 0) return null;
-  const nights = (Date.parse(to) - Date.parse(from)) / 86400000;
-  return { nights, total: Math.round(price * 100) * nights / 100 };
+  return stayPrice(booking.venue?.price, from, to);
 }
 
 export function groupBookings(bookings, today = dateKey()) {

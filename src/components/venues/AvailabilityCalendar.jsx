@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Icon from '../Icon.jsx';
 import GuestSelect from '../GuestSelect.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
-import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, validateStay, validDate } from '../../utils/availability.js';
-import { formatPrice, formatVenuePrice } from '../../utils/venue.js';
-import { staySummary } from '../../utils/availability.js';
+import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, staySummary, validateStay, validDate } from '../../utils/availability.js';
+import BookingPrice from './BookingPrice.jsx';
 
 const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
 const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'UTC' });
 
 export default function AvailabilityCalendar({ bookings, maxGuests, initialStay, onReserve, onStayChange, formId, price, compact = false, actionLabel = 'Reserve', readOnly = false }) {
   const today = dateKey();
+  const calendar = useRef(null);
   const { id } = useParams();
   const location = useLocation();
   const { search } = location;
@@ -23,7 +23,7 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
   const [guests, setGuests] = useState(initial.guests);
   const [checked, setChecked] = useState(false);
   useEffect(() => { onStayChange?.({ from, to, guests }); }, [from, to, guests, onStayChange]);
-  const summary = price === undefined ? null : staySummary({ bookings, maxGuests, price }, { from, to, guests });
+  const summary = !compact && price === undefined ? null : staySummary({ bookings, maxGuests, price }, { from, to, guests });
   const { periods, reliable } = bookedPeriods(bookings, readOnly ? '0001-01-01' : today);
   const error = validateStay({ from, to, guests, maxGuests, periods: reliable ? periods : null, today });
   const start = `${month}-01`;
@@ -51,7 +51,7 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
     {[['Check-in', from], ['Check-out', to]].map(([label, date]) => <div key={label} className="min-w-0"><dt className="text-muted">{label}</dt><dd className="font-semibold">{date ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', ...(compact ? {} : { year: 'numeric' }), timeZone: 'UTC' }) : 'Not selected'}</dd></div>)}
   </dl>;
 
-  return <section className={`${compact ? 'compact-calendar space-y-2 p-3 lg:space-y-4 lg:p-4' : 'space-y-4 p-4'} border-t border-border`} aria-label="Availability">
+  return <section ref={calendar} className={`${compact ? 'compact-calendar space-y-2 p-3 lg:space-y-4 lg:p-4' : 'space-y-4 p-4'} border-t border-border`} aria-label="Availability">
     <h2 className={`${compact ? 'sr-only lg:not-sr-only ' : ''}text-h3 font-bold`}>{readOnly ? 'Venue calendar' : 'Select dates'}</h2>
     {periods === null ? <p role="alert" className="text-small text-danger">Availability is unavailable. Please try again later.</p> : <>
       {!reliable && <p role="alert" className="text-small text-danger">Some booking dates are invalid. Known bookings are shown, but availability cannot be confirmed.</p>}
@@ -93,9 +93,10 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
           <label className={`${compact ? 'flex items-center justify-start gap-3 lg:block' : 'block'} min-w-0 text-left text-small`}>{compact ? <strong className="shrink-0">Who’s coming?</strong> : 'Guests'}<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={compact ? 'min-h-11 w-36 min-w-0 rounded-lg border border-border bg-surface px-2 lg:mt-1 lg:min-h-12 lg:w-full' : inputClass} /></label>
           <button type="button" aria-label="Reset selection" title="Reset selection" disabled={!from && !to} onClick={() => { setFrom(''); setTo(''); setChecked(false); }} className={`inline-flex ${compact ? 'size-11 lg:size-12' : 'size-12'} items-center justify-center rounded-lg border border-border bg-surface text-primary hover:bg-tint disabled:opacity-40`}><Icon name="reset" /></button>
         </div>
-        <div className={compact ? 'flex items-center justify-between gap-2 lg:block' : ''}>
-          {summary && <p className="accent-box min-w-0 text-small lg:hidden" aria-live="polite">{summary.error ? formatVenuePrice(price) : <><strong>{formatPrice(summary.total)} total</strong><span className="block text-caption">{summary.nights} {summary.nights === 1 ? 'night' : 'nights'}</span></>}</p>}
-          <button disabled={!reliable || !from || !to || !Number.isInteger(maxGuests) || maxGuests < 1} className={`min-h-12 ${compact ? 'shrink-0 lg:w-full' : 'w-full'} rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60`}>{actionLabel}</button>
+        <div className={compact ? 'booking-action-row sticky bottom-0 bg-surface pt-2 lg:block' : ''}>
+          {summary && <div className="lg:hidden"><BookingPrice price={price} stay={{ from, to, guests }} summary={summary} /></div>}
+          {compact && <div className="lg:hidden">{(from || to) && <button type="button" aria-label="Change dates and guests" title="Change dates and guests" className="edit-icon-button" onClick={() => calendar.current.querySelector('button[aria-pressed="true"]:not(:disabled)')?.focus()}><Icon name="edit" /></button>}</div>}
+          <button disabled={!reliable || !from || !to || !Number.isInteger(maxGuests) || maxGuests < 1} className={compact ? 'booking-action-button lg:w-full' : 'booking-action-button w-full'}>{actionLabel}</button>
         </div>
         {checked && error && <p role="alert" className="text-small text-danger">{error}</p>}
       </form>}

@@ -1,20 +1,12 @@
-import { ApiError } from './client.js';
+import { ApiError, getAllPages } from './client.js';
 import { clearVenueCache, getVenue } from './venues.js';
 import { staySummary } from '../utils/availability.js';
 import { bookingStatus } from '../utils/bookings.js';
 
-export async function getOwnBookings(request, name, { signal } = {}) {
-  const bookings = new Map();
-  let page = 1;
-  do {
-    signal?.throwIfAborted();
-    const { data, meta } = await request(`holidaze/profiles/${encodeURIComponent(name)}/bookings`, {
-      query: { _venue: true, limit: 100, page, sort: 'dateFrom', sortOrder: 'desc' }, signal,
-    });
-    for (const booking of data) bookings.set(booking.id, booking);
-    page = meta?.nextPage;
-  } while (page);
-  return [...bookings.values()];
+export function getOwnBookings(request, name, { signal } = {}) {
+  return getAllPages(request, `holidaze/profiles/${encodeURIComponent(name)}/bookings`, {
+    query: { _venue: true, sort: 'dateFrom', sortOrder: 'desc' }, signal,
+  });
 }
 
 export async function getOwnBooking(request, id, name, { signal } = {}) {

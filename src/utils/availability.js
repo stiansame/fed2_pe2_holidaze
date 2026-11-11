@@ -27,9 +27,14 @@ export function staySummary(venue, stay, bookingId) {
   const { periods, reliable } = bookedPeriods(bookingId ? venue.bookings?.filter(booking => booking.id !== bookingId) : venue.bookings);
   const error = validateStay({ ...stay, maxGuests: venue.maxGuests, periods: reliable ? periods : null });
   if (error) return { error };
-  if (!Number.isFinite(venue.price) || venue.price < 0) return { error: 'A valid price is unavailable for this stay.' };
-  const nights = (Date.parse(stay.to) - Date.parse(stay.from)) / 86400000;
-  return { error: '', nights, total: Math.round(venue.price * 100) * nights / 100 };
+  const price = stayPrice(venue.price, stay.from, stay.to);
+  return price ? { error: '', ...price } : { error: 'A valid price is unavailable for this stay.' };
+}
+
+export function stayPrice(price, from, to) {
+  if (!validDate(from) || !validDate(to) || to <= from || !Number.isFinite(price) || price < 0) return null;
+  const nights = (Date.parse(to) - Date.parse(from)) / 86400000;
+  return { nights, total: Math.round(price * 100) * nights / 100 };
 }
 
 export function bookedPeriods(bookings, today = dateKey()) {

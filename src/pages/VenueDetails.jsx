@@ -61,7 +61,7 @@ function VenueContent({ id }) {
         {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Try again</button>}
       </> : !venue ? <Loading>Loading stay…</Loading> : <>
         <VenueGallery media={venue.media} name={name}>
-          {isOwner && <VenueOwnerActions venue={venue} className="hidden lg:block" />}
+          {isOwner && <VenueOwnerActions venue={venue} />}
         </VenueGallery>
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-6">
@@ -69,7 +69,6 @@ function VenueContent({ id }) {
               <div className="flex items-center justify-between gap-3 lg:items-start lg:justify-start">
                 <h1 title={name} className="min-w-0 flex-1 truncate text-h3 font-bold sm:text-h2 lg:flex-initial lg:whitespace-normal lg:wrap-anywhere">{name}</h1>
                 <span className="hidden shrink-0 rounded-full bg-tint px-3 py-2 text-small font-semibold text-primary lg:inline">{venue.rating > 0 ? `★ ${venue.rating}` : 'New'}</span>
-                {isOwner && <VenueOwnerActions venue={venue} className="lg:hidden" />}
               </div>
               <div className="flex items-center gap-3 text-small">
                 <p title={place} className="flex min-w-0 flex-1 items-center gap-1 text-muted lg:gap-2"><Icon name="pin" className="size-4 shrink-0 text-success lg:size-5" /><span className="truncate lg:whitespace-normal lg:wrap-anywhere">{place || 'Location not specified'}</span></p>
