@@ -18,9 +18,7 @@ export default function MobileMenu({ onClose }) {
         if (event.key === 'Escape') onClose();
       }}
     >
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-h3 font-semibold">Menu</h2>
-      </div>
+      <h2 className="text-h3 font-semibold">Menu</h2>
       <NavigationLinks mobile onNavigate={onClose} />
     </nav>
   );

@@ -40,7 +40,7 @@ export default function Profile() {
   }
 
   return (
-    <section className="mx-auto max-w-3xl overflow-hidden rounded-xl border border-border bg-surface">
+    <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
       <title>Holidaze | My profile</title>
       {profile && <VenueImage key={profile.banner?.url} media={profile.banner} name={`${user.name}'s banner`} className="h-40 sm:h-56" loading="eager" />}
       <div className={`space-y-5 px-5 pb-5 sm:px-8 sm:pb-8 ${profile ? '' : 'pt-5 sm:pt-8'}`}>

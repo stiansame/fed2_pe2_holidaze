@@ -1,9 +1,8 @@
 import { bookingPrice, formatBookingRange } from '../../utils/bookings.js';
 import { formatPrice, formatVenuePrice } from '../../utils/venue.js';
 import Icon from '../Icon.jsx';
-import HostAvatar from '../HostAvatar.jsx';
 
-export default function BookingCardDetails({ booking, title, showGuest = false }) {
+export default function BookingCardDetails({ booking, title }) {
   const venue = booking.venue;
   const place = [venue?.location?.city, venue?.location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified';
@@ -20,6 +19,5 @@ export default function BookingCardDetails({ booking, title, showGuest = false }
       <p>{formatVenuePrice(venue?.price)}</p>
       <p className="text-right font-semibold">{price ? `${formatPrice(price.total)} total` : 'Total unavailable'}</p>
     </div>
-    {showGuest && <p className="flex min-w-0 items-center gap-2 border-t border-border pt-2"><HostAvatar key={booking.customer?.avatar?.url} media={booking.customer?.avatar} className="size-7" /><span className="min-w-0 truncate">{booking.customer?.name?.trim() || 'Guest name unavailable'}</span></p>}
   </div>;
 }

@@ -1,14 +1,12 @@
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getHostProfile } from '../api/profiles.js';
 import HostAvatar from '../components/HostAvatar.jsx';
 import VenueImage from '../components/venues/VenueImage.jsx';
-import Icon from '../components/Icon.jsx';
+import VenueCard from '../components/venues/VenueCard.jsx';
 import BackLink from '../components/BackLink.jsx';
-import { navigationOrigin } from '../utils/navigation.js';
-import { formatVenuePrice } from '../utils/venue.js';
 
 export default function PublicProfile() {
   const { name } = useParams();
@@ -16,7 +14,6 @@ export default function PublicProfile() {
 }
 
 function HostProfile({ name }) {
-  const location = useLocation();
   const { request } = useAuth();
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -40,7 +37,7 @@ function HostProfile({ name }) {
       <p role="alert">{notFound ? 'This profile may have been removed or the link is incorrect.' : error.message}</p>
       {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary">Try again</button>}
     </div>}
-    {data && <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+    {data && <div className="min-w-0 space-y-6">
       <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
         <VenueImage key={profile.banner?.url} media={profile.banner} name={`${profile.name}'s banner`} className="h-40 sm:h-48" loading="eager" />
         <div className="space-y-5 px-5 pb-6">
@@ -59,20 +56,8 @@ function HostProfile({ name }) {
           <h2 className="text-h3 font-bold">Venues <span className="text-small font-normal text-muted">({data.venues.length})</span></h2>
           {data.venues.length > 3 && <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="min-h-12 rounded-lg px-2 font-semibold text-primary hover:bg-tint">{expanded ? 'Show less' : 'View all'} <span aria-hidden="true">→</span></button>}
         </div>
-        {data.venues.length ? <ul className="space-y-3">
-          {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => {
-            const title = venue.name?.trim() || 'Unnamed stay';
-            const place = [venue.location?.city, venue.location?.country].map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified';
-            return <li key={venue.id}><Link to={`/venues/${encodeURIComponent(venue.id)}`} state={navigationOrigin(location)} className="flex min-w-0 items-stretch overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md focus-visible:outline-offset-2">
-              <VenueImage key={venue.media?.[0]?.url} media={venue.media?.[0]} name={title} className="relative w-16 shrink-0 sm:w-24" imageClass="absolute inset-0 object-cover" />
-              <div className="min-w-0 flex-1 space-y-1 p-3">
-                <h3 title={title} className="truncate font-semibold text-primary lg:whitespace-normal lg:wrap-anywhere">{title}</h3>
-                <p title={place} className="flex min-w-0 items-start gap-1 text-small text-muted"><Icon name="pin" className="size-4 shrink-0 text-success" /><span className="truncate lg:whitespace-normal lg:wrap-anywhere">{place}</span></p>
-                <p title={formatVenuePrice(venue.price)} className="truncate text-caption font-semibold sm:text-small">{formatVenuePrice(venue.price)}</p>
-              </div>
-              <span aria-hidden="true" className="flex items-center pr-3 text-primary">›</span>
-            </Link></li>;
-          })}
+        {data.venues.length ? <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => <li key={venue.id} className="min-w-0"><VenueCard venue={venue} /></li>)}
         </ul> : <p className="text-muted">No venues listed yet.</p>}
       </section>
     </div>}

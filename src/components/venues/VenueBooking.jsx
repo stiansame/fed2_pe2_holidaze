@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Icon from '../Icon.jsx';
 import AvailabilityCalendar from './AvailabilityCalendar.jsx';
+import BookingPrice from './BookingPrice.jsx';
 import { stayFromSearch, staySummary } from '../../utils/availability.js';
 import { formatPrice, formatVenuePrice } from '../../utils/venue.js';
 
@@ -51,12 +52,10 @@ export default function VenueBooking({ venue }) {
       </div>
       <AvailabilityCalendar bookings={venue.bookings} maxGuests={venue.maxGuests} onStayChange={setStay} formId={formId} price={venue.price} compact />
     </dialog>
-    <div className="venue-booking-bar fixed inset-x-0 bottom-0 z-30 flex items-center justify-between gap-3 border-t border-border bg-surface px-4 pt-3 lg:hidden">
-      <button type="button" aria-label="Change dates and guests" onClick={openBooking} className="accent-box min-h-12 min-w-0 text-left text-small hover:bg-accent/30" aria-live="polite">
-        <span className="block font-bold">{summary.error ? formatVenuePrice(venue.price) : `${formatPrice(summary.total)} total`}</span>
-        {!summary.error && <span className="block text-caption text-muted underline underline-offset-2">{stay.from.slice(8)}–{new Date(stay.to).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })} · {summary.nights} {summary.nights === 1 ? 'night' : 'nights'}</span>}
-      </button>
-      <button ref={trigger} type={summary.error ? 'button' : 'submit'} form={summary.error ? undefined : formId} aria-haspopup={summary.error ? 'dialog' : undefined} onClick={summary.error ? openBooking : undefined} className="min-h-12 shrink-0 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">{summary.error ? 'Select dates' : 'Reserve'}</button>
+    <div className="venue-booking-bar booking-action-row fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface px-3 pt-3 lg:hidden">
+      <BookingPrice price={venue.price} stay={stay} summary={summary} />
+      <div>{(stay.from || stay.to) && <button type="button" aria-label="Change dates and guests" title="Change dates and guests" onClick={openBooking} className="edit-icon-button"><Icon name="edit" /></button>}</div>
+      <button ref={trigger} type={summary.error ? 'button' : 'submit'} form={summary.error ? undefined : formId} aria-haspopup={summary.error ? 'dialog' : undefined} onClick={summary.error ? openBooking : undefined} className="booking-action-button">{summary.error ? 'Select dates' : 'Reserve'}</button>
     </div>
   </aside>;
 }

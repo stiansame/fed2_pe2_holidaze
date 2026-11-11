@@ -46,6 +46,25 @@
 }
 
 @layer components {
+  .photo-strip {
+    @apply flex snap-x snap-mandatory overflow-x-auto motion-safe:scroll-smooth;
+    scrollbar-width: none;
+  }
+  .edit-icon-button {
+    @apply inline-flex size-11 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-primary shadow-sm hover:bg-tint;
+  }
+  .edit-menu-item {
+    @apply flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-left text-small font-semibold text-primary hover:bg-tint disabled:opacity-40;
+  }
+  .edit-menu-danger {
+    @apply text-danger hover:bg-danger/10;
+  }
+  .booking-action-row {
+    @apply grid grid-cols-[minmax(0,1fr)_2.75rem_7rem] items-center gap-2;
+  }
+  .booking-action-button {
+    @apply h-12 w-28 shrink-0 rounded-lg bg-primary px-2 text-small font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60;
+  }
   .accent-box {
     @apply rounded-lg bg-accent/20 px-3 py-2 font-semibold text-text;
   }
@@ -71,7 +90,6 @@
   }
 }
 
-/* A restrained boost for listing and hero photos; text and badges stay unchanged. */
 .venue-booking-panel {
   position: fixed;
   inset: auto 0 0;
@@ -107,6 +125,7 @@
   }
 }
 
+/* A restrained boost for listing and hero photos; text and badges stay unchanged. */
 .venue-photo {
   filter: saturate(1.08) contrast(1.04);
 }

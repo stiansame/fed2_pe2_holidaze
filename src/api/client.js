@@ -1,5 +1,19 @@
 const API_BASE = 'https://v2.api.noroff.dev/';
 
+// Return only complete, deduplicated lists; a failed page must reject the whole load.
+export async function getAllPages(request, path, { query = {}, signal } = {}) {
+  const items = new Map();
+  let page = 1;
+  do {
+    signal?.throwIfAborted();
+    const { data, meta } = await request(path, { query: { ...query, page, limit: 100 }, signal });
+    for (const item of data) items.set(item.id, item);
+    page = meta?.nextPage;
+  } while (page);
+  signal?.throwIfAborted();
+  return [...items.values()];
+}
+
 export class ApiError extends Error {
   constructor(message, status = 0, errors = []) {
     super(message);

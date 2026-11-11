@@ -1,4 +1,4 @@
-import { apiRequest, ApiError } from './client.js';
+import { apiRequest, ApiError, getAllPages } from './client.js';
 import { venueFormData } from '../utils/venueForm.js';
 import { bookedPeriods, overlaps, validDate, dateKey } from '../utils/availability.js';
 
@@ -72,18 +72,9 @@ export async function getAllVenues({ bookings = false, owner = false, signal } =
   const key = `${Boolean(bookings)}:${Boolean(owner)}`;
   const cached = venueCache.get(key);
   if (cached && Date.now() - cached.savedAt < 120_000) return cached.venues;
-  const venues = new Map();
-  let page = 1;
-  do {
-    signal?.throwIfAborted();
-    const { data, meta } = await apiRequest('holidaze/venues', {
-      query: { page, limit: 100, sort: 'created', sortOrder: 'desc', _bookings: bookings || undefined, _owner: owner || undefined }, signal,
-    });
-    for (const venue of data) venues.set(venue.id, venue);
-    page = meta.nextPage;
-  } while (page);
-  signal?.throwIfAborted();
-  const result = [...venues.values()];
+  const result = await getAllPages(apiRequest, 'holidaze/venues', {
+    query: { sort: 'created', sortOrder: 'desc', _bookings: bookings || undefined, _owner: owner || undefined }, signal,
+  });
   // Cache only complete lists; date searches need their own booking data.
   venueCache.set(key, { venues: result, savedAt: Date.now() });
   return result;

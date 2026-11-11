@@ -24,9 +24,7 @@ export function venueFormData(form) {
     const url = value.trim();
     const alt = String(descriptions[index] ?? '').trim();
     if (!url && !alt) return null;
-    let parsed;
-    try { parsed = new URL(url); } catch { /* Report a useful error below. */ }
-    if (!parsed || !['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password || url.length > 300) {
+    if (!validMediaUrl(url)) {
       throw new Error(`Image ${index + 1}: use a complete HTTP or HTTPS image URL of at most 300 characters.`);
     }
     if (alt.length > 120) throw new Error(`Image ${index + 1}: alt text must be 120 characters or fewer.`);
@@ -52,3 +50,5 @@ export function venueFormData(form) {
     ...(Object.keys(location).length && { location }),
   };
 }
+import { validMediaUrl } from './media.js';
+
