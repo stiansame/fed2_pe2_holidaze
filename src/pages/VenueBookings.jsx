@@ -46,7 +46,7 @@ export default function VenueBookings() {
       : data && (data.venues.length ? Object.entries(data.groups).map(([status, bookings]) => {
         const filtered = bookings.filter(booking => !venueId || booking.venue.id === venueId);
         return status === 'unknown' && !filtered.length ? null : <BookingGroup key={`${venueId}-${status}`} status={status} bookings={filtered} />;
-      }) : <p className="rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. <Link to="/manager/venues/new" className="navigation-link">Create your first venue</Link> to receive bookings.</p>)}
+      }) : <p className="empty-state rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. <Link to="/manager/venues/new" className="navigation-link">Create your first venue</Link> to receive bookings.</p>)}
   </section>;
 }
 
@@ -55,7 +55,7 @@ function BookingGroup({ status, bookings }) {
   const title = { upcoming: 'Upcoming stays', current: 'Current stays', past: 'Past stays', unknown: 'Dates unavailable' }[status];
   return <section aria-label={title} className="min-w-0 space-y-3">
     <h2 className="text-h3 font-semibold">{title} <span className="text-small font-normal text-muted">({bookings.length})</span></h2>
-    {!bookings.length ? <p className="text-muted">No {title.toLowerCase()}.</p> : <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    {!bookings.length ? <p className="empty-state text-muted">No {title.toLowerCase()}.</p> : <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {(expanded ? bookings : bookings.slice(0, 3)).map(booking => <li key={booking.id} className="min-w-0"><ManagerBookingCard booking={booking} /></li>)}
     </ul>}
     {bookings.length > 3 && <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="navigation-link">{expanded ? 'Show less' : `Show all (${bookings.length})`}</button>}

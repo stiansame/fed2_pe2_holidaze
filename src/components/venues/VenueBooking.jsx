@@ -45,7 +45,7 @@ export default function VenueBooking({ venue }) {
         <h2 id={titleId} className="text-h3 font-bold">Your stay</h2>
         <button type="button" aria-label="Close booking" autoFocus onClick={() => dialog.current.close()} className="flex size-12 items-center justify-center rounded-lg text-primary hover:bg-tint"><Icon name="close" /></button>
       </div>
-      <div className="hidden bg-primary p-6 text-surface lg:block">
+      <div className="booking-price-header hidden bg-primary p-6 text-surface lg:block">
         <p className="text-small font-semibold">Your stay</p>
         <p className="mt-2 text-h3 font-semibold" aria-live="polite">{summary.error ? formatVenuePrice(venue.price) : `${formatPrice(summary.total)} total`}</p>
         {!summary.error && <p className="mt-1 text-small">{summary.nights} {summary.nights === 1 ? 'night' : 'nights'} · {formatVenuePrice(venue.price)}</p>}

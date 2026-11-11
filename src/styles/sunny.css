@@ -1,0 +1,111 @@
+/* Coastal overrides the shared tokens, leaving layout and status colours intact. */
+:root[data-theme='sunny'] {
+  --font-sans: 'DM Sans', sans-serif;
+  --color-primary: #006d77;
+  --color-primary-hover: #00535b;
+  --color-accent: #f4d35e;
+  --color-text: #163238;
+  --color-muted: #526d74;
+  --color-background: #fff8eb;
+  --color-surface: #ffffff;
+  --color-border: #d5e3df;
+  --color-tint: #e5f3f1;
+  --sunny-coral: #ff9f6b;
+  --sunny-coral-hover: #ff8850;
+  --sunny-backdrop: linear-gradient(135deg, #d8efec, var(--color-background) 45%, #fff0bd);
+}
+
+/* Keep existing text sizes while giving headings and branding a softer shape. */
+[data-theme='sunny'] :is(h1, h2, h3, h4, h5, h6, .brand-name) {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* The selected sun stays readable against a pale yellow background. */
+[data-theme='sunny'] .theme-toggle {
+  background-color: #fff1b8;
+}
+
+/* Sand, shallow-water aqua and sunlight give the shared shell a warmer backdrop. */
+[data-theme='sunny'] .site-shell {
+  /* Local SVG outlines carry 5% opacity. Backgrounds add no focus or click targets. */
+  background-image:
+    url('../assets/sunny/palm.svg'), url('../assets/sunny/beach-chair.svg'),
+    url('../assets/sunny/beach-ball.svg'), url('../assets/sunny/parasol.svg'),
+    url('../assets/sunny/sunglasses.svg'), url('../assets/sunny/suitcase.svg'),
+    url('../assets/sunny/shell.svg'), url('../assets/sunny/sailboat.svg'),
+    var(--sunny-backdrop);
+  background-repeat: no-repeat;
+  background-size: 220px, 180px, 140px, 200px, 150px, 150px, 130px, 180px, cover;
+  background-position: left -60px top 120px, right -40px top 30%, left -30px top 45%,
+    right -65px top 60%, left -40px top 75%, right -40px top 85%,
+    left 15px bottom 180px, right 5px bottom 140px, center;
+}
+
+/* Keep small screens quiet with just three smaller motifs near the edges. */
+@media (width < 64rem) {
+  [data-theme='sunny'] .site-shell {
+    background-image: url('../assets/sunny/palm.svg'), url('../assets/sunny/beach-ball.svg'),
+      url('../assets/sunny/shell.svg'), var(--sunny-backdrop);
+    background-size: 140px, 100px, 100px, cover;
+    background-position: left -65px top 100px, right -45px top 55%, left -35px bottom 180px, center;
+  }
+}
+[data-theme='sunny'] header { background-color: #f0f9f5; }
+[data-theme='sunny'] footer { background-color: #faedcf; }
+
+/* An opaque base keeps background motifs from showing through the detail gradient. */
+[data-theme='sunny'] .venue-details { background-color: var(--color-surface); }
+
+/* Primary actions use coral with dark text. Selected amenity filters stay petrol. */
+[data-theme='sunny'] :is(button.bg-primary:not(.amenity-pill), a.bg-primary, .booking-action-button) {
+  background-color: var(--sunny-coral);
+  color: var(--color-text);
+}
+[data-theme='sunny'] :is(button.bg-primary:not(.amenity-pill), a.bg-primary, .booking-action-button):hover {
+  background-color: var(--sunny-coral-hover);
+}
+
+/* Soft aqua amenities and yellow guest pills keep photo overlays readable. */
+[data-theme='sunny'] :is(.amenity-pill[aria-pressed='false'], [aria-label='Amenities'] > li) {
+  background-color: #dff3ef;
+}
+[data-theme='sunny'] .guest-pill { background-color: #fff1b8; }
+[data-theme='sunny'] .rating-star { color: #a96500; }
+
+/* Cream card surfaces and warm shadows complement the existing hover lift. */
+[data-theme='sunny'] .venue-card {
+  background-color: #fffdf6;
+  box-shadow: 0 2px 8px rgb(119 78 35 / 10%);
+}
+[data-theme='sunny'] .venue-card:is(:hover, :focus-within) {
+  box-shadow: 0 8px 24px rgb(119 78 35 / 14%), 0 0 18px rgb(244 211 94 / 20%);
+}
+
+/* A sandy price header replaces the solid booking colour in Sunny Mode. */
+[data-theme='sunny'] .booking-price-header {
+  background-color: #faedcf;
+  color: var(--color-text);
+  box-shadow: inset 0 3px var(--color-accent);
+}
+
+/* Reuse one calm, colourful treatment for missing pages and empty lists. */
+[data-theme='sunny'] .empty-state {
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #e5f3f1, #fff8eb 65%, #fff1b8);
+  color: var(--color-text);
+}
+[data-theme='sunny'] .sunny-state-icon { display: block; color: #a96500; }
+
+/* Warm only hero and listing photos, preserving the separate past-booking filter. */
+[data-theme='sunny'] .venue-photo { filter: sepia(0.08) saturate(1.12) contrast(1.04); }
+
+/* A short turn acknowledges the selected theme, respecting reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .theme-toggle svg { transition: transform 250ms ease; }
+  [data-theme='sunny'] .theme-toggle svg { transform: rotate(45deg); }
+  /* A smaller lift and slower shadow transition make card hover gentler. */
+  [data-theme='sunny'] .venue-card { transition-duration: 300ms; }
+  [data-theme='sunny'] .venue-card:is(:hover, :focus-within) { translate: 0 -2px; }
+}
