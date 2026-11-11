@@ -9,6 +9,7 @@ import BackLink from '../components/BackLink.jsx';
 import { navigationOrigin } from '../utils/navigation.js';
 import HostAvatar from '../components/HostAvatar.jsx';
 import Amenities from '../components/venues/Amenities.jsx';
+import Rating from '../components/venues/Rating.jsx';
 import VenueGallery from '../components/venues/VenueGallery.jsx';
 import VenueDescription from '../components/venues/VenueDescription.jsx';
 import VenueBooking from '../components/venues/VenueBooking.jsx';
@@ -54,7 +55,7 @@ function VenueContent({ id }) {
       <title>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : 'Venue details'}`}</title>
       <div className="flex items-center justify-between gap-2">
         <BackLink to={`/venues${search}`} />
-        {venue && <span className="shrink-0 rounded-full bg-tint px-3 py-2 text-small font-semibold text-primary lg:hidden">{venue.rating > 0 ? `★ ${venue.rating}` : 'New'}</span>}
+        {venue && <Rating rating={venue.rating} className="lg:hidden" />}
       </div>
       {error ? <>
         <h1 className="text-h2 font-bold">{notFound ? messages.venueNotFound : messages.venueLoadFailed}</h1>
@@ -69,7 +70,7 @@ function VenueContent({ id }) {
             <div className="space-y-3 border-b border-border pb-5">
               <div className="flex items-center justify-between gap-3 lg:items-start lg:justify-start">
                 <h1 title={name} className="min-w-0 flex-1 truncate text-h3 font-bold sm:text-h2 lg:flex-initial lg:whitespace-normal lg:wrap-anywhere">{name}</h1>
-                <span className="hidden shrink-0 rounded-full bg-tint px-3 py-2 text-small font-semibold text-primary lg:inline">{venue.rating > 0 ? `★ ${venue.rating}` : 'New'}</span>
+                <Rating rating={venue.rating} className="hidden lg:inline" />
               </div>
               <div className="flex items-center gap-3 text-small">
                 <p title={place} className="flex min-w-0 flex-1 items-center gap-1 text-muted lg:gap-2"><Icon name="pin" className="size-4 shrink-0 text-success lg:size-5" /><span className="truncate lg:whitespace-normal lg:wrap-anywhere">{place || 'Location not specified'}</span></p>

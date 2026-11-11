@@ -14,6 +14,9 @@
   --color-tint: #eef2ff;
   --color-success: #0f766e;
   --color-danger: #b91c1c;
+  /* Past calendar dates keep their standard colours in every theme. */
+  --color-calendar-past: #e2e8f0;
+  --color-calendar-past-text: #64748b;
   --text-display: 3rem;
   --text-display--line-height: 3.5rem;
   --text-h2: 2.25rem;

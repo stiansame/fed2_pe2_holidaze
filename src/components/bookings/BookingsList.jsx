@@ -9,6 +9,7 @@ import BookingCardDetails from './BookingCardDetails.jsx';
 import EditMenu from '../EditMenu.jsx';
 import Icon from '../Icon.jsx';
 import VenueImage from '../venues/VenueImage.jsx';
+import Rating from '../venues/Rating.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 
 export default function BookingsList({ upcomingOnly = false }) {
@@ -91,6 +92,7 @@ function BookingCard({ booking, manage, onCancelled }) {
   return <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-surface" aria-label={name}>
     <div className="relative shrink-0">
       <VenueImage key={booking.venue?.media?.[0]?.url} media={booking.venue?.media?.[0]} name={name} className="relative aspect-video" imageClass={`absolute inset-0 object-cover ${status === 'past' ? 'saturate-25' : ''}`} />
+      <Rating rating={booking.venue?.rating} className="absolute top-3 right-3" />
       {manage && editable && <div className="absolute bottom-3 right-3 z-10"><EditMenu label="Manage booking">
         {venueLink && !pending && <Link to={`/bookings/${encodeURIComponent(booking.id)}/edit`} state={navigationOrigin(routeLocation)} className="edit-menu-item"><Icon name="edit" />Change booking</Link>}
         <button type="button" disabled={pending} onClick={event => { setConfirming(true); event.currentTarget.closest('details').open = false; }} className="edit-menu-item edit-menu-danger"><Icon name="trash" />Cancel booking</button>

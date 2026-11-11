@@ -72,7 +72,7 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
           const choosingEnd = from && !to && date > from;
           const disabled = past || !reliable || (choosingEnd ? overlaps(from, date, periods) : booked);
           const selected = readOnly ? Boolean(from && to && date >= from && date < to) : date === from || date === to || (date > from && date < to);
-          const stateClass = readOnly && selected ? 'bg-success/15 font-semibold text-success' : past ? 'bg-border text-muted line-through'
+          const stateClass = readOnly && selected ? 'bg-success/15 font-semibold text-success' : past ? 'bg-calendar-past text-calendar-past-text line-through'
             : booked ? 'bg-danger/10 text-danger'
             : selected ? 'bg-success/15 font-semibold text-success' : disabled ? 'bg-border/50 text-muted' : 'text-text hover:bg-tint';
           return <button type="button" key={date} disabled={readOnly || disabled} onClick={() => selectDate(date)} aria-pressed={selected} aria-label={`${fullDate.format(new Date(date))}: ${readOnly && selected ? 'This booking' : past ? 'Past, unavailable' : booked ? 'Booked night' : disabled ? 'Unavailable for this stay' : 'Available night'}${!readOnly && choosingEnd && !disabled ? ', checkout available' : ''}`} aria-current={date === today ? 'date' : undefined} className={`flex min-h-11 items-center justify-center rounded ${readOnly ? 'disabled:cursor-default' : 'disabled:cursor-not-allowed'} ${stateClass} ${readOnly ? selected ? 'ring-1 ring-success' : '' : date === from || date === to ? 'ring-2 ring-success' : ''}`}>{i + 1}</button>;
