@@ -1,3 +1,4 @@
+import { messages } from '../../constants/messages.js';
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -55,6 +56,6 @@ export default function VenueLocationMap({ lat, lng, onChange, disabled, compact
         onChange({ lat: point.lat.toFixed(6), lng: point.lng.toFixed(6) });
       }}>Use map centre</button>
     </>}
-    {tileError && <p role="status" className="text-small text-muted">Map images could not be loaded.{onChange && ' You can still enter coordinates manually.'}</p>}
+    {tileError && <p role="status" className="text-small text-muted">{messages.mapLoadFailed}{onChange && messages.mapManualCoordinates}</p>}
   </div>;
 }

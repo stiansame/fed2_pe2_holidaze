@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import { apiRequest, ApiError, getAllPages } from './client.js';
 import { venueFormData } from '../utils/venueForm.js';
 import { bookedPeriods, overlaps, validDate, dateKey } from '../utils/availability.js';
@@ -13,7 +14,7 @@ export async function createVenue(request, form) {
   clearVenueCache();
   try {
     const { data } = await request('holidaze/venues', { method: 'POST', body });
-    if (!data?.id) throw new ApiError('The server did not return a venue reference.');
+    if (!data?.id) throw new ApiError(messages.missingVenueReference);
     return data;
   } catch (error) {
     // A lost response can follow a saved venue. Never retry POST automatically.
@@ -26,7 +27,7 @@ export async function getOwnVenue(request, id, name, { signal } = {}) {
   const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, {
     query: { _owner: true }, signal,
   });
-  if (!name || data?.owner?.name !== name) throw new Error('You can only manage your own venues.');
+  if (!name || data?.owner?.name !== name) throw new Error(messages.venueAccessDenied);
   return data;
 }
 
@@ -43,7 +44,7 @@ export async function updateVenue(request, id, name, form) {
   await getOwnVenue(request, id, name);
   clearVenueCache();
   const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, { method: 'PUT', body });
-  if (data?.id !== id) throw new Error('The update could not be confirmed. Check My venues before saving again.');
+  if (data?.id !== id) throw new Error(messages.venueUpdateUnconfirmed);
   return data;
 }
 

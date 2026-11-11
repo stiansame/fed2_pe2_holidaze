@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -28,13 +29,13 @@ export default function BookingConfirmation() {
     <h1 className="text-h3 font-bold">{booking ? 'Booking confirmed' : 'Booking confirmation'}</h1>
     {!booking && !error && <Loading>Loading your reservation…</Loading>}
     {booking && <>
-      <p role="status" className="text-success">Your reservation is saved.</p>
+      <p role="status" className="text-success">{messages.reservationSaved}</p>
       <h2 className="text-h3 font-semibold wrap-anywhere">{booking.venue?.name || 'Your stay'}</h2>
       <dl className="space-y-3">
         {[['Booking reference', booking.id], ['Check-in', booking.dateFrom.slice(0, 10)], ['Check-out', booking.dateTo.slice(0, 10)], ['Guests', booking.guests]].map(([label, value]) => <div key={label}><dt className="text-small text-muted">{label}</dt><dd className="font-semibold wrap-anywhere">{value}</dd></div>)}
       </dl>
     </>}
-    {error && <><p role="alert" className="text-danger">Your reservation may already be saved, but its details could not be loaded: {error}</p><button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Reload confirmation</button></>}
+    {error && <><p role="alert" className="text-danger">{messages.confirmationLoadFailed(error)}</p><button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Reload confirmation</button></>}
     <div className="flex flex-wrap gap-3">
       {booking?.venue?.id && <Link to={`/venues/${encodeURIComponent(booking.venue.id)}`} className="navigation-link">View venue</Link>}
       <Link to="/bookings" className="navigation-link">My bookings</Link>

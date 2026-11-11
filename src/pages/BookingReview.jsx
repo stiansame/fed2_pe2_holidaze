@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -48,13 +49,13 @@ function Review({ id, search }) {
       const result = await createBooking(request, id, stay, venue.price);
       setVenue(result.venue);
       if (!result.booking) {
-        setError('The price has changed. Review the updated total before confirming again.');
+        setError(messages.bookingPriceChanged);
         return;
       }
       navigate(`/bookings/${encodeURIComponent(result.booking.id)}/confirmation`, { replace: true });
     } catch (error) {
       setUncertain(!!error.bookingUncertain);
-      setError(error.bookingUncertain ? 'We could not confirm whether your reservation was saved. Please verify your booking before reserving again.' : error.message);
+      setError(error.bookingUncertain ? messages.bookingUncertain : error.message);
     } finally {
       submitting.current = false;
       setPending(false);

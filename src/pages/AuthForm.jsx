@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { apiRequest } from '../api/client.js';
@@ -52,18 +53,18 @@ export default function AuthForm({ register = false }) {
       <h1 className="text-h3 font-bold">{register ? 'Create your account' : 'Welcome back'}</h1>
       <p className="mt-2 text-muted">{register ? 'Your next stay starts here.' : 'Log in to manage your stays.'}</p>
       {!register && (notice || location.state?.registered) && (
-        <p role="status" className="mt-4">{location.state?.registered ? 'Account created. You can now log in.' : notice}</p>
+        <p role="status" className="mt-4">{location.state?.registered ? messages.accountCreated : notice}</p>
       )}
       <form onSubmit={submit} className="mt-6 space-y-5" onInput={event => event.target.setCustomValidity?.('')} onInvalid={event => {
         const input = event.target;
-        const message = input.validity.valueMissing ? 'Please fill in this field.'
-          : input.name === 'email' ? 'Use a valid @stud.noroff.no email address.'
-          : input.name === 'name' ? 'Use letters, numbers and underscores only.'
-          : 'Use at least 8 characters.';
+        const message = input.validity.valueMissing ? messages.requiredField
+          : input.name === 'email' ? messages.invalidEmail
+          : input.name === 'name' ? messages.invalidUsername
+          : messages.shortPassword;
         input.setCustomValidity(message);
       }}>
         {register && <label className="block">Username
-          <input name="name" required pattern="[a-zA-Z0-9_]+" autoComplete="username" aria-invalid={!!fieldErrors.name} aria-describedby={fieldErrors.name ? 'name-error' : undefined} title="Use letters, numbers and underscores only." className={inputClass} />
+          <input name="name" required pattern="[a-zA-Z0-9_]+" autoComplete="username" aria-invalid={!!fieldErrors.name} aria-describedby={fieldErrors.name ? 'name-error' : undefined} title={messages.invalidUsername} className={inputClass} />
           <span className="mt-1 block text-small text-muted">Letters, numbers and underscores only.</span>
           {fieldErrors.name && <span id="name-error" className="block text-small text-danger">{fieldErrors.name}</span>}
         </label>}

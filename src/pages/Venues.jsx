@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -23,9 +24,9 @@ export default function Venues() {
   const to = params.get('to') || '';
   const datesSelected = Boolean(from || to);
   const dateError = datesSelected && (!validDate(from) || !validDate(to))
-    ? 'Choose both check-in and check-out dates.'
+    ? messages.incompleteSearchDates
     : datesSelected && (from < dateKey() || to <= from)
-      ? 'Choose a future stay with check-out after check-in.' : '';
+      ? messages.invalidSearchDates : '';
   const activeFilters = Number(guests > 0) + amenities.length + Number(order !== 'newest') + Number(datesSelected);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [search, setSearch] = useState({ value: q, url: q });
@@ -109,7 +110,7 @@ export default function Venues() {
             <GuestSelect value={guests} onChange={value => update('guests', value || '')} allowAny className={selectClass} />
           </label>
         </div>
-        <p id="search-hint" role="status" className={tooShort ? 'col-span-2 text-caption text-muted lg:order-5 lg:col-span-3' : 'sr-only'}>{tooShort ? 'Enter at least 3 characters.' : ''}</p>
+        <p id="search-hint" role="status" className={tooShort ? 'col-span-2 text-caption text-muted lg:order-5 lg:col-span-3' : 'sr-only'}>{tooShort ? messages.shortSearch : ''}</p>
         <p id="date-hint" role="status" className="col-span-2 text-small text-danger lg:order-6 lg:col-span-3">{dateError}</p>
       </form>
       {!dateError && <VenueResults key={String(datesSelected)} order={order} filters={{ q, guests, amenities, from, to }} waiting={waiting} tooShort={tooShort} />}

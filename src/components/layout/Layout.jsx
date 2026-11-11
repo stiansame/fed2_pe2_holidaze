@@ -1,3 +1,4 @@
+import { messages } from '../../constants/messages.js';
 import { matchPath, Outlet, useLocation } from 'react-router-dom';
 import Header from './Header.jsx';
 import Footer from './Footer.jsx';
@@ -19,7 +20,7 @@ export default function Layout() {
   const { pathname } = useLocation();
   const isVenueDetails = !!matchPath('/venues/:id', pathname);
   const isAccount = /^\/(profile|bookings|manager)(\/|$)/.test(pathname);
-  const title = titles[pathname.replace(/\/+$/, '') || '/'] || 'Page not found';
+  const title = titles[pathname.replace(/\/+$/, '') || '/'] || messages.pageNotFound;
   return (
     <div className="flex min-h-dvh flex-col bg-linear-to-br from-accent/10 via-background to-tint/40">
       {!isVenueDetails && <title>{`Holidaze | ${title}`}</title>}

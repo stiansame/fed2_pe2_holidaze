@@ -1,9 +1,10 @@
+import { messages } from '../constants/messages.js';
 import { bookingStatus, groupBookings } from './bookings.js';
 import { dateKey } from './availability.js';
 
 export function managerBookingGroups(venues, today = dateKey()) {
   // Missing booking data must never appear as a confirmed zero.
-  if (venues.some(venue => !Array.isArray(venue.bookings))) throw new Error('Booking information is unavailable. Please try again.');
+  if (venues.some(venue => !Array.isArray(venue.bookings))) throw new Error(messages.bookingInformationUnavailable);
   const bookings = [...new Map(venues.flatMap(venue => venue.bookings.map(booking => ({ ...booking, venue })))
     .map(booking => [booking.id, booking])).values()];
   const groups = groupBookings(bookings, today);

@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 export function venueCoordinates(lat, lng) {
   if (!String(lat ?? '').trim() || !String(lng ?? '').trim()) return null;
   const point = [Number(lat), Number(lng)];
@@ -11,13 +12,13 @@ export function venueFormData(form) {
   const price = Number(text('price'));
   const maxGuests = Number(text('maxGuests'));
   const rating = Number(text('rating'));
-  if (!name || !description) throw new Error('Enter a venue name and description.');
+  if (!name || !description) throw new Error(messages.requiredVenueDetails);
   if (!text('price') || !Number.isFinite(price) || price < 0
     || !Number.isSafeInteger(Math.round(price * 100)) || price !== Math.round(price * 100) / 100) {
-    throw new Error('Enter a price of zero or more, with at most two decimal places.');
+    throw new Error(messages.invalidVenuePrice);
   }
-  if (!Number.isSafeInteger(maxGuests) || maxGuests < 1) throw new Error('Enter a whole guest count of at least one.');
-  if (!Number.isFinite(rating) || rating < 0 || rating > 5) throw new Error('Enter a rating from 0 to 5.');
+  if (!Number.isSafeInteger(maxGuests) || maxGuests < 1) throw new Error(messages.invalidVenueGuests);
+  if (!Number.isFinite(rating) || rating < 0 || rating > 5) throw new Error(messages.invalidRating);
 
   const descriptions = form.getAll('mediaAlt');
   const media = form.getAll('mediaUrl').map((value, index) => {
@@ -25,9 +26,9 @@ export function venueFormData(form) {
     const alt = String(descriptions[index] ?? '').trim();
     if (!url && !alt) return null;
     if (!validMediaUrl(url)) {
-      throw new Error(`Image ${index + 1}: use a complete HTTP or HTTPS image URL of at most 300 characters.`);
+      throw new Error(messages.invalidImageUrl(index + 1));
     }
-    if (alt.length > 120) throw new Error(`Image ${index + 1}: alt text must be 120 characters or fewer.`);
+    if (alt.length > 120) throw new Error(messages.imageAltTooLong(index + 1));
     return { url, alt };
   }).filter(Boolean);
 
@@ -40,7 +41,7 @@ export function venueFormData(form) {
   if (lat || lng) {
     const point = venueCoordinates(lat, lng);
     if (!point) {
-      throw new Error('Enter both coordinates: latitude from −90 to 90 and longitude from −180 to 180.');
+      throw new Error(messages.invalidCoordinates);
     }
     [location.lat, location.lng] = point;
   }

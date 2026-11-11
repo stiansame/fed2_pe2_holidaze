@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import { useCallback, useEffect, useState } from 'react';
 import { apiRequest } from '../api/client.js';
 import { AuthContext } from './AuthContext.js';
@@ -32,7 +33,7 @@ export default function AuthProvider({ children }) {
     try {
       return await apiRequest(path, { ...options, token: user?.accessToken });
     } catch (error) {
-      if (error.status === 401) logout('Your session has ended. Please log in again.');
+      if (error.status === 401) logout(messages.sessionEnded);
       throw error;
     }
   }, [user, logout]);
@@ -52,7 +53,7 @@ export default function AuthProvider({ children }) {
     if (!user) return;
     const timer = setInterval(() => {
       if (sessionExpiresAt(user) > Date.now()) return;
-      logout('Your session has expired. Please log in again.');
+      logout(messages.sessionExpired);
     }, 1000);
     return () => clearInterval(timer);
   }, [user, logout]);

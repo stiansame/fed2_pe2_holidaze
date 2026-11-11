@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -37,12 +38,12 @@ export default function MyVenues() {
     </div>
     {notice && <p role="status" className="text-success">{notice}</p>}
     {error ? <div role="alert" className="space-y-3">
-      <p>Unable to load your venues. {error}</p>
+      <p>{messages.ownVenuesLoadFailed} {error}</p>
       <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
     </div> : !venues ? <Loading>Loading your venues…</Loading> : venues.length ? <>
       <p role="status" className="text-small text-muted">Showing {Math.min(count, venues.length)} of {venues.length} venues.</p>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {venues.slice(0, count).map(venue => <VenueCard key={venue.id} venue={venue} actions={<VenueOwnerActions card venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice('Venue deleted.'); }} />} />)}
+        {venues.slice(0, count).map(venue => <VenueCard key={venue.id} venue={venue} actions={<VenueOwnerActions card venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice(messages.venueDeleted); }} />} />)}
       </div>
       {count < venues.length && <button type="button" className="navigation-link" onClick={() => setCount(value => value + 15)}>Load more</button>}
     </> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. Create your first venue to get started.</p>}

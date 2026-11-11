@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import BackLink from '../components/BackLink.jsx';
 import { useEffect, useRef, useState } from 'react';
@@ -25,8 +26,8 @@ function EditLoader({ id }) {
     const controller = new AbortController();
     async function load() {
       const booking = await getOwnBooking(request, id, user.name, { signal: controller.signal });
-      if (bookingStatus(booking) !== 'upcoming') throw new Error('Only stays that have not started can be changed.');
-      if (!booking.venue?.id) throw new Error('This venue is no longer available.');
+      if (bookingStatus(booking) !== 'upcoming') throw new Error(messages.bookingNotChangeable);
+      if (!booking.venue?.id) throw new Error(messages.venueUnavailable);
       const { data: venue } = await getVenue(booking.venue.id, { signal: controller.signal });
       if (!controller.signal.aborted) setData({ booking, venue });
     }
@@ -65,10 +66,10 @@ function BookingEditor({ booking, initialVenue }) {
       const result = await updateBooking(request, booking.id, user.name, stay, venue.price);
       setVenue(result.venue);
       if (!result.booking) {
-        setError('The price has changed. Review the updated total before saving again.');
+        setError(messages.bookingEditPriceChanged);
         return;
       }
-      navigate('/bookings', { replace: true, state: { notice: 'Booking updated.' } });
+      navigate('/bookings', { replace: true, state: { notice: messages.bookingUpdated } });
     } catch (error) {
       setError(error.message);
     } finally {

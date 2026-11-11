@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -30,11 +31,11 @@ function HostProfile({ name }) {
   const notFound = error && [400, 404].includes(error.status);
   const profile = data?.profile;
   return <section className="space-y-5">
-    <title>{`Holidaze | ${notFound ? 'Profile not found' : name}`}</title>
+    <title>{`Holidaze | ${notFound ? messages.profileNotFound : name}`}</title>
     {!data && !error && <Loading>Loading host profile…</Loading>}
     {error && <div className="space-y-3">
-      <h1 className="text-h3 font-bold">{notFound ? 'Profile not found' : 'Unable to load host profile'}</h1>
-      <p role="alert">{notFound ? 'This profile may have been removed or the link is incorrect.' : error.message}</p>
+      <h1 className="text-h3 font-bold">{notFound ? messages.profileNotFound : messages.profileLoadFailed}</h1>
+      <p role="alert">{notFound ? messages.profileNotFoundDescription : error.message}</p>
       {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary">Try again</button>}
     </div>}
     {data && <div className="min-w-0 space-y-6">

@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 // Keep calendar dates as YYYY-MM-DD; UTC arithmetic avoids daylight-saving shifts.
 export function dateKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -28,7 +29,7 @@ export function staySummary(venue, stay, bookingId) {
   const error = validateStay({ ...stay, maxGuests: venue.maxGuests, periods: reliable ? periods : null });
   if (error) return { error };
   const price = stayPrice(venue.price, stay.from, stay.to);
-  return price ? { error: '', ...price } : { error: 'A valid price is unavailable for this stay.' };
+  return price ? { error: '', ...price } : { error: messages.invalidStayPrice };
 }
 
 export function stayPrice(price, from, to) {
@@ -52,11 +53,11 @@ export function overlaps(from, to, periods) {
 }
 
 export function validateStay({ from, to, guests, maxGuests, periods, today = dateKey() }) {
-  if (periods === null) return 'Availability is unavailable. Please try again later.';
-  if (!validDate(from) || !validDate(to)) return 'Choose a valid check-in and check-out date.';
-  if (from < today) return 'Check-in cannot be in the past.';
-  if (to <= from) return 'Check-out must be after check-in (at least one night).';
-  if (!Number.isInteger(guests) || guests < 1 || !Number.isInteger(maxGuests) || guests > maxGuests) return 'Choose a guest count within this stay’s capacity.';
-  if (overlaps(from, to, periods)) return 'These dates overlap an existing booking. Choose another stay.';
+  if (periods === null) return messages.availabilityUnavailable;
+  if (!validDate(from) || !validDate(to)) return messages.invalidStayDates;
+  if (from < today) return messages.pastCheckIn;
+  if (to <= from) return messages.invalidCheckOut;
+  if (!Number.isInteger(guests) || guests < 1 || !Number.isInteger(maxGuests) || guests > maxGuests) return messages.invalidStayGuests;
+  if (overlaps(from, to, periods)) return messages.overlappingStay;
   return '';
 }

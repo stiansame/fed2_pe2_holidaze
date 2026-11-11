@@ -1,3 +1,4 @@
+import { messages } from '../../constants/messages.js';
 import Loading from '../Loading.jsx';
 import { lazy, Suspense, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -99,6 +100,6 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
       </div>
     </fieldset>
     {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}
-    {uncertain && <p role="status" className="text-muted">Your venue may have been created. Check <Link to="/manager/venues" className="navigation-link">My venues</Link> before trying again.</p>}
+    {uncertain && <div role="status" className="space-y-2 text-muted"><p>{messages.venueCreationUncertain}</p><Link to="/manager/venues" className="navigation-link">My venues</Link></div>}
   </form>;
 }

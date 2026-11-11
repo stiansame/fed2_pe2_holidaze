@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -38,10 +39,10 @@ export default function VenueBookings() {
         {data.venues.map(venue => <option key={venue.id} value={venue.id}>{venue.name?.trim() || 'Unnamed stay'}</option>)}
       </select>
     </label>}
-    {error && <p role="alert" className="text-danger">Unable to load your venue bookings. {error}</p>}
+    {error && <p role="alert" className="text-danger">{messages.venueBookingsLoadFailed} {error}</p>}
     {!data && !error && <Loading>Loading venue bookings…</Loading>}
     {(data || error) && <button type="button" className="navigation-link" onClick={() => { setError(''); setData(null); setAttempt(value => value + 1); }}>{error ? 'Try again' : 'Refresh bookings'}</button>}
-    {unavailable ? <p role="alert" className="text-danger">This venue is unavailable or does not belong to you. Choose one of your venues or All venues.</p>
+    {unavailable ? <p role="alert" className="text-danger">{messages.unavailableVenueFilter}</p>
       : data && (data.venues.length ? Object.entries(data.groups).map(([status, bookings]) => {
         const filtered = bookings.filter(booking => !venueId || booking.venue.id === venueId);
         return status === 'unknown' && !filtered.length ? null : <BookingGroup key={`${venueId}-${status}`} status={status} bookings={filtered} />;

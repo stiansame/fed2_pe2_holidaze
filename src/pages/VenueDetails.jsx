@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
@@ -50,14 +51,14 @@ function VenueContent({ id }) {
     .map(value => value?.trim()).filter(Boolean).join(', ');
   return (
     <section className="space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(7rem+env(safe-area-inset-bottom))] lg:p-8">
-      <title>{`Holidaze | ${notFound ? 'Venue not found' : venue ? name : 'Venue details'}`}</title>
+      <title>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : 'Venue details'}`}</title>
       <div className="flex items-center justify-between gap-2">
         <BackLink to={`/venues${search}`} />
         {venue && <span className="shrink-0 rounded-full bg-tint px-3 py-2 text-small font-semibold text-primary lg:hidden">{venue.rating > 0 ? `★ ${venue.rating}` : 'New'}</span>}
       </div>
       {error ? <>
-        <h1 className="text-h2 font-bold">{notFound ? 'Venue not found' : 'Unable to load this stay'}</h1>
-        <p role="alert">{notFound ? 'This stay may have been removed or the link is incorrect.' : error.message}</p>
+        <h1 className="text-h2 font-bold">{notFound ? messages.venueNotFound : messages.venueLoadFailed}</h1>
+        <p role="alert">{notFound ? messages.venueNotFoundDescription : error.message}</p>
         {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Try again</button>}
       </> : !venue ? <Loading>Loading stay…</Loading> : <>
         <VenueGallery media={venue.media} name={name}>

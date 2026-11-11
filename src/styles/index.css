@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Shared design tokens extend Tailwind's colour, font and text-size utilities. */
 @theme {
   --font-sans: "Inter", sans-serif;
   --color-primary: #0047ab;
@@ -28,10 +29,12 @@
 }
 
 @layer base {
+  /* Set the default page colours and typography. */
   body {
     @apply bg-background font-sans text-body text-text;
   }
 
+  /* Give keyboard navigation a consistent, visible focus outline. */
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 4px;
@@ -46,50 +49,63 @@
 }
 
 @layer components {
+  /* Snap swipeable gallery images into place and hide the scrollbar. */
   .photo-strip {
     @apply flex snap-x snap-mandatory overflow-x-auto motion-safe:scroll-smooth;
     scrollbar-width: none;
   }
+  /* Shared pencil trigger for venue and booking action menus. */
   .edit-icon-button {
     @apply inline-flex size-11 shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-primary shadow-sm hover:bg-tint;
   }
+  /* Keep links and buttons inside edit menus the same size and style. */
   .edit-menu-item {
     @apply flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-left text-small font-semibold text-primary hover:bg-tint disabled:opacity-40;
   }
+  /* Mark destructive menu actions in red. */
   .edit-menu-danger {
     @apply text-danger hover:bg-danger/10;
   }
+  /* Reserve space for the price, edit icon and primary booking action. */
   .booking-action-row {
     @apply grid grid-cols-[minmax(0,1fr)_2.75rem_7rem] items-center gap-2;
   }
+  /* Keep Select dates and Reserve identical in size. */
   .booking-action-button {
     @apply h-12 w-28 shrink-0 rounded-lg bg-primary px-2 text-small font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60;
   }
+  /* Shared accent background for compact information such as guest capacity. */
   .accent-box {
     @apply rounded-lg bg-accent/20 px-3 py-2 font-semibold text-text;
   }
 
+  /* Give return links and secondary navigation a consistent button shape. */
   .navigation-link {
     @apply inline-flex min-h-12 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint;
   }
 
+  /* Style sanitised API HTML, whose elements cannot carry Tailwind classes. */
   .venue-description {
     @apply overflow-x-auto;
 
+    /* Restore readable spacing, headings and list markers after Tailwind's reset. */
     :is(p, ul, ol, blockquote, pre, table) { @apply mb-3; }
     :is(h1, h2, h3, h4, h5, h6) { @apply mt-4 mb-3 font-semibold text-text; }
     :is(h1, h2) { @apply text-h3; }
     ul { @apply list-disc pl-6; }
     ol { @apply list-decimal pl-6; }
+    /* Distinguish links, quotations, code and table cells within descriptions. */
     a { @apply text-primary underline underline-offset-4; }
     blockquote { @apply border-l-4 border-accent pl-4 italic; }
     pre { @apply overflow-x-auto rounded-lg bg-tint p-3; }
     :is(th, td) { @apply border border-border p-2; }
+    /* Fit embedded images to the content width and remove trailing block spacing. */
     img { @apply h-auto max-w-full rounded-lg; }
     > :last-child { @apply mb-0; }
   }
 }
 
+/* Anchor the mobile booking dialog to the bottom, with scrolling and safe-area space. */
 .venue-booking-panel {
   position: fixed;
   inset: auto 0 0;
@@ -102,7 +118,9 @@
   border-radius: 1rem 1rem 0 0;
   padding: 0 0 max(1rem, env(safe-area-inset-bottom));
 }
+/* Keep the fixed action bar clear of mobile home indicators. */
 .venue-booking-bar { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+/* Reduce calendar spacing and scale date cells to the available mobile height. */
 @media (width < 64rem) {
   .compact-calendar [aria-label='Night availability'] { gap: 2px; }
   .compact-calendar [aria-label='Night availability'] > span { padding-block: 2px; }
@@ -114,6 +132,7 @@
     height: 36px;
   }
 }
+/* Reuse the booking dialog as a regular, always-visible panel on desktop. */
 @media (width >= 64rem) {
   .venue-booking-panel {
     display: block;
@@ -130,33 +149,39 @@
   filter: saturate(1.08) contrast(1.04);
 }
 
+/* Give all three logo panels the same looping timing and depth. */
 .loading-map-left, .loading-map-middle, .loading-map-right {
   animation-duration: 3.2s;
   animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
   animation-iteration-count: infinite;
   filter: drop-shadow(0 2px 2px rgb(0 47 100 / 20%));
 }
+/* Each panel rotates around its own centre and follows a separate shuffle path. */
 .loading-map-left { transform-origin: 13px 36px; animation-name: map-shuffle-left; }
 .loading-map-middle { transform-origin: 46px 36px; animation-name: map-shuffle-middle; }
 .loading-map-right { transform-origin: 81px 36px; animation-name: map-shuffle-right; }
+/* Move the left panel across the stack, then return it to its starting position. */
 @keyframes map-shuffle-left {
   0%, 10%, 90%, 100% { transform: none; }
   22%, 76% { transform: translate(-8px, -3px) rotate(-12deg); }
   40% { transform: translate(66px, -10px) rotate(12deg); }
   58% { transform: translate(33px, 8px) rotate(-8deg); }
 }
+/* Lift the middle panel and alternate its position within the stack. */
 @keyframes map-shuffle-middle {
   0%, 10%, 90%, 100% { transform: none; }
   22%, 76% { transform: translateY(-7px); }
   40% { transform: translate(-33px, 8px) rotate(-10deg); }
   58% { transform: translate(35px, -10px) rotate(10deg); }
 }
+/* Move the right panel across the stack in the opposite direction. */
 @keyframes map-shuffle-right {
   0%, 10%, 90%, 100% { transform: none; }
   22%, 76% { transform: translate(8px, -3px) rotate(12deg); }
   40% { transform: translate(-35px, -10px) rotate(-8deg); }
   58% { transform: translate(-68px, -5px) rotate(-12deg); }
 }
+/* Keep the loading logo still when reduced motion is requested. */
 @media (prefers-reduced-motion: reduce) {
   .loading-map-left, .loading-map-middle, .loading-map-right { animation: none; }
 }

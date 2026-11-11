@@ -1,3 +1,4 @@
+import { messages } from '../../constants/messages.js';
 import Loading from '../Loading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -42,7 +43,7 @@ export default function BookingsList({ upcomingOnly = false }) {
       manage={!upcomingOnly}
       allLink={upcomingOnly ? '/bookings?show=upcoming' : undefined}
       initialExpanded={new URLSearchParams(search).get('show') === key}
-      onCancelled={id => { setBookings(current => current?.filter(booking => booking.id !== id) ?? current); setNotice('Booking cancelled.'); }}
+      onCancelled={id => { setBookings(current => current?.filter(booking => booking.id !== id) ?? current); setNotice(messages.bookingCancelled); }}
     />)}
   </div>;
 }
@@ -80,7 +81,7 @@ function BookingCard({ booking, manage, onCancelled }) {
       await cancelBooking(request, booking.id, user.name);
       onCancelled(booking.id);
     } catch (error) {
-      setError(`${error.message} Refresh your bookings if the cancellation outcome is unclear.`);
+      setError(messages.cancellationUnclear(error.message));
     } finally {
       submitting.current = false;
       setPending(false);
@@ -98,7 +99,7 @@ function BookingCard({ booking, manage, onCancelled }) {
     <div className="min-w-0 flex-1 space-y-3 p-4">
     <BookingCardDetails booking={booking} title={venueLink ? <Link to={venueLink} state={navigationOrigin(routeLocation)} className="text-primary hover:underline">{name}</Link> : name} />
     {confirming && <div className="space-y-3 rounded-lg bg-danger/5 p-3">
-      <p className="text-small">Cancel your stay at {name}? This removes the booking and cannot be undone.</p>
+      <p className="text-small">{messages.confirmBookingCancellation(name)}</p>
       <div className="flex flex-wrap gap-3">
         <button type="button" autoFocus disabled={pending} onClick={cancel} className="min-h-12 rounded-lg bg-danger px-3 text-small font-semibold text-surface disabled:opacity-60">{pending ? 'Cancelling…' : 'Confirm cancellation'}</button>
         <button type="button" disabled={pending} onClick={() => { setConfirming(false); setError(''); }} className="min-h-12 rounded-lg border border-border bg-surface px-3 text-small font-semibold text-primary disabled:opacity-60">Keep booking</button>

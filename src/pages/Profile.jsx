@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.js';
@@ -57,7 +58,7 @@ export default function Profile() {
           </div>
           {editing ? <ProfileForm profile={profile} path={path} onCancel={() => setEditing(false)} onSave={data => { setProfile(data); setEditing(false); setSaved(true); }} /> : <>
             <p className="whitespace-pre-line text-muted wrap-anywhere">{profile.bio?.trim() || 'No bio yet.'}</p>
-            {saved && <p role="status" className="text-success">Profile updated.</p>}
+            {saved && <p role="status" className="text-success">{messages.profileUpdated}</p>}
             <button type="button" disabled={pending} onClick={() => { setSaved(false); setError(''); setEditing(true); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60">Edit profile</button>
             {!user.venueManager && <div className="space-y-4 border-t border-border pt-5">
                 <p>Want to host guests? Become a venue manager to create and manage your own venues.</p>

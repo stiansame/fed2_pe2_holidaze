@@ -1,3 +1,4 @@
+import { messages } from '../constants/messages.js';
 const API_BASE = 'https://v2.api.noroff.dev/';
 
 // Return only complete, deduplicated lists; a failed page must reject the whole load.
@@ -46,7 +47,7 @@ export async function apiRequest(path, {
 } = {}) {
   const url = new URL(path.replace(/^\/+/, ''), API_BASE);
   if (url.origin !== new URL(API_BASE).origin) {
-    throw new TypeError('API requests must use the Noroff API.');
+    throw new TypeError(messages.invalidApiOrigin);
   }
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined && value !== null) url.searchParams.set(key, value);
@@ -68,7 +69,7 @@ export async function apiRequest(path, {
   } catch (error) {
     // Cancellation is intentional; callers can ignore it instead of showing an API error.
     if (signal?.aborted || error.name === 'AbortError') throw error;
-    throw new ApiError('Unable to connect. Please try again.');
+    throw new ApiError(messages.networkError);
   }
 
   // Successful deletions have no JSON body to parse.
@@ -78,13 +79,13 @@ export async function apiRequest(path, {
     result = await response.json();
   } catch (error) {
     if (signal?.aborted || error.name === 'AbortError') throw error;
-    throw new ApiError('The server returned an unreadable response.', response.status);
+    throw new ApiError(messages.unreadableResponse, response.status);
   }
   // fetch resolves even for HTTP errors such as 400 or 401.
   if (!response.ok) {
     const errors = result?.errors ?? [];
     throw new ApiError(
-      errors.map(error => error.message).join('\n') || 'Request failed. Please try again.',
+      errors.map(error => error.message).join('\n') || messages.requestFailed,
       response.status,
       errors,
     );

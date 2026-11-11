@@ -1,3 +1,4 @@
+import { messages } from '../../constants/messages.js';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Icon from '../Icon.jsx';
@@ -53,8 +54,8 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
 
   return <section ref={calendar} className={`${compact ? 'compact-calendar space-y-2 p-3 lg:space-y-4 lg:p-4' : 'space-y-4 p-4'} border-t border-border`} aria-label="Availability">
     <h2 className={`${compact ? 'sr-only lg:not-sr-only ' : ''}text-h3 font-bold`}>{readOnly ? 'Venue calendar' : 'Select dates'}</h2>
-    {periods === null ? <p role="alert" className="text-small text-danger">Availability is unavailable. Please try again later.</p> : <>
-      {!reliable && <p role="alert" className="text-small text-danger">Some booking dates are invalid. Known bookings are shown, but availability cannot be confirmed.</p>}
+    {periods === null ? <p role="alert" className="text-small text-danger">{messages.availabilityUnavailable}</p> : <>
+      {!reliable && <p role="alert" className="text-small text-danger">{messages.invalidBookingDates}</p>}
       <div className="flex items-center justify-between gap-1">
         <button type="button" aria-label="Previous month" disabled={!readOnly && month <= today.slice(0, 7)} onClick={() => changeMonth(-1)} className="flex size-11 shrink-0 items-center justify-center rounded-lg text-primary hover:bg-tint disabled:opacity-30"><Icon name="left" /></button>
         <p aria-live="polite" className="text-small font-semibold">{monthDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' })}</p>
