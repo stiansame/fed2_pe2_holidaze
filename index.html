@@ -3,12 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script>
-      // Restore the saved profile before styles paint to avoid a theme flash.
-      try {
-        if (localStorage.getItem('holidaze-theme') === 'sunny') document.documentElement.dataset.theme = 'sunny';
-      } catch { /* Browser storage is optional. */ }
-    </script>
     <meta name="description" content="Holidaze — find somewhere worth staying." />
     <link rel="icon" type="image/svg+xml" href="/src/assets/holidaze-mark.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
