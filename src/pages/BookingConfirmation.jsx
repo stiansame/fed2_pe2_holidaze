@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getOwnBooking } from '../api/bookings.js';
+import { formatBookingDate } from '../utils/bookings.js';
 
 export default function BookingConfirmation() {
   const { id } = useParams();
@@ -32,7 +33,7 @@ export default function BookingConfirmation() {
       <p role="status" className="text-success">{messages.reservationSaved}</p>
       <h2 className="text-h3 font-semibold wrap-anywhere">{booking.venue?.name || 'Your stay'}</h2>
       <dl className="space-y-3">
-        {[['Booking reference', booking.id], ['Check-in', booking.dateFrom.slice(0, 10)], ['Check-out', booking.dateTo.slice(0, 10)], ['Guests', booking.guests]].map(([label, value]) => <div key={label}><dt className="text-small text-muted">{label}</dt><dd className="font-semibold wrap-anywhere">{value}</dd></div>)}
+        {[['Booking reference', booking.id], ['Check-in', formatBookingDate(booking.dateFrom)], ['Check-out', formatBookingDate(booking.dateTo)], ['Guests', booking.guests]].map(([label, value]) => <div key={label}><dt className="text-small text-muted">{label}</dt><dd className="font-semibold wrap-anywhere">{value}</dd></div>)}
       </dl>
     </>}
     {error && <><p role="alert" className="text-danger">{messages.confirmationLoadFailed(error)}</p><button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Reload confirmation</button></>}

@@ -6,6 +6,7 @@ import GuestSelect from '../GuestSelect.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, staySummary, validateStay, validDate } from '../../utils/availability.js';
 import BookingPrice from './BookingPrice.jsx';
+import { formatBookingDate } from '../../utils/bookings.js';
 
 const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
 const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'UTC' });
@@ -49,7 +50,7 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
   }
 
   const dates = <dl className={`grid min-w-0 ${compact ? 'grid-cols-[auto_auto] justify-start gap-x-6 lg:grid-cols-2' : 'grid-cols-2'} gap-2 text-left text-small`} aria-live="polite">
-    {[['Check-in', from], ['Check-out', to]].map(([label, date]) => <div key={label} className="min-w-0"><dt className="text-muted">{label}</dt><dd className="font-semibold">{date ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', ...(compact ? {} : { year: 'numeric' }), timeZone: 'UTC' }) : 'Not selected'}</dd></div>)}
+    {[['Check-in', from], ['Check-out', to]].map(([label, date]) => <div key={label} className="min-w-0"><dt className="text-muted">{label}</dt><dd className="font-semibold">{date ? formatBookingDate(date) : 'Not selected'}</dd></div>)}
   </dl>;
 
   return <section ref={calendar} className={`${compact ? 'compact-calendar space-y-2 p-3 lg:space-y-4 lg:p-4' : 'space-y-4 p-4'} border-t border-border`} aria-label="Availability">

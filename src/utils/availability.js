@@ -1,5 +1,5 @@
 import { messages } from '../constants/messages.js';
-// Keep calendar dates as YYYY-MM-DD; UTC arithmetic avoids daylight-saving shifts.
+// Internal ISO keys sort chronologically and match date inputs/API payloads; format dates separately for display.
 export function dateKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }

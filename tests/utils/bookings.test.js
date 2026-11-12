@@ -3,9 +3,9 @@ import { test } from 'node:test';
 import { bookingDates, bookingPrice, bookingStatus, formatBookingDate, formatBookingRange, groupBookings } from '../../src/utils/bookings.js';
 
 test('short booking ranges retain the month and year when crossing boundaries', () => {
-  assert.equal(formatBookingRange({ dateFrom: '2030-11-13', dateTo: '2030-11-16' }), '13–16 Nov 2030');
-  assert.equal(formatBookingRange({ dateFrom: '2030-11-30', dateTo: '2030-12-02' }), '30 Nov–2 Dec 2030');
-  assert.equal(formatBookingRange({ dateFrom: '2030-12-30', dateTo: '2031-01-02' }), '30 Dec 2030–2 Jan 2031');
+  assert.equal(formatBookingRange({ dateFrom: '2030-11-13', dateTo: '2030-11-16' }), '13–16-11-2030');
+  assert.equal(formatBookingRange({ dateFrom: '2030-11-30', dateTo: '2030-12-02' }), '30-11–02-12-2030');
+  assert.equal(formatBookingRange({ dateFrom: '2030-12-30', dateTo: '2031-01-02' }), '30-12-2030–02-01-2031');
   assert.equal(formatBookingRange({ dateFrom: null, dateTo: '2031-01-02' }), 'Dates unavailable');
 });
 
@@ -29,6 +29,8 @@ test('groups upcoming and current stays, newest past stays and invalid dates wit
   assert.deepEqual(items, original);
   assert.equal(bookingStatus(items[2], '2030-03-01'), 'current');
   assert.deepEqual(bookingDates(items[0]), { from: '2030-03-10', to: '2030-03-12', guests: 2 });
-  assert.equal(formatBookingDate('2030-03-10T00:00:00Z'), '10 Mar 2030');
+  assert.equal(formatBookingDate('2030-03-10T00:00:00Z'), '10-03-2030');
   assert.equal(formatBookingDate(null), 'Date unavailable');
+  assert.equal(formatBookingDate('2030-02-30'), 'Date unavailable');
+  assert.equal(formatBookingDate('2032-02-29'), '29-02-2032');
 });

@@ -51,7 +51,7 @@ function VenueContent({ id }) {
   const address = [location?.address, location?.zip, location?.city, location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ');
   return (
-    <section className="venue-details space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(7rem+env(safe-area-inset-bottom))] lg:p-8">
+    <section className="venue-details space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
       <title>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : 'Venue details'}`}</title>
       <div className="flex items-center justify-between gap-2">
         <BackLink to={`/venues${search}`} />
@@ -65,7 +65,7 @@ function VenueContent({ id }) {
         <VenueGallery media={venue.media} name={name}>
           {isOwner && <VenueOwnerActions venue={venue} />}
         </VenueGallery>
-        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="grid items-start gap-x-8 lg:gap-y-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-6">
             <div className="space-y-3 border-b border-border pb-5">
               <div className="flex items-center justify-between gap-3 lg:items-start lg:justify-start">

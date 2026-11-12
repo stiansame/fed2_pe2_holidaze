@@ -28,7 +28,7 @@ export function groupBookings(bookings, today = dateKey()) {
 
 export function formatBookingDate(value) {
   const date = value?.slice(0, 10);
-  return validDate(date) ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'Date unavailable';
+  return validDate(date) ? date.split('-').reverse().join('-') : 'Date unavailable';
 }
 
 export function formatBookingRange(booking) {
@@ -37,5 +37,5 @@ export function formatBookingRange(booking) {
   if (from === 'Date unavailable' || to === 'Date unavailable') return 'Dates unavailable';
   const sameYear = booking.dateFrom.slice(0, 4) === booking.dateTo.slice(0, 4);
   const sameMonth = sameYear && booking.dateFrom.slice(0, 7) === booking.dateTo.slice(0, 7);
-  return `${sameMonth ? from.split(' ')[0] : sameYear ? from.replace(/ \d{4}$/, '') : from}–${to}`;
+  return `${sameMonth ? from.slice(0, 2) : sameYear ? from.slice(0, 5) : from}–${to}`;
 }
