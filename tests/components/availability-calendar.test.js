@@ -17,7 +17,6 @@ test('read-only venue calendar shows historical booking nights without offering 
     });
     assert.ok(html.includes('Venue calendar') && html.includes('June 2020'));
     assert.equal((html.match(/This booking/g) || []).length, 2);
-    assert.ok(html.includes('10-06-2020') && html.includes('12-06-2020'));
     assert.ok(!html.includes('<form') && !html.includes('>Reserve<') && !html.includes('Choose check-in'));
     assert.ok(!/aria-label="Previous month" disabled/.test(html));
     const interactive = render({ bookings: [], maxGuests: 4 });

@@ -9,7 +9,6 @@ import VenueCard from '../components/venues/VenueCard.jsx';
 import GuestSelect from '../components/GuestSelect.jsx';
 import Icon from '../components/Icon.jsx';
 import { addDays, dateKey, validDate } from '../utils/availability.js';
-import { formatBookingDate } from '../utils/bookings.js';
 
 const buttonClass = 'min-h-12 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60';
 const pillClass = 'inline-flex min-h-12 items-center gap-2 rounded-full border border-border bg-surface px-3 text-small sm:px-4 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2';
@@ -95,7 +94,7 @@ export default function Venues() {
           </div>
           <details className="relative min-w-0 lg:order-3" onKeyDown={event => { if (event.key === 'Escape') { event.currentTarget.open = false; event.currentTarget.querySelector('summary').focus(); } }}>
             <summary className={`${pillClass} w-full cursor-pointer lg:h-full list-none [&::-webkit-details-marker]:hidden`}>
-              <Icon name="calendar" /><span className="min-w-0 truncate">{from ? formatBookingDate(from) : 'Check-in'} — {to ? formatBookingDate(to) : 'Check-out'}</span>
+              <Icon name="calendar" /><span className="min-w-0 truncate">{from || 'Check-in'} — {to || 'Check-out'}</span>
             </summary>
             <div className="mt-2 grid lg:absolute lg:inset-x-0 lg:top-full lg:z-10 gap-3 rounded-xl border border-border bg-surface p-4 shadow-lg sm:grid-cols-2">
               <label className="min-w-0 text-small font-semibold">Check-in
