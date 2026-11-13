@@ -8,6 +8,8 @@ import HostAvatar from '../components/HostAvatar.jsx';
 import VenueImage from '../components/venues/VenueImage.jsx';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import BackLink from '../components/BackLink.jsx';
+import AccountStats from '../components/account/AccountStats.jsx';
+import { guestSummary } from '../utils/bookings.js';
 
 export default function PublicProfile() {
   const { name } = useParams();
@@ -39,6 +41,7 @@ function HostProfile({ name }) {
       {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary">Try again</button>}
     </div>}
     {data && <div className="min-w-0 space-y-6">
+      <div className="grid items-start gap-4 lg:items-stretch lg:grid-cols-2">
       <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
         <VenueImage key={profile.banner?.url} media={profile.banner} name={`${profile.name}'s banner`} className="h-40 sm:h-48" loading="eager" />
         <div className="space-y-5 px-5 pb-6">
@@ -52,7 +55,9 @@ function HostProfile({ name }) {
           <p className="whitespace-pre-line text-muted wrap-anywhere">{profile.bio?.trim() || 'No bio yet.'}</p>
         </div>
       </div>
-      <section aria-label="Host venues" className="min-w-0 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-5">
+      <AccountStats items={guestSummary(data.bookings)} />
+      </div>
+      {(profile.venueManager || data.venues.length > 0) && <section aria-label="Host venues" className="min-w-0 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-h3 font-bold">Venues <span className="text-small font-normal text-muted">({data.venues.length})</span></h2>
           {data.venues.length > 3 && <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="h-11 rounded-lg px-2 font-semibold text-primary hover:bg-tint">{expanded ? 'Show less' : 'View all'} <span aria-hidden="true">→</span></button>}
@@ -60,7 +65,7 @@ function HostProfile({ name }) {
         {data.venues.length ? <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => <li key={venue.id} className="min-w-0"><VenueCard venue={venue} /></li>)}
         </ul> : <p className="empty-state text-muted">No venues listed yet.</p>}
-      </section>
+      </section>}
     </div>}
     <BackLink />
   </section>;

@@ -6,7 +6,7 @@ import { bookingPrice, bookingStatus, formatBookingRange } from '../../utils/boo
 import { formatPrice } from '../../utils/venue.js';
 import { navigationOrigin } from '../../utils/navigation.js';
 
-const pillClass = 'inline-flex max-w-full items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-caption text-text';
+const pillClass = 'inline-flex h-6.5 max-w-full items-center gap-1 rounded-full bg-surface px-2.5 text-caption text-text';
 
 export default function ManagerBookingCard({ booking }) {
   const location = useLocation();
@@ -23,7 +23,7 @@ export default function ManagerBookingCard({ booking }) {
       </div>
       <div className="min-w-0 space-y-1.5">
         <div className="grid min-w-0 grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-1.5">
-          <p className={pillClass}><HostAvatar key={booking.customer?.avatar?.url} media={booking.customer?.avatar} className="size-6" /><span className="min-w-0 truncate">{booking.customer?.name?.trim() || 'Guest name unavailable'}</span></p>
+          <p className={pillClass}><HostAvatar key={booking.customer?.avatar?.url} media={booking.customer?.avatar} className="-ml-2.5 size-8 border-2 border-surface" /><span className="min-w-0 truncate">{booking.customer?.name?.trim() || 'Guest name unavailable'}</span></p>
           <p className={`${pillClass} min-w-0`}><Icon name="user" className="size-4 shrink-0" /><span className="min-w-0 wrap-anywhere">{Number.isInteger(booking.guests) && booking.guests > 0 ? `${booking.guests} ${booking.guests === 1 ? 'guest' : 'guests'}` : 'Guests unavailable'}</span></p>
           <p className={`${pillClass} min-w-0`}><Icon name="moon" className="size-4 shrink-0" /><span className="min-w-0 wrap-anywhere">{price ? `${price.nights} ${price.nights === 1 ? 'night' : 'nights'}` : 'Nights unavailable'}</span></p>
         </div>

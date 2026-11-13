@@ -97,7 +97,7 @@
   }
   /* Shared accent background for compact information such as guest capacity. */
   .accent-box {
-    @apply rounded-lg bg-accent/20 px-3 py-2 font-semibold text-text;
+    @apply h-8 rounded-full bg-accent/20 px-3 font-semibold text-text;
   }
 
   /* Give return links and secondary navigation a consistent button shape. */

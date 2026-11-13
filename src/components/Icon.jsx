@@ -1,4 +1,9 @@
 const paths = {
+  'calendar-check': <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4m10-4v4M3 11h18m-13 5 3 3 5-5" /></>,
+  compass: <><circle cx="12" cy="12" r="9" /><path d="m16 8-2 6-6 2 2-6Z" /></>,
+  login: <><path d="M14 3h6v18h-6M3 12h12m-4-4 4 4-4 4" /></>,
+  logout: <><path d="M10 3H4v18h6m0-9h11m-4-4 4 4-4 4" /></>,
+  'user-plus': <><circle cx="9" cy="7" r="4" /><path d="M2 21v-2a7 7 0 0 1 14 0v2m3-12v8m-4-4h8" /></>,
   menu: <path d="M3 6h18M3 12h18M3 18h18" />,
   filter: <><path d="M3 7h18M3 17h18" /><circle cx="8" cy="7" r="3" fill="var(--color-surface)" /><circle cx="16" cy="17" r="3" fill="var(--color-surface)" /></>,
   moon: <path d="M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10Z" />,

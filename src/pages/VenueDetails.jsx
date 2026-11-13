@@ -71,7 +71,7 @@ function VenueContent({ id }) {
               </div>
               <div className="flex items-center gap-3 text-small">
                 <p title={place} className="flex min-w-0 flex-1 items-center gap-1 text-muted lg:gap-2"><Icon name="pin" className="size-4 shrink-0 text-success lg:size-5" /><span className="truncate lg:whitespace-normal lg:wrap-anywhere">{place || 'Location not specified'}</span></p>
-                <p className="accent-box ml-auto inline-flex h-8 shrink-0 items-center gap-1 text-caption lg:gap-2 lg:text-small"><Icon name="user" className="size-4 shrink-0 lg:size-5" />{venue.maxGuests > 0 ? `${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Capacity unknown'}</p>
+                <p className="accent-box ml-auto inline-flex shrink-0 items-center gap-1 text-caption lg:gap-2 lg:text-small"><Icon name="user" className="size-4 shrink-0 lg:size-5" />{venue.maxGuests > 0 ? `${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Capacity unknown'}</p>
               </div>
               <div>{Object.values(venue.meta ?? {}).some(value => value === true) ? <Amenities meta={venue.meta} compact /> : <p className="text-small text-muted">No amenities listed.</p>}</div>
             </div>

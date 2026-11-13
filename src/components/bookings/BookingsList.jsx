@@ -4,7 +4,7 @@ import SectionHeading from '../account/SectionHeading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
-import { cancelBooking, getOwnBookings } from '../../api/bookings.js';
+import { cancelBooking, getProfileBookings } from '../../api/bookings.js';
 import { bookingStatus, groupBookings } from '../../utils/bookings.js';
 import BookingCardDetails from './BookingCardDetails.jsx';
 import EditMenu from '../EditMenu.jsx';
@@ -13,7 +13,7 @@ import VenueImage from '../venues/VenueImage.jsx';
 import Rating from '../venues/Rating.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 
-export default function BookingsList({ upcomingOnly = false }) {
+export default function BookingsList({ upcomingOnly = false, onLoaded }) {
   const { user, request } = useAuth();
   const { search, state } = useLocation();
   const [bookings, setBookings] = useState(null);
@@ -23,13 +23,13 @@ export default function BookingsList({ upcomingOnly = false }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    getOwnBookings(request, user.name, { signal: controller.signal }).then(data => {
-      if (!controller.signal.aborted) setBookings(data);
+    getProfileBookings(request, user.name, { signal: controller.signal }).then(data => {
+      if (!controller.signal.aborted) { setBookings(data); onLoaded?.(data); }
     }).catch(error => {
       if (!controller.signal.aborted) setError(error.message);
     });
     return () => controller.abort();
-  }, [request, user.name, attempt]);
+  }, [request, user.name, attempt, onLoaded]);
 
   const groups = bookings ? groupBookings(bookings) : null;
   return <div className="space-y-6">
@@ -93,9 +93,10 @@ function BookingCard({ booking, manage, onCancelled }) {
     <div className="relative shrink-0">
       <VenueImage key={booking.venue?.media?.[0]?.url} media={booking.venue?.media?.[0]} name={name} className="relative aspect-video" imageClass={`absolute inset-0 object-cover ${status === 'past' ? 'saturate-25' : ''}`} />
       <Rating rating={booking.venue?.rating} className="absolute top-3 right-3" />
-      {manage && editable && <div className="absolute bottom-3 right-3 z-10"><EditMenu label="Manage booking">
-        {venueLink && !pending && <Link to={`/bookings/${encodeURIComponent(booking.id)}/edit`} state={navigationOrigin(routeLocation)} className="edit-menu-item"><Icon name="edit" />Change booking</Link>}
-        <button type="button" disabled={pending} onClick={event => { setConfirming(true); event.currentTarget.closest('details').open = false; }} className="edit-menu-item edit-menu-danger"><Icon name="trash" />Cancel booking</button>
+      {manage && (venueLink || editable) && <div className="absolute bottom-3 right-3 z-10"><EditMenu label="Manage booking">
+        {venueLink && <Link to={venueLink} state={navigationOrigin(routeLocation)} className="edit-menu-item"><Icon name="home" />View venue</Link>}
+        {editable && venueLink && !pending && <Link to={`/bookings/${encodeURIComponent(booking.id)}/edit`} state={navigationOrigin(routeLocation)} className="edit-menu-item"><Icon name="edit" />Change booking</Link>}
+        {editable && <button type="button" disabled={pending} onClick={event => { setConfirming(true); event.currentTarget.closest('details').open = false; }} className="edit-menu-item edit-menu-danger"><Icon name="trash" />Cancel booking</button>}
       </EditMenu></div>}
     </div>
     <div className="min-w-0 flex-1 space-y-3 p-4">

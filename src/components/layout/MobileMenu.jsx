@@ -13,12 +13,11 @@ export default function MobileMenu({ onClose }) {
       id="mobile-menu"
       ref={menuRef}
       aria-label="Mobile navigation"
-      className="space-y-8 bg-background p-6 lg:hidden"
+      className="grid grid-cols-3 gap-2 bg-background p-4 lg:hidden"
       onKeyDown={event => {
         if (event.key === 'Escape') onClose();
       }}
     >
-      <h2 className="text-h3 font-semibold">Menu</h2>
       <NavigationLinks mobile onNavigate={onClose} />
     </nav>
   );

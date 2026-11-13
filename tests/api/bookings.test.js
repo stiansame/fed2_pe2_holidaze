@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { cancelBooking, createBooking, getOwnBooking, getOwnBookings, updateBooking } from '../../src/api/bookings.js';
+import { cancelBooking, createBooking, getOwnBooking, getProfileBookings, updateBooking } from '../../src/api/bookings.js';
 import { ApiError } from '../../src/api/client.js';
 import { stayFromSearch, staySummary } from '../../src/utils/availability.js';
 
@@ -15,13 +15,13 @@ test('loads every page of own bookings with venue data and rejects partial resul
     pages.push(query.page);
     return { data: [{ id: 'a' }, { id: String(query.page) }], meta: { nextPage: query.page === 1 ? 2 : null } };
   };
-  assert.equal((await getOwnBookings(request, 'A B')).length, 3);
+  assert.equal((await getProfileBookings(request, 'A B')).length, 3);
   assert.deepEqual(pages, [1, 2]);
-  await assert.rejects(getOwnBookings(async (path, options) => {
+  await assert.rejects(getProfileBookings(async (path, options) => {
     if (options.query.page === 2) throw new Error('Page failed');
     return request(path, options);
   }, 'A B'), /Page failed/);
-  await assert.rejects(getOwnBookings(request, 'A B', { signal: AbortSignal.abort() }), { name: 'AbortError' });
+  await assert.rejects(getProfileBookings(request, 'A B', { signal: AbortSignal.abort() }), { name: 'AbortError' });
 });
 
 test('editing excludes only this booking and sends PUT to its original id', async t => {

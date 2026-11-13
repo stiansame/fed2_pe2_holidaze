@@ -7,15 +7,19 @@ import VenueImage from '../components/venues/VenueImage.jsx';
 import { profileUpdate } from '../utils/profile.js';
 import BookingsList from '../components/bookings/BookingsList.jsx';
 import ManagerOverview from '../components/account/ManagerOverview.jsx';
+import AccountStats from '../components/account/AccountStats.jsx';
+import { guestSummary } from '../utils/bookings.js';
 
 export default function Profile() {
   const { user } = useAuth();
+  const [bookings, setBookings] = useState(null);
+  const stats = guestSummary(bookings, undefined, true);
   const profile = <ProfileCard />;
   return <section className="min-w-0 space-y-6">
     <title>Holidaze | My account</title>
     <h1 className="text-h3 font-bold sm:text-h2">My account</h1>
-    {user.venueManager ? <ManagerOverview>{profile}</ManagerOverview> : profile}
-    <div className="account-section"><BookingsList upcomingOnly /></div>
+    {user.venueManager ? <ManagerOverview stats={stats}>{profile}</ManagerOverview> : <div className="grid items-start gap-4 lg:items-stretch lg:grid-cols-2">{profile}<AccountStats items={stats} /></div>}
+    <div className="account-section"><BookingsList upcomingOnly onLoaded={setBookings} /></div>
   </section>;
 }
 
@@ -61,10 +65,10 @@ function ProfileCard() {
             <HostAvatar key={profile.avatar?.url} media={profile.avatar} className="-mt-14 size-28 border-4 border-surface bg-surface sm:-mt-16 sm:size-32" />
             <div className="min-w-0 flex-1 xl:pt-3">
               <h2 className="text-h3 font-bold wrap-anywhere">{profile.name}</h2>
-              <p className="text-small text-muted wrap-anywhere">{profile.email}</p>
               {user.venueManager && <span className="mt-2 inline-flex h-8 items-center rounded-full bg-tint px-3 text-caption font-semibold text-primary">Venue manager</span>}
             </div>
           </div>
+          <p className="text-small text-muted wrap-anywhere">{profile.email}</p>
           {editing ? <ProfileForm profile={profile} path={path} onCancel={() => setEditing(false)} onSave={data => { setProfile(data); setEditing(false); setSaved(true); }} /> : <>
             <p className="whitespace-pre-line text-muted wrap-anywhere">{profile.bio?.trim() || 'No bio yet.'}</p>
             {saved && <p role="status" className="text-success">{messages.profileUpdated}</p>}

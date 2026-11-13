@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import VenueImage from './VenueImage.jsx';
 import Icon from '../Icon.jsx';
 
+const counterClass = 'pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-surface px-3 py-1 text-small text-text';
 const controlClass = 'h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-50';
 const galleryControl = 'absolute z-10 flex size-11 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-sm hover:bg-tint';
 
@@ -38,7 +39,7 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
               <VenueImage media={item} name={item.alt || `${name}, photo ${index + 1}`} loading={index ? 'lazy' : 'eager'} className="relative aspect-square w-full rounded-lg" imageClass="absolute inset-0 object-cover" />
             </button>)}
           </div>
-          <p aria-live="polite" className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-text/80 px-3 py-1 text-small text-surface">{active + 1} / {photos.length}</p>
+          <p aria-live="polite" className={counterClass}>{active + 1} / {photos.length}</p>
         </div>
         <div className={`hidden gap-3 lg:grid ${photos.length > 1 ? 'sm:h-90 sm:grid-cols-[1.8fr_1fr]' : ''}`}>
           <button type="button" aria-label="Open photo gallery" onClick={() => openPhoto(0)} className="min-h-0 min-w-0 rounded-lg">
@@ -64,7 +65,7 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
               {photos.map((item, index) => <div key={`${item.url}-${index}`} className="h-full w-full shrink-0 snap-center"><VenueImage media={item} name={`${name}, photo ${index + 1}`} className="h-full w-full" imageClass="object-contain" /></div>)}
             </div>
           </div>
-          <p aria-live="polite" className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-surface px-3 py-1 text-small text-text">{active + 1} / {photos.length}</p>
+          <p aria-live="polite" className={counterClass}>{active + 1} / {photos.length}</p>
           {photos.length > 1 && <>
             <button type="button" aria-label="Previous photo" onClick={() => move(-1)} className={`${galleryControl} left-2 top-1/2 -translate-y-1/2`}><Icon name="left" /></button>
             <button type="button" aria-label="Next photo" onClick={() => move(1)} className={`${galleryControl} right-2 top-1/2 -translate-y-1/2`}><Icon name="right" /></button>

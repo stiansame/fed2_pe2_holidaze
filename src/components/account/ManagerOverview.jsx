@@ -6,11 +6,11 @@ import { getProfileVenues } from '../../api/profiles.js';
 import { managerSummary } from '../../utils/manager.js';
 import ManagerBookingCard from '../bookings/ManagerBookingCard.jsx';
 import VenueCard from '../venues/VenueCard.jsx';
-import Icon from '../Icon.jsx';
+import AccountStats from './AccountStats.jsx';
 import SectionHeading from './SectionHeading.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 
-export default function ManagerOverview({ children }) {
+export default function ManagerOverview({ children, stats }) {
   const location = useLocation();
   const { user, request } = useAuth();
   const [data, setData] = useState(null);
@@ -27,23 +27,19 @@ export default function ManagerOverview({ children }) {
 
   const bookings = data ? [...data.current, ...data.upcoming].sort((a, b) => a.dateFrom.localeCompare(b.dateFrom)) : [];
   return <section className="min-w-0 space-y-6">
-    <div className="grid items-start gap-4 lg:grid-cols-2">
+    <div className="grid items-start gap-4 lg:items-stretch lg:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]">
       {children}
       <div className="min-w-0 self-stretch">
         {error ? <div role="alert" className="space-y-3">
           <p>Unable to load your venue overview. {error}</p>
           <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
-        </div> : !data ? <Loading>Loading your venue overview…</Loading> : <dl className="grid h-full grid-cols-2 gap-3">
-          {[
-            ['My venues', data.venues.length, 'home'],
-            ['Total bookings', data.totalBookings, 'calendar'],
-            ['Upcoming bookings', data.upcoming.length, 'bed'],
-            ['Average venue rating', data.averageRating ?? 'Not rated yet', 'star'],
-          ].map(([label, value, icon]) => <div key={label} className="relative flex min-h-40 min-w-0 flex-col justify-end gap-2 rounded-lg bg-primary p-4 text-surface sm:min-h-44 sm:p-5">
-            <Icon name={icon} className="absolute top-4 right-4 size-7 text-surface sm:size-8" />
-            <dt className="order-2 text-small font-medium">{label}</dt><dd className={`order-1 pr-7 font-bold tracking-tight ${value === 'Not rated yet' ? 'text-lg' : 'text-4xl leading-none sm:text-5xl'}`}>{value}</dd>
-          </div>)}
-        </dl>}
+        </div> : !data ? <Loading>Loading your venue overview…</Loading> : <AccountStats items={[
+          ['My venues', data.venues.length, 'home'],
+          ['Total bookings', data.totalBookings, 'calendar'],
+          ['Upcoming bookings', data.upcoming.length, 'bed'],
+          ['Average venue rating', data.averageRating ?? 'Not rated yet', 'star'],
+          ...stats,
+        ]} />}
       </div>
     </div>
     {data && <>

@@ -41,7 +41,7 @@ function EditLoader({ id }) {
     {!data && !error && <Loading>Loading your booking…</Loading>}
     {data && <BookingEditor booking={data.booking} initialVenue={data.venue} />}
     {error && <><p role="alert" className="text-danger">{error}</p><button type="button" onClick={() => { setError(''); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border px-4 text-primary">Try again</button></>}
-    {!data && <BackLink to="/bookings" label="Back to my bookings" />}
+    {!data && <BackLink to="/bookings" label="Back to my bookings" shortLabel />}
   </section>;
 }
 
@@ -81,15 +81,15 @@ function BookingEditor({ booking, initialVenue }) {
   return reviewing ? <div className="space-y-5">
     <StaySummary venue={venue} stay={stay} summary={summary} />
     {summary.error && <p role="alert" className="text-danger">{summary.error}</p>}
-    <form onSubmit={save}><button disabled={pending || !!summary.error} className="h-11 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60">{pending ? 'Saving…' : 'Save changes'}</button></form>
+    <form onSubmit={save}><button disabled={pending || !!summary.error} className="h-11 w-full rounded-lg bg-primary px-4 text-small font-semibold text-surface hover:bg-primary-hover disabled:opacity-60">{pending ? 'Saving…' : 'Save changes'}</button></form>
     <div className="grid grid-cols-2 items-stretch gap-2">
-      <button type="button" disabled={pending} onClick={() => { setReviewing(false); setError(''); }} className="navigation-link justify-center disabled:opacity-60">Back to dates</button>
-      <BackLink to="/bookings" label="Back to my bookings" />
+      <button type="button" disabled={pending} onClick={() => { setReviewing(false); setError(''); }} className="navigation-link justify-center text-small disabled:opacity-60">Back to dates</button>
+      <BackLink to="/bookings" label="Back to my bookings" shortLabel />
     </div>
     {error && <p role="alert" className="text-danger">{error}</p>}
   </div> : <AvailabilityCalendar
     bookings={venue.bookings?.filter(item => item.id !== booking.id)} maxGuests={venue.maxGuests}
-    actions={<BackLink to="/bookings" label="Back to my bookings" />}
+    actions={<BackLink to="/bookings" label="Back to my bookings" shortLabel />}
     initialStay={stay} actionLabel="Review changes" onReserve={selection => { setStay(selection); setReviewing(true); }}
   />;
 }

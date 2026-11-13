@@ -7,7 +7,7 @@ export default function SectionHeading({ title, count, id, to, state, expanded, 
   const chevron = <Icon name="right" className={`size-8 stroke-[2.5] transition-transform motion-reduce:transition-none ${expanded ? 'rotate-90' : ''}`} />;
   return <div className={`account-section-heading flex min-w-0 items-center gap-3 text-h3 font-bold ${level === 'h1' ? 'sm:text-h2' : ''}`}>
     <Heading id={id} title={title} className="min-w-0 text-[1em] font-bold">
-      <span className="relative inline-block max-w-full pr-4">
+      <span className="relative block max-w-full pr-4">
         <span className="block truncate">{title}</span>
         {count != null && <span className="absolute -top-1 right-0 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.625rem] leading-none font-semibold text-surface"><span className="sr-only">Total: </span>{count}</span>}
       </span>

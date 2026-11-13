@@ -39,3 +39,24 @@ export function formatBookingRange(booking) {
   const sameMonth = sameYear && booking.dateFrom.slice(0, 7) === booking.dateTo.slice(0, 7);
   return `${sameMonth ? from.split(' ')[0] : sameYear ? from.replace(/ \d{4}$/, '') : from}–${to}`;
 }
+
+/** Summarise available reservations; invalid dates make the night total unknown. */
+export function guestSummary(bookings, today = dateKey(), personal = false) {
+  const counts = { past: 0, upcoming: 0, current: 0, unknown: 0 };
+  let nights = 0;
+  for (const booking of bookings ?? []) {
+    const status = bookingStatus(booking, today);
+    counts[status]++;
+    if (status !== 'unknown') {
+      const { from, to } = bookingDates(booking);
+      nights += stayPrice(0, from, to).nights;
+    }
+  }
+  return [
+    [personal ? 'My bookings' : 'Total bookings', bookings?.length, 'calendar', true],
+    ['Completed stays', bookings ? counts.past : null, 'calendar-check', true],
+    ['Upcoming stays', bookings ? counts.upcoming : null, 'bed', true],
+    ['Nights booked', bookings && !counts.unknown ? nights : null, 'moon', true],
+    ['Current stays', bookings ? counts.current : null, 'user', true],
+  ];
+}

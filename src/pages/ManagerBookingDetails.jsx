@@ -44,7 +44,7 @@ function BookingDetails({ id }) {
     .map(value => value?.trim()).filter(Boolean).join(', ');
   return <section className="min-w-0 space-y-5">
     <title>Holidaze | Booking details</title>
-    <BackLink to="/manager/bookings" label="Back to venue bookings" />
+    {!booking && <BackLink to="/manager/bookings" label="Back to venue bookings" shortLabel />}
     <h1 className="text-h3 font-bold sm:text-h2">Booking details</h1>
     {error ? <div role="alert" className="space-y-3">
       <p className="text-danger">{error}</p>
@@ -56,14 +56,20 @@ function BookingDetails({ id }) {
           <StaySummary venue={venue} stay={bookingDates(booking)} summary={{ nights: price?.nights, total: price?.total, error: !price }} />
           <p className="flex items-start gap-2 text-small text-muted"><Icon name="pin" className="mt-0.5 size-4 shrink-0 text-success" /><span className="min-w-0 wrap-anywhere">{address || 'Location not specified'}</span></p>
           <p className="text-small text-muted">Prices are estimates based on the venue’s current nightly rate.</p>
-          <Link to={`/venues/${encodeURIComponent(venue.id)}`} state={navigationOrigin(location)} className="navigation-link">View venue</Link>
+          <div className="flex flex-wrap gap-2">
+            <Link to={`/venues/${encodeURIComponent(venue.id)}`} state={navigationOrigin(location)} className="navigation-link">View venue</Link>
+            <BackLink to="/manager/bookings" label="Back to venue bookings" shortLabel />
+          </div>
         </div>
       </section>
       <section aria-label="Booking and guest" className="min-w-0 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-5">
         <h2 className="text-h3 font-semibold">Guest</h2>
         <div className="flex items-center gap-3">
           <HostAvatar media={guest?.avatar} className="size-14" />
-          <p className="min-w-0 font-semibold wrap-anywhere">{guest?.name?.trim() || 'Guest name unavailable'}</p>
+          <div className="min-w-0 space-y-1">
+            <p className="font-semibold wrap-anywhere">{guest?.name?.trim() || 'Guest name unavailable'}</p>
+            {guest?.email?.trim() && <p className="text-small text-muted wrap-anywhere">{guest.email.trim()}</p>}
+          </div>
         </div>
         {guest?.bio?.trim() && <p className="whitespace-pre-line text-muted wrap-anywhere">{guest.bio}</p>}
         {guest?.name && <Link to={`/profiles/${encodeURIComponent(guest.name)}`} state={navigationOrigin(location)} className="navigation-link">View guest profile</Link>}

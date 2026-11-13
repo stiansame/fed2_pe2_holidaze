@@ -1,7 +1,7 @@
 ## Unified account (#99)
 
 - `/profile` is the shared account page. `/manager` redirects there for managers.
-- Manager: profile and four summary cards share the desktop top row; on mobile, profile comes first and the summary keeps two columns. Test at 320/390px and desktop in both themes.
+- Manager: profile and four summary cards share the desktop top row; on mobile, profile comes first and the summary stacks one slim row per statistic on mobile (nine statistics in three columns on desktop). Test at 320/390px and desktop in both themes.
 - One Venue bookings section combines current and upcoming stays, nearest check-in first, with three manager cards and Show all.
 - Customer: profile editing, upcoming personal bookings and Become a venue manager remain available; no manager summary or venue lists.
 - Main/account navigation uses the signed-in name and avatar. Save a new profile avatar, then check both menus and their image fallback.
@@ -22,7 +22,7 @@
 ## Venue bookings (#28)
 
 - Booking summary includes the shared venue calendar in read-only mode. It opens on this reservation's month (including past stays), highlights its nights in green with checkout excluded, and shows other booked nights in red. Month navigation works in both directions; no guest selector, date selection or Reserve form appears. Missing availability produces the existing error. The original public booking calendar must still support date selection and Reserve.
-- Booking cards use the same lift/shadow hover and focus effect as venue cards and respect reduced motion. Pills use smaller caption text, padding and 24px avatars. Check readable contrast and long text at narrow widths.
+- Booking cards use the same lift/shadow hover and focus effect as venue cards and respect reduced motion. Pills use caption text and a 26px height. The 32px avatar sits flush left, overlapping its pill by 3px above and below. Check readable contrast and long text at narrow widths.
 
 - Booking cards now open `/manager/bookings/:id`, including cards on My account. The details page rechecks the venue owner before showing guest/booking data. `mode=manager-other` rejects another host's booking, including direct URLs.
 - Open a card from a filtered list: Back to venue bookings preserves the venue query. Reload/direct details links work; View venue and View guest profile open the correct public pages. Reference, booking creation date, stay dates, guests and current-rate estimate are shown; no editing/cancellation actions exist.
@@ -111,7 +111,7 @@
 
 ## Manager overview (#23, now part of My account)
 
-- Summary cards keep two columns at all widths, beside the profile on desktop and below it on mobile. Venue search below 1024px initially shows only search and Filters & sort. Expand to access amenities, sorting, guest count, dates and reset; collapse/reopen must retain values and show the active count. The date panel expands in normal document flow on mobile. Checked at 320px without overflow; desktop retains its two-row search layout.
+- Summary cards use one slim row per statistic on mobile and three columns on desktop, beside the profile on desktop and below it on mobile. Venue search below 1024px initially shows only search and Filters & sort. Expand to access amenities, sorting, guest count, dates and reset; collapse/reopen must retain values and show the active count. The date panel expands in normal document flow on mobile. Checked at 320px without overflow; desktop retains its two-row search layout.
 
 - `/tests/browser/venues.html?path=/manager&signedIn=1&manager=1&mode=manager-data`: six own venues across two fixture pages, 12 bookings, six upcoming and rating 5.0. Only three venue cards and the three nearest upcoming bookings are shown.
 - Change mode to `manager-empty`: zero counts, `Not rated yet`, and helpful empty messages.
@@ -364,3 +364,28 @@ Recorded locally 2026-10-31: host bio/fallback, six/two guest options, invalid U
 - Dates and guest count follow the venue link. Escape closes the date panel and restores focus to its summary.
 - Checked locally at 1280px and 320px: controls fit without horizontal overflow; mobile date fields remain readable in the expanded panel.
 - Automated checks cover overlap boundaries, unknown booking data, invalid dates and requesting bookings on every API page only for date searches.
+
+## Short booking navigation
+
+- Change booking uses ← My bookings in both date selection and review; return destinations and query parameters remain intact.
+- Manager booking details places View venue and the shortened return link on the same row in the venue summary. A booking opened from My account returns there; one opened from Venue bookings retains its venue filter. Loading/error states still offer a return link.
+- My bookings → pencil menu → View venue opens that booking’s venue and preserves return navigation. Upcoming stays also offer Change booking and Cancel booking. Current/past stays offer View venue without mutation actions. Missing venues offer no broken venue link.
+- Check both themes at mobile/desktop widths. These new visual checks remain manual.
+
+## Horizontal mobile main menu
+
+- Open the hamburger menu while signed out: three equal-width boxes show Explore, Login and Get started with icons above the text. Get started matches the desktop primary action in both themes.
+- Sign in: the boxes become Explore, account avatar/name and Log out. Long names truncate inside their box. The account bottom navigation remains separate.
+- Check 320px, 390px and desktop: no overflow, correct active links, keyboard focus, Escape, close X, destinations and logout. Mobile main-menu boxes are 80px high; desktop controls stay 44px. Visual checks remain manual.
+
+## Personal and guest statistics
+
+- My account: managers see four primary-coloured manager boxes plus five accent-coloured personal boxes, in three columns on desktop and one slim row per statistic on mobile. Customers see only five personal boxes. The personal booking list and statistics share one paginated fetch.
+- Public guest profiles show five personal statistics without exposing booking cards, dates, destinations or editing actions. Hosts retain their venues underneath; guests without venues do not get an empty Host venues section.
+- Verify total/completed/upcoming/current counts and whole nights against fixture bookings. Checkout today counts as completed; check-in today counts as current. Empty confirmed lists show zero; loading/failure must not show a false zero. Invalid date ranges leave the night total unavailable.
+- Verify pagination, retry, avatar fallbacks, both themes and 320/390px/desktop layouts. New visual and live-account checks remain manual.
+
+## Profile and statistic sizing
+
+- On desktop, profile cards and the complete statistic grid share their top and bottom edges, including long bios and profile editing. Manager accounts use a 3 × 3 grid; five-box profiles use two columns and a full-width last box.
+- Below 1024px, each statistic becomes a slim full-width row: icon left, label centre, value right. Verify five/nine rows, both themes, unavailable values and 320/390px without overflow. These visual checks remain manual.

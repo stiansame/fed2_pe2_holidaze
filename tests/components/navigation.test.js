@@ -41,6 +41,12 @@ test('account navigation follows the role and back links follow the originating 
     assert.ok(compact.includes('navigation-link') && !compact.includes('edit-icon-button'));
     const direct = render(BackLink, true, '/manager/bookings/reservation', { to: '/manager/bookings', label: 'Back to venue bookings' });
     assert.ok(direct.includes('href="/manager/bookings"') && direct.includes('Back to venue bookings'));
+    const short = render(BackLink, true, { pathname: '/manager/bookings/reservation', state: navigationOrigin({ pathname: '/manager/bookings', search: '?venue=cabin' }) }, { shortLabel: true });
+    assert.ok(short.includes('href="/manager/bookings?venue=cabin"') && short.includes('← Venue bookings') && !short.includes('Back to'));
+    const account = render(BackLink, true, { pathname: '/manager/bookings/reservation', state: navigationOrigin({ pathname: '/profile' }) }, { shortLabel: true });
+    assert.ok(account.includes('href="/profile"') && account.includes('← My account'));
+    const own = render(BackLink, false, '/bookings/reservation/edit', { to: '/bookings', label: 'Back to my bookings', shortLabel: true });
+    assert.ok(own.includes('href="/bookings"') && own.includes('← My bookings'));
   } finally {
     await server.close();
   }

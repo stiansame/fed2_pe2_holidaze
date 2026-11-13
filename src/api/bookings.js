@@ -4,7 +4,7 @@ import { clearVenueCache, getVenue } from './venues.js';
 import { staySummary } from '../utils/availability.js';
 import { bookingStatus } from '../utils/bookings.js';
 
-export function getOwnBookings(request, name, { signal } = {}) {
+export function getProfileBookings(request, name, { signal } = {}) {
   return getAllPages(request, `holidaze/profiles/${encodeURIComponent(name)}/bookings`, {
     query: { _venue: true, sort: 'dateFrom', sortOrder: 'desc' }, signal,
   });

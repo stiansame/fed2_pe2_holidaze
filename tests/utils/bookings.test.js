@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { bookingDates, bookingPrice, bookingStatus, formatBookingDate, formatBookingRange, groupBookings } from '../../src/utils/bookings.js';
+import { guestSummary, bookingDates, bookingPrice, bookingStatus, formatBookingDate, formatBookingRange, groupBookings } from '../../src/utils/bookings.js';
 
 test('short booking ranges retain the month and year when crossing boundaries', () => {
   assert.equal(formatBookingRange({ dateFrom: '2030-11-13', dateTo: '2030-11-16' }), '13–16 Nov 2030');
@@ -33,4 +33,22 @@ test('groups upcoming and current stays, newest past stays and invalid dates wit
   assert.equal(formatBookingDate(null), 'Date unavailable');
   assert.equal(formatBookingDate('2030-02-30'), 'Date unavailable');
   assert.equal(formatBookingDate('2032-02-29'), '29 Feb 2032');
+});
+
+test('guest statistics distinguish completed, current and future stays and count whole reserved nights', () => {
+  const bookings = [
+    { dateFrom: '2030-02-27', dateTo: '2030-03-02' },
+    { dateFrom: '2030-03-02', dateTo: '2030-03-04' },
+    { dateFrom: '2030-03-10', dateTo: '2030-03-14' },
+  ];
+  const original = structuredClone(bookings);
+  const values = items => items.map(item => item[1]);
+  assert.deepEqual(values(guestSummary(bookings, '2030-03-02')), [3, 1, 1, 9, 1]);
+  assert.deepEqual(bookings, original);
+  assert.deepEqual(values(guestSummary([], '2030-03-02')), [0, 0, 0, 0, 0]);
+  assert.ok(values(guestSummary(null)).every(value => value == null));
+  const invalid = [...bookings, { dateFrom: '2030-02-30', dateTo: '2030-03-03' }];
+  assert.deepEqual(values(guestSummary(invalid, '2030-03-02')), [4, 1, 1, null, 1]);
+  assert.equal(guestSummary(bookings, '2030-03-02', true)[0][0], 'My bookings');
+  assert.equal(guestSummary(bookings, '2030-03-02')[0][0], 'Total bookings');
 });

@@ -8,7 +8,7 @@ import Icon from '../Icon.jsx';
 
 const VenueLocationMap = lazy(() => import('./VenueLocationMap.jsx'));
 
-const fieldClass = 'mt-1 w-full min-w-0 rounded-lg border border-border bg-surface px-3 font-normal';
+const fieldClass = 'mt-1 w-full min-w-0 rounded-lg border border-border bg-surface px-3 text-body font-normal';
 const inputClass = `${fieldClass} h-11`;
 const sectionClass = 'min-w-0 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-6';
 
@@ -41,7 +41,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
     }
   }
 
-  return <form onSubmit={submit} aria-label={editing ? 'Edit venue' : 'Create venue'} className="min-w-0 space-y-5">
+  return <form onSubmit={submit} aria-label={editing ? 'Edit venue' : 'Create venue'} className="min-w-0 space-y-5 text-small">
     <fieldset disabled={pending || uncertain} className="min-w-0 space-y-5">
       <legend className="sr-only">Venue information</legend>
       <section className={sectionClass} aria-labelledby="venue-basics">
