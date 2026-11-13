@@ -13,7 +13,7 @@ export default function VenueDescription({ description }) {
     <>
     <div className="lg:hidden">
       <div className={`${expanded ? 'venue-description' : 'line-clamp-3'} whitespace-pre-line text-muted wrap-anywhere`} dangerouslySetInnerHTML={{ __html: expanded ? html : DOMPurify.sanitize(html.replace(/<\/[^>]+>|<br\s*\/?>/gi, ' '), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }) }} />
-      <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="mt-2 min-h-11 rounded font-semibold text-primary">{expanded ? 'Read less' : 'Read more'}</button>
+      <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="mt-2 h-11 rounded font-semibold text-primary">{expanded ? 'Read less' : 'Read more'}</button>
     </div>
     <div
       className="venue-description hidden whitespace-pre-line text-muted wrap-anywhere lg:block"

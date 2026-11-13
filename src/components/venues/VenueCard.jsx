@@ -18,7 +18,7 @@ export default function VenueCard({ venue, onImageError, actions }) {
       <div className="relative">
         <VenueImage key={venue.media?.[0]?.url || 'missing'} media={venue.media?.[0]} name={name} className="h-65 rounded-t-lg" imageClass="venue-photo object-cover" onImageError={() => onImageError?.(venue.id)} />
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-          <span className="guest-pill inline-flex min-w-0 items-center gap-1.5 rounded-full bg-surface px-2.5 py-1.5 text-caption font-semibold text-text shadow-sm"><Icon name="user" className="size-4 shrink-0 text-primary" />{venue.maxGuests > 0 ? `${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Capacity not specified'}</span>
+          <span className="guest-pill inline-flex h-8 min-w-0 items-center gap-1.5 rounded-full bg-surface px-2.5 text-caption font-semibold text-text"><Icon name="user" className="size-4 shrink-0 text-primary" />{venue.maxGuests > 0 ? `${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Capacity not specified'}</span>
           <Rating rating={venue.rating} />
         </div>
         <div className={`absolute inset-x-0 bottom-0 bg-linear-to-t from-black/45 to-transparent px-3 pt-8 pb-3 ${actions ? 'pr-16' : ''}`}>

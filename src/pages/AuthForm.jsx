@@ -4,7 +4,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { apiRequest } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 
-const inputClass = 'mt-2 min-h-12 w-full rounded-lg border border-border bg-surface px-3';
+const inputClass = 'mt-2 h-11 w-full rounded-lg border border-border bg-surface px-3';
 
 export default function AuthForm({ register = false }) {
   const { user, notice, login } = useAuth();
@@ -83,7 +83,7 @@ export default function AuthForm({ register = false }) {
           Register as a venue manager
         </label>}
         {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}
-        <button disabled={pending} className="min-h-12 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60">
+        <button disabled={pending} className="h-11 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60">
           {pending ? 'Please wait…' : register ? 'Create account' : 'Log in'}
         </button>
       </form>

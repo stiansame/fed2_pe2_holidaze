@@ -57,7 +57,7 @@ export const messages = {
   staysLoadFailed: "Unable to load stays.",
   ownVenuesLoadFailed: "Unable to load your venues.",
   venueBookingsLoadFailed: "Unable to load your venue bookings.",
-  unavailableVenueFilter: "This venue is unavailable or does not belong to you. Choose one of your venues or All venues.",
+  unavailableVenueFilter: "This venue is unavailable or does not belong to you. Open Bookings from the account menu to view all your venues.",
   mapLoadFailed: "Map images could not be loaded.",
   mapManualCoordinates: " You can still enter coordinates manually.",
   venueCreationUncertain: "Your venue may have been created. Check My venues before trying again.",

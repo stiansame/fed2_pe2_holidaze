@@ -2,10 +2,10 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import VenueImage from './VenueImage.jsx';
 import Icon from '../Icon.jsx';
 
-const controlClass = 'min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-50';
-const galleryControl = 'absolute z-10 flex size-12 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-sm hover:bg-tint';
+const controlClass = 'h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-50';
+const galleryControl = 'absolute z-10 flex size-11 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-sm hover:bg-tint';
 
-export default function VenueGallery({ media = [], name, children }) {
+export default function VenueGallery({ media = [], name, children, backLink }) {
   const photos = (media ?? []).filter(photo => typeof photo?.url === 'string' && photo.url.trim());
   const [active, setActive] = useState(0);
   const dialog = useRef(null);
@@ -35,7 +35,7 @@ export default function VenueGallery({ media = [], name, children }) {
         <div className="relative lg:hidden">
           <div ref={strip} onScroll={event => setActive(Math.max(0, Math.min(photos.length - 1, Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth))))} className="photo-strip rounded-lg" aria-label="Swipe venue photos">
             {photos.map((item, index) => <button key={`${item.url}-${index}`} type="button" aria-label={`Open photo ${index + 1} of ${photos.length}`} onClick={() => openPhoto(index)} className="w-full shrink-0 snap-center rounded-lg focus-visible:-outline-offset-4">
-              <VenueImage media={item} name={item.alt || `${name}, photo ${index + 1}`} loading={index ? 'lazy' : 'eager'} className="relative aspect-video w-full rounded-lg" imageClass="absolute inset-0 object-cover" />
+              <VenueImage media={item} name={item.alt || `${name}, photo ${index + 1}`} loading={index ? 'lazy' : 'eager'} className="relative aspect-square w-full rounded-lg" imageClass="absolute inset-0 object-cover" />
             </button>)}
           </div>
           <p aria-live="polite" className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-text/80 px-3 py-1 text-small text-surface">{active + 1} / {photos.length}</p>
@@ -70,10 +70,11 @@ export default function VenueGallery({ media = [], name, children }) {
             <button type="button" aria-label="Next photo" onClick={() => move(1)} className={`${galleryControl} right-2 top-1/2 -translate-y-1/2`}><Icon name="right" /></button>
           </>}
         </dialog>
-      </> : <VenueImage name={name} className="aspect-video w-full rounded-lg lg:aspect-auto lg:h-90" />}
+      </> : <VenueImage name={name} className="aspect-square w-full rounded-lg lg:aspect-auto lg:h-90" />}
+        {photos.length > 0 && <button type="button" onClick={() => openPhoto()} className={`${controlClass} absolute bottom-3 left-3 z-10 hidden lg:block`}>View all photos ({photos.length})</button>}
+        {backLink && <div className="absolute top-3 left-3 z-20 lg:hidden">{backLink}</div>}
         {children && <div className="absolute bottom-3 right-3 z-20">{children}</div>}
       </div>
-      {photos.length > 0 && <button type="button" onClick={() => openPhoto()} className={`${controlClass} hidden lg:block`}>View all photos ({photos.length})</button>}
     </section>
   );
 }

@@ -50,31 +50,28 @@ function VenueContent({ id }) {
   const place = [location?.city, location?.country].map(value => value?.trim()).filter(Boolean).join(', ');
   const address = [location?.address, location?.zip, location?.city, location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ');
+  const venueTitle = <h1 title={name} className="min-w-0 truncate text-body font-bold lg:text-h2 lg:whitespace-normal lg:wrap-anywhere">{name}</h1>;
   return (
     <section className="venue-details space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
       <title>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : 'Venue details'}`}</title>
-      <div className="flex items-center justify-between gap-2">
-        <BackLink to={`/venues${search}`} />
-        {venue && <Rating rating={venue.rating} className="lg:hidden" />}
-      </div>
+      <div className={venue && !error ? 'hidden lg:block' : 'block'}><BackLink to={`/venues${search}`} /></div>
       {error ? <>
         <h1 className="text-h2 font-bold">{notFound ? messages.venueNotFound : messages.venueLoadFailed}</h1>
         <p role="alert">{notFound ? messages.venueNotFoundDescription : error.message}</p>
-        {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Try again</button>}
+        {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Try again</button>}
       </> : !venue ? <Loading>Loading stay…</Loading> : <>
-        <VenueGallery media={venue.media} name={name}>
+        <VenueGallery media={venue.media} name={name} backLink={<BackLink to={`/venues${search}`} iconOnly />}>
           {isOwner && <VenueOwnerActions venue={venue} />}
         </VenueGallery>
         <div className="grid items-start gap-x-8 lg:gap-y-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0 space-y-6">
             <div className="space-y-3 border-b border-border pb-5">
-              <div className="flex items-center justify-between gap-3 lg:items-start lg:justify-start">
-                <h1 title={name} className="min-w-0 flex-1 truncate text-h3 font-bold sm:text-h2 lg:flex-initial lg:whitespace-normal lg:wrap-anywhere">{name}</h1>
-                <Rating rating={venue.rating} className="hidden lg:inline" />
+              <div className="flex min-w-0 items-center gap-2 lg:items-start lg:gap-3">
+                {venueTitle}<Rating rating={venue.rating} />
               </div>
               <div className="flex items-center gap-3 text-small">
                 <p title={place} className="flex min-w-0 flex-1 items-center gap-1 text-muted lg:gap-2"><Icon name="pin" className="size-4 shrink-0 text-success lg:size-5" /><span className="truncate lg:whitespace-normal lg:wrap-anywhere">{place || 'Location not specified'}</span></p>
-                <p className="accent-box ml-auto inline-flex shrink-0 items-center gap-1 text-caption lg:gap-2 lg:text-small"><Icon name="user" className="size-4 shrink-0 lg:size-5" />{venue.maxGuests > 0 ? `${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Capacity unknown'}</p>
+                <p className="accent-box ml-auto inline-flex h-8 shrink-0 items-center gap-1 text-caption lg:gap-2 lg:text-small"><Icon name="user" className="size-4 shrink-0 lg:size-5" />{venue.maxGuests > 0 ? `${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Capacity unknown'}</p>
               </div>
               <div>{Object.values(venue.meta ?? {}).some(value => value === true) ? <Amenities meta={venue.meta} compact /> : <p className="text-small text-muted">No amenities listed.</p>}</div>
             </div>

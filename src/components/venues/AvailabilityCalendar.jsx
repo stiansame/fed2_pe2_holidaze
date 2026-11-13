@@ -7,10 +7,10 @@ import { navigationOrigin } from '../../utils/navigation.js';
 import { addDays, bookedPeriods, dateKey, overlaps, stayFromSearch, staySummary, validateStay, validDate } from '../../utils/availability.js';
 import BookingPrice from './BookingPrice.jsx';
 
-const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
+const inputClass = 'mt-1 h-11 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
 const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'UTC' });
 
-export default function AvailabilityCalendar({ bookings, maxGuests, initialStay, onReserve, onStayChange, formId, price, compact = false, actionLabel = 'Reserve', readOnly = false }) {
+export default function AvailabilityCalendar({ bookings, maxGuests, initialStay, onReserve, onStayChange, formId, price, compact = false, actionLabel = 'Reserve', readOnly = false, actions }) {
   const today = dateKey();
   const calendar = useRef(null);
   const { id } = useParams();
@@ -91,12 +91,13 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
       }}>
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 gap-y-3">
           <div className="col-span-2 min-w-0">{dates}</div>
-          <label className={`${compact ? 'flex items-center justify-start gap-3 lg:block' : 'block'} min-w-0 text-left text-small`}>{compact ? <strong className="shrink-0">Who’s coming?</strong> : 'Guests'}<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={compact ? 'min-h-11 w-36 min-w-0 rounded-lg border border-border bg-surface px-2 lg:mt-1 lg:min-h-12 lg:w-full' : inputClass} /></label>
-          <button type="button" aria-label="Reset selection" title="Reset selection" disabled={!from && !to} onClick={() => { setFrom(''); setTo(''); setChecked(false); }} className={`inline-flex ${compact ? 'size-11 lg:size-12' : 'size-12'} items-center justify-center rounded-lg border border-border bg-surface text-primary hover:bg-tint disabled:opacity-40`}><Icon name="reset" /></button>
+          <label className={`${compact ? 'flex items-center justify-start gap-3 lg:block' : 'block'} min-w-0 text-left text-small`}>{compact ? <strong className="shrink-0">Who’s coming?</strong> : 'Guests'}<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={compact ? 'h-11 w-36 min-w-0 rounded-lg border border-border bg-surface px-2 lg:mt-1 lg:w-full' : inputClass} /></label>
+          <button type="button" aria-label="Reset selection" title="Reset selection" disabled={!from && !to} onClick={() => { setFrom(''); setTo(''); setChecked(false); }} className="inline-flex size-11 items-center justify-center rounded-lg border border-border bg-surface text-primary hover:bg-tint disabled:opacity-40"><Icon name="reset" /></button>
         </div>
-        <div className={compact ? 'booking-action-row sticky bottom-0 bg-surface pt-2 lg:block' : ''}>
+        <div className={compact ? 'booking-action-row sticky bottom-0 bg-surface pt-2 lg:block' : actions ? 'grid grid-cols-2 items-stretch gap-2' : ''}>
           {summary && <div className="lg:hidden"><BookingPrice price={price} stay={{ from, to, guests }} summary={summary} /></div>}
           {compact && <div className="lg:hidden">{(from || to) && <button type="button" aria-label="Change dates and guests" title="Change dates and guests" className="edit-icon-button" onClick={() => calendar.current.querySelector('button[aria-pressed="true"]:not(:disabled)')?.focus()}><Icon name="edit" /></button>}</div>}
+          {actions}
           <button disabled={!reliable || !from || !to || !Number.isInteger(maxGuests) || maxGuests < 1} className={compact ? 'booking-action-button lg:w-full' : 'booking-action-button w-full'}>{actionLabel}</button>
         </div>
         {checked && error && <p role="alert" className="text-small text-danger">{error}</p>}

@@ -15,7 +15,8 @@ const paths = {
   close: <path d="m6 6 12 12M6 18 18 6" />,
   search: <><circle cx="10" cy="10" r="7" /><path d="m15 15 6 6" /></>,
   calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4m10-4v4M3 11h18" /></>,
-  dashboard: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
+  'calendar-users': <><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M7 2v4m10-4v4M3 9h18M6 19v-1a3 3 0 0 1 6 0v1m0-1a3 3 0 0 1 6 0v1" /><circle cx="9" cy="13" r="1.5" /><circle cx="15" cy="13" r="1.5" /></>,
+  bed: <><path d="M3 18v3m18-3v3M3 18h18V9a3 3 0 0 0-3-3h-6v8H3V6m9 8h9" /><circle cx="7" cy="10" r="2" /></>,
   home: <><path d="m3 10 9-7 9 7v11H3Z" /><path d="M9 21v-8h6v8" /></>,
   plus: <path d="M12 4v16M4 12h16" />,
 };

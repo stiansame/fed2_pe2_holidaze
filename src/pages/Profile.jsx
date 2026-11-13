@@ -6,10 +6,21 @@ import HostAvatar from '../components/HostAvatar.jsx';
 import VenueImage from '../components/venues/VenueImage.jsx';
 import { profileUpdate } from '../utils/profile.js';
 import BookingsList from '../components/bookings/BookingsList.jsx';
+import ManagerOverview from '../components/account/ManagerOverview.jsx';
 
 export default function Profile() {
-  const { user, request, becomeManager } = useAuth();
-  const [profile, setProfile] = useState(null);
+  const { user } = useAuth();
+  const profile = <ProfileCard />;
+  return <section className="min-w-0 space-y-6">
+    <title>Holidaze | My account</title>
+    <h1 className="text-h3 font-bold sm:text-h2">My account</h1>
+    {user.venueManager ? <ManagerOverview>{profile}</ManagerOverview> : profile}
+    <div className="account-section"><BookingsList upcomingOnly /></div>
+  </section>;
+}
+
+function ProfileCard() {
+  const { user, profile, setProfile, request, becomeManager } = useAuth();
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -25,7 +36,7 @@ export default function Profile() {
       if (!controller.signal.aborted) setError(error.message);
     });
     return () => controller.abort();
-  }, [path, request, attempt]);
+  }, [path, request, attempt, setProfile]);
 
   async function enableManager() {
     if (pending) return;
@@ -42,35 +53,32 @@ export default function Profile() {
 
   return (
     <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
-      <title>Holidaze | My profile</title>
-      {profile && <VenueImage key={profile.banner?.url} media={profile.banner} name={`${user.name}'s banner`} className="h-40 sm:h-56" loading="eager" />}
+      {profile && <VenueImage key={profile.banner?.url} media={profile.banner} name={`${user.name}'s banner`} className="h-40" loading="eager" />}
       <div className={`space-y-5 px-5 pb-5 sm:px-8 sm:pb-8 ${profile ? '' : 'pt-5 sm:pt-8'}`}>
-        <h1 className="sr-only">My profile</h1>
         {!profile && !error && <Loading>Loading your profile…</Loading>}
         {profile && <>
-          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-6">
+          <div className="relative flex flex-col gap-3 xl:flex-row xl:items-start xl:gap-6">
             <HostAvatar key={profile.avatar?.url} media={profile.avatar} className="-mt-14 size-28 border-4 border-surface bg-surface sm:-mt-16 sm:size-32" />
-            <div className="min-w-0 flex-1 sm:pt-3 sm:pl-4">
+            <div className="min-w-0 flex-1 xl:pt-3">
               <h2 className="text-h3 font-bold wrap-anywhere">{profile.name}</h2>
               <p className="text-small text-muted wrap-anywhere">{profile.email}</p>
-              {user.venueManager && <span className="mt-2 inline-block rounded-full bg-tint px-3 py-1 text-caption font-semibold text-primary">Venue manager</span>}
+              {user.venueManager && <span className="mt-2 inline-flex h-8 items-center rounded-full bg-tint px-3 text-caption font-semibold text-primary">Venue manager</span>}
             </div>
           </div>
           {editing ? <ProfileForm profile={profile} path={path} onCancel={() => setEditing(false)} onSave={data => { setProfile(data); setEditing(false); setSaved(true); }} /> : <>
             <p className="whitespace-pre-line text-muted wrap-anywhere">{profile.bio?.trim() || 'No bio yet.'}</p>
             {saved && <p role="status" className="text-success">{messages.profileUpdated}</p>}
-            <button type="button" disabled={pending} onClick={() => { setSaved(false); setError(''); setEditing(true); }} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60">Edit profile</button>
+            <button type="button" disabled={pending} onClick={() => { setSaved(false); setError(''); setEditing(true); }} className="h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60">Edit profile</button>
             {!user.venueManager && <div className="space-y-4 border-t border-border pt-5">
                 <p>Want to host guests? Become a venue manager to create and manage your own venues.</p>
-                <button type="button" disabled={pending} onClick={enableManager} className="min-h-12 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60">
+                <button type="button" disabled={pending} onClick={enableManager} className="h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60">
                   {pending ? 'Please wait…' : 'Become a venue manager'}
                 </button>
             </div>}
-            <div className="border-t border-border pt-5"><BookingsList upcomingOnly /></div>
           </>}
         </>}
         {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}
-        {!profile && error && <button type="button" onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Try again</button>}
+        {!profile && error && <button type="button" onClick={() => { setError(''); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border px-4 text-primary">Try again</button>}
       </div>
     </section>
   );
@@ -81,7 +89,8 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const submitting = useRef(false);
-  const inputClass = 'mt-1 min-h-12 w-full rounded-lg border border-border bg-surface px-3';
+  const fieldClass = 'mt-1 w-full rounded-lg border border-border bg-surface px-3';
+  const inputClass = `${fieldClass} h-11`;
 
   async function submit(event) {
     event.preventDefault();
@@ -104,7 +113,7 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
   return <form onSubmit={submit} className="space-y-5" aria-label="Edit profile">
     <fieldset disabled={pending} className="min-w-0 space-y-5">
       <legend className="mb-3 text-h3 font-semibold">Edit profile</legend>
-      <div><label className="block" htmlFor="profile-bio">Bio</label><textarea id="profile-bio" name="bio" maxLength={160} rows={3} defaultValue={profile.bio ?? ''} aria-describedby="bio-help" autoFocus className={`${inputClass} py-3`} /><p id="bio-help" className="text-small text-muted">Up to 160 characters.</p></div>
+      <div><label className="block" htmlFor="profile-bio">Bio</label><textarea id="profile-bio" name="bio" maxLength={160} rows={3} defaultValue={profile.bio ?? ''} aria-describedby="bio-help" autoFocus className={`${fieldClass} min-h-11 py-3`} /><p id="bio-help" className="text-small text-muted">Up to 160 characters.</p></div>
       {['avatar', 'banner'].map(field => <fieldset key={field} className="min-w-0 space-y-3 rounded-lg border border-border p-4">
         <legend className="px-1 font-semibold">{field === 'avatar' ? 'Avatar' : 'Banner'}</legend>
         <label className="block text-small">Image URL<input name={`${field}Url`} type="url" maxLength={300} defaultValue={profile[field]?.url ?? ''} aria-describedby={`${field}-help`} className={inputClass} /></label>
@@ -112,8 +121,8 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
         <p id={`${field}-help`} className="text-small text-muted">Use a public HTTP or HTTPS image URL. Leave blank to keep the current image and description.</p>
       </fieldset>)}
       <div className="flex flex-wrap gap-3">
-        <button className="min-h-12 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover">{pending ? 'Saving…' : 'Save'}</button>
-        <button type="button" onClick={onCancel} className="min-h-12 rounded-lg border border-border px-5 font-semibold text-primary hover:bg-tint">Cancel</button>
+        <button className="h-11 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover">{pending ? 'Saving…' : 'Save'}</button>
+        <button type="button" onClick={onCancel} className="h-11 rounded-lg border border-border px-5 font-semibold text-primary hover:bg-tint">Cancel</button>
       </div>
     </fieldset>
     {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}

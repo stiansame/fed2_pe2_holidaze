@@ -26,7 +26,7 @@ export default function Header() {
         <nav aria-label="Main navigation" className="hidden gap-4 lg:flex">
           <NavigationLinks />
         </nav>
-        <button type="button" aria-label="Sunny mode" aria-pressed={sunny} title={sunny ? 'Switch to standard theme' : 'Switch to Sunny mode'} onClick={() => setSunny(toggleSunnyMode())} className="theme-toggle flex size-12 shrink-0 items-center justify-center rounded-full text-primary hover:bg-tint">
+        <button type="button" aria-label="Sunny mode" aria-pressed={sunny} title={sunny ? 'Switch to standard theme' : 'Switch to Sunny mode'} onClick={() => setSunny(toggleSunnyMode())} className="theme-toggle flex size-11 shrink-0 items-center justify-center rounded-full text-primary hover:bg-tint">
           <Icon name="sun" />
         </button>
         <button
@@ -36,7 +36,7 @@ export default function Header() {
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-controls={menuOpen ? 'mobile-menu' : undefined}
           onClick={() => menuOpen ? closeMenu() : setMenuOpen(true)}
-          className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-border text-primary hover:bg-tint lg:hidden"
+          className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-border text-primary hover:bg-tint lg:hidden"
         >
           <Icon name={menuOpen ? 'close' : 'menu'} />
         </button>

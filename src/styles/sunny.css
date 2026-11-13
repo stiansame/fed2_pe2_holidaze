@@ -16,7 +16,7 @@
 }
 
 /* Keep existing text sizes while giving headings and branding a softer shape. */
-[data-theme='sunny'] :is(h1, h2, h3, h4, h5, h6, .brand-name) {
+[data-theme='sunny'] :is(h1, h2, h3, h4, h5, h6, .brand-name, .account-section-heading) {
   font-family: 'Poppins', sans-serif;
 }
 

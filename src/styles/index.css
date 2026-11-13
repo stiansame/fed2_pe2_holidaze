@@ -52,6 +52,24 @@
 }
 
 @layer components {
+  /* Shared surface, border, spacing and safe area for mobile account and booking bars. */
+  .mobile-bottom-bar {
+    @apply fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface p-3;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  /* Reserve space after the footer, so fixed mobile controls cannot cover it. */
+  @media (width < 64rem) {
+    .site-shell:has(.mobile-bottom-bar) {
+      padding-bottom: calc(3.5625rem + max(0.75rem, env(safe-area-inset-bottom)));
+    }
+  }
+
+  /* Separate personal stays, hosted venues and guest bookings without changing their cards. */
+  .account-section {
+    @apply min-w-0 space-y-4 rounded-xl border border-border bg-accent/5 p-3 sm:p-5;
+  }
+
   /* Snap swipeable gallery images into place and hide the scrollbar. */
   .photo-strip {
     @apply flex snap-x snap-mandatory overflow-x-auto motion-safe:scroll-smooth;
@@ -63,7 +81,7 @@
   }
   /* Keep links and buttons inside edit menus the same size and style. */
   .edit-menu-item {
-    @apply flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-left text-small font-semibold text-primary hover:bg-tint disabled:opacity-40;
+    @apply flex h-11 w-full items-center gap-2 rounded-lg px-2 text-left text-small font-semibold text-primary hover:bg-tint disabled:opacity-40;
   }
   /* Mark destructive menu actions in red. */
   .edit-menu-danger {
@@ -75,7 +93,7 @@
   }
   /* Keep Select dates and Reserve identical in size. */
   .booking-action-button {
-    @apply h-12 w-28 shrink-0 rounded-lg bg-primary px-2 text-small font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60;
+    @apply h-11 w-28 shrink-0 rounded-lg bg-primary px-2 text-small font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60;
   }
   /* Shared accent background for compact information such as guest capacity. */
   .accent-box {
@@ -84,7 +102,7 @@
 
   /* Give return links and secondary navigation a consistent button shape. */
   .navigation-link {
-    @apply inline-flex min-h-12 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint;
+    @apply inline-flex h-11 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint;
   }
 
   /* Style sanitised API HTML, whose elements cannot carry Tailwind classes. */
@@ -121,8 +139,6 @@
   border-radius: 1rem 1rem 0 0;
   padding: 0 0 max(1rem, env(safe-area-inset-bottom));
 }
-/* Keep the fixed action bar clear of mobile home indicators. */
-.venue-booking-bar { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
 /* Reduce calendar spacing and scale date cells to the available mobile height. */
 @media (width < 64rem) {
   .compact-calendar [aria-label='Night availability'] { gap: 2px; }
@@ -187,4 +203,11 @@
 /* Keep the loading logo still when reduced motion is requested. */
 @media (prefers-reduced-motion: reduce) {
   .loading-map-left, .loading-map-middle, .loading-map-right { animation: none; }
+}
+
+/* Match Leaflet zoom controls to the shared 44px button height. */
+.leaflet-container .leaflet-bar.leaflet-control-zoom a {
+  width: 2.75rem;
+  height: 2.75rem;
+  line-height: 2.75rem;
 }

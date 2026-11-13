@@ -8,7 +8,8 @@ import Icon from '../Icon.jsx';
 
 const VenueLocationMap = lazy(() => import('./VenueLocationMap.jsx'));
 
-const inputClass = 'mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-3 font-normal';
+const fieldClass = 'mt-1 w-full min-w-0 rounded-lg border border-border bg-surface px-3 font-normal';
+const inputClass = `${fieldClass} h-11`;
 const sectionClass = 'min-w-0 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-6';
 
 export default function VenueForm({ onSave, onCancel, venue = {} }) {
@@ -49,7 +50,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
         <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
           <div className="min-w-0 space-y-4">
             <label className="block text-small font-semibold">Venue name<input name="name" defaultValue={venue.name ?? ''} required className={inputClass} /></label>
-            <label className="block text-small font-semibold">Description<textarea name="description" defaultValue={venue.description ?? ''} required rows={4} className={`${inputClass} py-3`} /></label>
+            <label className="block text-small font-semibold">Description<textarea name="description" defaultValue={venue.description ?? ''} required rows={4} className={`${fieldClass} min-h-11 py-3`} /></label>
           </div>
           <div className="min-w-0 space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -74,7 +75,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
           <legend className="px-1 text-small font-semibold">Image {index + 1}</legend>
           <label className="block min-w-0 text-small font-semibold">Image URL<input name="mediaUrl" defaultValue={venue.media?.[key]?.url ?? ''} type="url" maxLength={300} className={inputClass} /></label>
           <label className="block min-w-0 text-small font-semibold">Alt text<input name="mediaAlt" defaultValue={venue.media?.[key]?.alt ?? ''} maxLength={120} className={inputClass} /></label>
-          <button type="button" onClick={() => setMediaKeys(keys => keys.filter(value => value !== key))} aria-label={`Remove image ${index + 1}`} className="inline-flex size-12 items-center justify-center rounded-lg border border-border text-danger hover:bg-danger/10"><Icon name="trash" /></button>
+          <button type="button" onClick={() => setMediaKeys(keys => keys.filter(value => value !== key))} aria-label={`Remove image ${index + 1}`} className="inline-flex size-11 items-center justify-center rounded-lg border border-border text-danger hover:bg-danger/10"><Icon name="trash" /></button>
         </fieldset>)}
         <button type="button" onClick={() => { const key = nextKey.current++; setMediaKeys(keys => [...keys, key]); }} className="navigation-link gap-2"><Icon name="plus" />Add image</button>
       </section>
@@ -95,7 +96,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
         </div>
       </section>
       <div className="flex flex-wrap gap-3">
-        <button type="submit" className="min-h-12 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60">{pending ? (editing ? 'Saving…' : 'Creating…') : (editing ? 'Save changes' : 'Create venue')}</button>
+        <button type="submit" className="h-11 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60">{pending ? (editing ? 'Saving…' : 'Creating…') : (editing ? 'Save changes' : 'Create venue')}</button>
         <button type="button" onClick={onCancel} className="navigation-link">Cancel</button>
       </div>
     </fieldset>

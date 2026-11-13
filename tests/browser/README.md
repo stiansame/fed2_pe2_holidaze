@@ -1,10 +1,19 @@
+## Unified account (#99)
+
+- `/profile` is the shared account page. `/manager` redirects there for managers.
+- Manager: profile and four summary cards share the desktop top row; on mobile, profile comes first and the summary keeps two columns. Test at 320/390px and desktop in both themes.
+- One Venue bookings section combines current and upcoming stays, nearest check-in first, with three manager cards and Show all.
+- Customer: profile editing, upcoming personal bookings and Become a venue manager remain available; no manager summary or venue lists.
+- Main/account navigation uses the signed-in name and avatar. Save a new profile avatar, then check both menus and their image fallback.
+- Check return links, profile save/cancel, role upgrade, loading failures and retry. Manager cards show guest/count/nights together and dates/total on the bottom row.
+
 # Venue browser checks
 
 ## Navigation cleanup
 
-- My venues: Edit, Delete and Bookings share one row at mobile and desktop widths. Delete retains its confirmation dialog.
-- My account opens Dashboard for managers and Profile for other users. Dashboard is first in the manager menu and absent for other users.
-- Open a booking from Dashboard: the summary shows Back to dashboard. Open it from a filtered Venue bookings list: Back to venue bookings restores that filter.
+- My venues: the pencil menu at the image’s bottom-right contains Edit venue, Delete venue and Bookings at every width. Delete retains its confirmation dialog.
+- The signed-in name/avatar opens My account at `/profile`. Managers also see summary cards, My venues and Venue bookings; customers see their profile and My upcoming stays.
+- Open a booking from My account: the summary shows Back to my account. Open it from a filtered Venue bookings list: Back to venue bookings restores that filter.
 - Follow summary → venue → host profile and return through the links: each return restores the preceding page and its navigation context. Direct detail URLs use a sensible fallback.
 - Open Edit venue from My venues and from venue details. Cancel returns to the corresponding source without saving. Saving still opens the updated venue.
 - Check boxed navigation actions, visible keyboard focus and all three My venues actions at 320px, 390px and desktop.
@@ -15,19 +24,19 @@
 - Booking summary includes the shared venue calendar in read-only mode. It opens on this reservation's month (including past stays), highlights its nights in green with checkout excluded, and shows other booked nights in red. Month navigation works in both directions; no guest selector, date selection or Reserve form appears. Missing availability produces the existing error. The original public booking calendar must still support date selection and Reserve.
 - Booking cards use the same lift/shadow hover and focus effect as venue cards and respect reduced motion. Pills use smaller caption text, padding and 24px avatars. Check readable contrast and long text at narrow widths.
 
-- Booking cards now open `/manager/bookings/:id`, including dashboard cards. The details page rechecks the venue owner before showing guest/booking data. `mode=manager-other` rejects another host's booking, including direct URLs.
+- Booking cards now open `/manager/bookings/:id`, including cards on My account. The details page rechecks the venue owner before showing guest/booking data. `mode=manager-other` rejects another host's booking, including direct URLs.
 - Open a card from a filtered list: Back to venue bookings preserves the venue query. Reload/direct details links work; View venue and View guest profile open the correct public pages. Reference, booking creation date, stay dates, guests and current-rate estimate are shown; no editing/cancellation actions exist.
-- Booking cards use the venue image across the entire background at every width, with white pills for venue name/address, guest avatar/name, dates and guest count. Both the dashboard and overview use one column on mobile, two from 640px and three from 1280px. Long content grows the card instead of overlapping or being cut off. Check long values, fallbacks and keyboard focus at 320/390px and desktop. Account navigation highlights Bookings on nested manager booking URLs and My venues on Edit venue.
-- Manager booking cards share one component between the dashboard and overview. Verify full-image booking cards and white overlay pills at all widths, including guest name/avatar and the venue address. Missing images/avatars use existing fallbacks; long names and addresses wrap.
-- Dashboard has separate Current stays and Upcoming stays sections with up to three each. `mode=manager-bookings` exercises both; the Upcoming bookings statistic still excludes current stays. Each card opens the correct booking summary.
+- Booking cards use the venue image across the entire background at every width, with white pills for venue name/address, guest avatar/name, dates and guest count. Both My account and the booking overview use one column on mobile, two from 640px and three from 1280px. Long content grows the card instead of overlapping or being cut off. Check long values, fallbacks and keyboard focus at 320/390px and desktop. Account navigation highlights Bookings on nested manager booking URLs and My venues on Edit venue.
+- Manager booking cards share one component between My account and the booking overview. Verify full-image booking cards and white overlay pills at all widths, including guest name/avatar and the venue address. Missing images/avatars use existing fallbacks; long names and addresses wrap.
+- The unified account has a combined Venue bookings section with up to three current/upcoming stays. `mode=manager-bookings` exercises both; the Upcoming bookings statistic still excludes current stays. Each card opens the correct booking summary.
 - Manager cancellation is unavailable: Noroff's deleteBookingHandler authorises only the booking's customerName, not the venue owner. Keep these cards read-only.
 
-- `/tests/browser/venues.html?path=/manager/bookings&signedIn=1&manager=1&mode=manager-data`: loads all six own venues across two pages and shows six upcoming and six past bookings. Each group starts with three; Show all and Show less work independently.
-- Select one venue: only its bookings remain. All venues restores the complete list. The selection survives reload and browser back/forward navigation. Filtering and expansion must not request more pages.
-- Add `venue=test-2` to the path value (`path=/manager/bookings%3Fvenue=test-2`): the matching venue is preselected. An unknown/another owner's ID shows Unavailable venue and no booking rows; All venues recovers.
-- Start from `/manager` in manager-data mode: View all bookings opens the complete overview; an upcoming booking opens its booking summary. My venues has a View bookings action with the same filter.
-- `mode=manager-bookings`: includes a current stay and invalid dates, plus more than three upcoming bookings for the first venue. Current stays are separate from upcoming; invalid dates appear in Dates unavailable. Missing customer/guest information has readable fallbacks.
-- `mode=manager-empty`: helpful guidance and Create venue. `mode=manager-error`: Try again recovers. `mode=manager-missing`: an error appears instead of a misleading zero count. Refresh bookings reloads the complete data while retaining the venue selection.
+- `/tests/browser/venues.html?path=/manager/bookings&signedIn=1&manager=1&mode=manager-data`: loads all six own venues across two pages and shows six upcoming and six past bookings. Each group starts with three; the heading chevrons expand/collapse groups independently.
+- Open Bookings from a venue’s pencil menu: only its bookings remain. The venue query survives reload and return navigation. Open Bookings from the account menu for the complete list; there is no venue dropdown. Expansion must not request more pages.
+- Add `venue=test-2` to the path value (`path=/manager/bookings%3Fvenue=test-2`): only that venue’s bookings appear. An unknown/another owner’s ID shows an unavailable-venue message and no booking rows; the account Bookings link restores the complete list.
+- Start from `/manager` in manager-data mode: it redirects to `/profile`. Venue bookings → Show all opens the complete overview; a booking card opens its summary. My venues → pencil menu → Bookings opens a venue-filtered overview.
+- `mode=manager-bookings`: includes a current stay and invalid dates, plus more than three upcoming bookings for the first venue. The account combines current and upcoming stays; the full booking overview retains its status groups, with invalid dates in Dates unavailable. Missing customer/guest information has readable fallbacks.
+- `mode=manager-empty`: helpful guidance and Create venue. `mode=manager-error`: Try again recovers. `mode=manager-missing`: an error appears instead of a misleading zero count. Refresh bookings reloads the complete data while retaining the venue query.
 - Remove manager=1: Profile redirect. Remove signedIn=1: login redirect. No edit/cancel/delete booking actions appear in this manager overview.
 - Manual checks remain: 320px, 390px and desktop without horizontal overflow; keyboard focus, independently expanded groups, menu highlight and Holidaze | Venue bookings title. Local browser access was unavailable during implementation; real-account and Netlify validation also remain manual.
 
@@ -38,9 +47,9 @@
 
 ## Delete venue (#27)
 
-- `/tests/browser/venues.html?path=/manager/venues&signedIn=1&manager=1&mode=venue-delete`: Delete venue appears beside Edit. Cancel and Escape close the confirmation without deleting; focus returns to the trigger.
+- `/tests/browser/venues.html?path=/manager/venues&signedIn=1&manager=1&mode=venue-delete`: the pencil menu offers Edit venue and Delete venue. Cancel and Escape close the confirmation without deleting; focus returns to the trigger.
 - Confirm deletion: the venue is removed from My venues, the count/empty state updates and a Venue deleted status appears.
-- Open its details first: Delete venue appears beside Edit venue. Confirmation returns to My venues with the success message. The old detail URL no longer loads the venue.
+- Open its details first: the image’s pencil menu offers Edit venue and Delete venue. Confirmation returns to My venues with the success message. The old detail URL no longer loads the venue.
 - `mode=venue-delete-error`: the first DELETE fails. The dialog stays open, the error is announced and Cancel or a deliberate retry remains available.
 - `mode=venue-delete-uncertain`: deletion succeeds but its response is lost. No automatic retry or success message; the error tells the user to refresh My venues to check the outcome.
 - `mode=venue-delete-other` on `/venues/test-2`: neither Edit nor Delete appears for another host's venue. Signed-out and non-manager users must not see deletion controls.
@@ -58,7 +67,7 @@
 
 ## Compact amenity pills and logo loader
 
-- `/tests/browser/venues.html?path=/manager/venues/new&signedIn=1&manager=1`: at 1280px the four amenity pills fit on one row. At 320px they wrap without horizontal overflow and retain a 44px touch height. Space toggles a focused pill and its selected colour.
+- `/tests/browser/venues.html?path=/manager/venues/new&signedIn=1&manager=1`: at 1280px the four amenity pills fit on one row. At 320px they wrap without horizontal overflow and retain a 32px pill height. Space toggles a focused pill and its selected colour.
 - `/tests/browser/venues.html?path=/venues&mode=loading`: keeps a fixture GET pending so the three logo panels can be seen fanning out, rotating and swapping positions before returning to the original logo. A 3.2-second cycle includes a pause at the assembled logo. The pin follows its panel. The logo is decorative; the loading text is announced as a status.
 - Enable the operating system/browser's reduced-motion preference: the logo must stay fully open and still, with the loading text visible.
 - Remove `mode=loading`: the loader disappears when the venues arrive. Other data-fetch screens use the same Loading component and retain their specific loading text. Saving-button labels remain unchanged.
@@ -80,7 +89,7 @@
 - Leaflet follow-up: no marker is selected initially. Enter latitude `60.39` and longitude `5.32`: a marker appears in Bergen. Click another map position: both fields update to six decimal places. Clearing either coordinate removes the marker.
 - Keyboard users can focus/pan the map and select Use map centre. Verify the OpenStreetMap attribution stays visible and the map fits at 320px. Coordinate selection is disabled during saving and uncertain POST outcomes.
 - Submit with a chosen point: the resulting venue's location map uses those coordinates. Address fields remain manual; no forward/reverse geocoding service is connected.
-- Leaflet is loaded as a separate chunk only for the form. It requests standard OpenStreetMap tiles with normal browser caching; unavailable tiles do not prevent manual coordinate entry.
+- Leaflet is loaded as a separate chunk for the form and venue details. It requests standard OpenStreetMap tiles with normal browser caching; unavailable tiles do not prevent manual coordinate entry.
 
 - `/tests/browser/venues.html?path=/manager/venues/new&signedIn=1&manager=1`: create a fixture venue. Required fields are name, description, price (zero or more, at most two decimals) and a whole guest count of at least one.
 - Check whitespace-only text, negative/decimal guest counts, invalid price, non-HTTP image URLs, orphan alt text and incomplete/out-of-range coordinates. Invalid data must not be submitted.
@@ -94,22 +103,22 @@
 
 ## Own venues (#24)
 
-- `/tests/browser/venues.html?path=/manager/venues&signedIn=1&manager=1&mode=manager-list`: loads 18 own venues across four fixture pages. First 15 appear; Load more shows all 18 and disappears.
+- `/tests/browser/venues.html?path=/manager/venues&signedIn=1&manager=1&mode=manager-list`: loads 18 own venues across four fixture pages. First 15 appear; the heading chevron expands all 18 and collapses back to 15.
 - Venue cards open the correct details. The active account menu item and browser title are My venues.
 - `manager-empty` shows guidance and Create venue. `manager-error` fails once; Try again restores the complete list.
-- Checked at 320px without horizontal overflow. Manager route protection is shared with the dashboard.
+- Checked at 320px without horizontal overflow. Manager route protection also covers the booking and venue-edit routes.
 - The list requests no booking data. Create venue opens the form from #25. Editing, deleting and viewing venue bookings are separate work packages.
 
-## Manager dashboard (#23)
+## Manager overview (#23, now part of My account)
 
-- Mobile follow-up: summary cards use one column below 640px, two from 640px and four from 1280px. Venue search below 1024px initially shows only search and Filters & sort. Expand to access amenities, sorting, guest count, dates and reset; collapse/reopen must retain values and show the active count. The date panel expands in normal document flow on mobile. Checked at 320px without overflow; desktop retains its two-row search layout.
+- Summary cards keep two columns at all widths, beside the profile on desktop and below it on mobile. Venue search below 1024px initially shows only search and Filters & sort. Expand to access amenities, sorting, guest count, dates and reset; collapse/reopen must retain values and show the active count. The date panel expands in normal document flow on mobile. Checked at 320px without overflow; desktop retains its two-row search layout.
 
 - `/tests/browser/venues.html?path=/manager&signedIn=1&manager=1&mode=manager-data`: six own venues across two fixture pages, 12 bookings, six upcoming and rating 5.0. Only three venue cards and the three nearest upcoming bookings are shown.
 - Change mode to `manager-empty`: zero counts, `Not rated yet`, and helpful empty messages.
-- `manager-error`: a readable error appears; Try again loads the full dashboard.
+- `manager-error`: a readable error appears; Try again loads the manager overview.
 - `manager-missing`: missing booking data produces an error, never misleading zero counts.
 - Remove `manager=1`: ordinary users reach their profile. Remove `signedIn=1` too: visitors reach login.
-- At 320px, the account menu and dashboard fit without horizontal overflow. Use the menu to visit My venues. Create venue opens its form; Bookings remains a placeholder.
+- At 320px, My account and the fixed icon menu fit without horizontal overflow. My venues, Create venue and Bookings open their implemented pages.
 - Checked locally with fixture data; real-account/Netlify verification remains manual. Automated tests cover complete pagination, aborts, failed pages, rating calculations and future/current/past/invalid booking dates.
 
 ## Formatted venue descriptions
@@ -137,12 +146,12 @@ They are manual browser checks, separate from the automated `npm test` suite, an
    Check the long name and fallbacks for missing photos, description, amenities, location, capacity, price and host.
    There should be no map for missing coordinates.
 6. Open the same address with `test-1`: its photo and avatar fail to load.
-   Open **View all photos**. Check the image fallback, separate close/arrow controls and photo counter.
+   On mobile, tap the square photo to open the gallery; on desktop, use **View all photos**. Check the image fallback, separate close/arrow controls and photo counter.
    Use arrow keys, then Escape. Focus should return to the gallery opener.
    The second image is deliberately small; its controls must remain usable too.
 7. Open `test-2`. Check long unbroken description, host and location text without horizontal scrolling.
 8. Open `/tests/browser/venues.html?path=/&mode=data`.
-   Check the still hero photo, slogan, prominent search and six highly rated cards below it.
+   Check the still hero photo, slogan, prominent search and up to twelve highly rated cards below it.
    On the live home page, reload several times: the hero chooses one random photo from the highly rated pool on each visit and stays still while typing or waiting.
    Use `mode=broken` to check the fixed reserve photo when the selected venue image fails. `mode=empty` and API failures also retain the reserve photo and search.
    Search with an empty field, fewer than three characters and a valid query. The empty field opens all venues; a short query is rejected; a valid query is preserved in the results.
@@ -238,17 +247,17 @@ Persistent saving and publicly accessible image validation against Noroff remain
 ### Account layout and profile header
 
 - The larger avatar overlaps the banner. Identity and the optional Venue manager badge sit beside it on desktop and below it on mobile.
-- Desktop account pages show Profile and My bookings in a left sidebar. Add `manager=1` to the signed-in fixture URL for Dashboard, My venues, Bookings and Create venue.
-- The header keeps Explore, My account and Log out. My account provides entry from public pages.
-- On mobile, Account menu is a native select above the content. Check every manager destination and return to Profile; desktop navigation must highlight only the exact active destination.
+- Desktop account pages show the account avatar/name and My bookings in a left sidebar. Add `manager=1` for My venues, Bookings and Create venue. No separate Dashboard link remains.
+- The header keeps Explore, the signed-in avatar/name and Log out. The avatar/name opens My account.
+- On mobile, the account links form a fixed bottom icon menu. Check every destination, active state and that the complete footer scrolls above the menu. Desktop uses the sidebar, including the parent highlight on nested routes.
 - A regular customer's direct `/manager/bookings` visit must redirect to Profile. Upgrading to manager must immediately update the menu and badge.
-- Recorded: role-based links, all four manager destinations, active states, mobile selection, access guard and view/edit widths of 320/390px passed. Manager screens retain their existing Coming soon scope; this change adds navigation, not dashboard/venue-management functionality.
+- Recheck role-based links, active states, access guards and profile view/edit at 320/390px and desktop. Manager pages are implemented; there are no Coming soon placeholders.
 
 ## Own bookings — package #21
 
 Open `/tests/browser/venues.html?path=/bookings&signedIn=1&ownBookings=1`. This seeds five future and five past stays in memory. No real bookings or saved sessions are changed.
 
-1. Both groups show three stays. Upcoming stays are nearest first; past stays are most recent first. Show all and Show less expand/collapse each group independently.
+1. Both groups show three stays. Upcoming stays are nearest first; past stays are most recent first. Heading chevrons expand/collapse each group independently.
 2. Profile shows three upcoming stays. Its Show all link opens the complete upcoming group on My bookings.
 3. Change a future booking: the original dates must be available, while other booked nights remain blocked. Change dates/guests, Review changes, Back to dates, then Save changes. The list must display the returned dates/guests and success message.
 4. Cancel booking opens confirmation. Keep booking preserves it; Confirm cancellation removes it only after a successful response. Refresh and Profile must reflect the deletion.
@@ -307,9 +316,9 @@ Overall status: local integration checks passed; live persistence/deployment val
 
 Open `/tests/browser/venues.html?path=/venues/test-2`. Click the host's name/avatar. Without a session this opens login; use the fixture email/password described above and verify return to `/profiles/:name`. Noroff's profile endpoints require authentication (an unauthenticated live GET returned 401), so “public” means another user's read-only profile, not anonymous API access.
 
-- The profile shows banner, overlapping avatar, name, optional manager badge and bio on the left, with Venues on the right at desktop widths. Mobile stacks these sections.
-- The venue list initially shows three compact rows. View all expands the entire list, including additional pages (the fixture returns five per API page); Show less restores three.
-- Every venue row opens the corresponding venue details. Rows show name, location and nightly price, with fallbacks for unavailable images/location/price.
+- The profile shows banner, overlapping avatar, name, optional manager badge and bio. Venues appears underneath at every width using the shared venue cards.
+- The venue list initially shows three shared venue cards. View all expands the entire list, including additional pages (the fixture returns five per API page); Show less restores three.
+- Every venue card opens the corresponding venue details. Cards show name, location and nightly price, with fallbacks for unavailable images/location/price.
 - No Edit profile, manager upgrade, account sidebar or private bookings appear in the host profile, including when viewing your own name through `/profiles/:name`.
 - Use `path=/profiles/missing&signedIn=1` for a missing profile. Use `path=/profiles/host&signedIn=1` with `mode=host-empty`, `host-broken` or `host-error` for empty venues, failed images, or a first-load failure followed by successful Try again.
 - Check direct profile links while signed in and out, and check keyboard focus on the host link, venue links and View all/Show less.

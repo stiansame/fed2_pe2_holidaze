@@ -6,7 +6,7 @@ import { bookingPrice, bookingStatus, formatBookingRange } from '../../utils/boo
 import { formatPrice } from '../../utils/venue.js';
 import { navigationOrigin } from '../../utils/navigation.js';
 
-const pillClass = 'inline-flex max-w-full items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-caption text-text shadow-sm';
+const pillClass = 'inline-flex max-w-full items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-caption text-text';
 
 export default function ManagerBookingCard({ booking }) {
   const location = useLocation();
@@ -21,13 +21,15 @@ export default function ManagerBookingCard({ booking }) {
         <h3 title={name} className={`${pillClass} font-semibold`}><span className="truncate">{name}</span></h3>
         <p title={place} className={pillClass}><Icon name="pin" className="size-4 shrink-0 text-success" /><span className="truncate">{place}</span></p>
       </div>
-      <div className="flex min-w-0 flex-col items-start gap-1.5">
-        <p className={pillClass}><HostAvatar key={booking.customer?.avatar?.url} media={booking.customer?.avatar} className="size-6" /><span className="min-w-0 truncate">{booking.customer?.name?.trim() || 'Guest name unavailable'}</span></p>
-        <div className="flex max-w-full flex-wrap gap-1.5">
-          <p className={pillClass}><Icon name="calendar" className="size-4 shrink-0" />{formatBookingRange(booking)}</p>
-          <p className={pillClass}><Icon name="user" className="size-4 shrink-0" />{Number.isInteger(booking.guests) && booking.guests > 0 ? `${booking.guests} ${booking.guests === 1 ? 'guest' : 'guests'}` : 'Guests unavailable'}</p>
-          <p className={pillClass}><Icon name="moon" className="size-4 shrink-0" />{price ? `${price.nights} ${price.nights === 1 ? 'night' : 'nights'}` : 'Nights unavailable'}</p>
-          <p className={`${pillClass} font-semibold`}>{price ? `${formatPrice(price.total)} total` : 'Total unavailable'}</p>
+      <div className="min-w-0 space-y-1.5">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-1.5">
+          <p className={pillClass}><HostAvatar key={booking.customer?.avatar?.url} media={booking.customer?.avatar} className="size-6" /><span className="min-w-0 truncate">{booking.customer?.name?.trim() || 'Guest name unavailable'}</span></p>
+          <p className={`${pillClass} min-w-0`}><Icon name="user" className="size-4 shrink-0" /><span className="min-w-0 wrap-anywhere">{Number.isInteger(booking.guests) && booking.guests > 0 ? `${booking.guests} ${booking.guests === 1 ? 'guest' : 'guests'}` : 'Guests unavailable'}</span></p>
+          <p className={`${pillClass} min-w-0`}><Icon name="moon" className="size-4 shrink-0" /><span className="min-w-0 wrap-anywhere">{price ? `${price.nights} ${price.nights === 1 ? 'night' : 'nights'}` : 'Nights unavailable'}</span></p>
+        </div>
+        <div className="grid min-w-0 grid-cols-2 items-center gap-1.5">
+          <p className={pillClass}><Icon name="calendar" className="size-4 shrink-0" /><span className="min-w-0 wrap-anywhere">{formatBookingRange(booking)}</span></p>
+          <p className={`${pillClass} justify-self-end font-semibold wrap-anywhere`}>{price ? `${formatPrice(price.total)} total` : 'Total unavailable'}</p>
         </div>
       </div>
     </div>

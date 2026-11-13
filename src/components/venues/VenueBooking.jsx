@@ -43,7 +43,7 @@ export default function VenueBooking({ venue }) {
     }}>
       <div className="flex items-center justify-between gap-3 px-3 lg:hidden">
         <h2 id={titleId} className="text-h3 font-bold">Your stay</h2>
-        <button type="button" aria-label="Close booking" autoFocus onClick={() => dialog.current.close()} className="flex size-12 items-center justify-center rounded-lg text-primary hover:bg-tint"><Icon name="close" /></button>
+        <button type="button" aria-label="Close booking" autoFocus onClick={() => dialog.current.close()} className="flex size-11 items-center justify-center rounded-lg text-primary hover:bg-tint"><Icon name="close" /></button>
       </div>
       <div className="booking-price-header hidden bg-primary p-6 text-surface lg:block">
         <p className="text-small font-semibold">Your stay</p>
@@ -52,7 +52,7 @@ export default function VenueBooking({ venue }) {
       </div>
       <AvailabilityCalendar bookings={venue.bookings} maxGuests={venue.maxGuests} onStayChange={setStay} formId={formId} price={venue.price} compact />
     </dialog>
-    <div className="venue-booking-bar booking-action-row fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface px-3 pt-3 lg:hidden">
+    <div className="mobile-bottom-bar booking-action-row lg:hidden">
       <BookingPrice price={venue.price} stay={stay} summary={summary} />
       <div>{(stay.from || stay.to) && <button type="button" aria-label="Change dates and guests" title="Change dates and guests" onClick={openBooking} className="edit-icon-button"><Icon name="edit" /></button>}</div>
       <button ref={trigger} type={summary.error ? 'button' : 'submit'} form={summary.error ? undefined : formId} aria-haspopup={summary.error ? 'dialog' : undefined} onClick={summary.error ? openBooking : undefined} className="booking-action-button">{summary.error ? 'Select dates' : 'Reserve'}</button>
