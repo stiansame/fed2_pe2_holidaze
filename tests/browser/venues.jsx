@@ -8,6 +8,7 @@ import App from '../../src/App.jsx';
 import AuthProvider from '../../src/auth/AuthProvider.jsx';
 import { SESSION_KEY } from '../../src/auth/session.js';
 import '../../src/styles/index.css';
+import '../../src/styles/sunny.css';
 import { addDays, dateKey } from '../../src/utils/availability.js';
 
 const params = new URLSearchParams(location.search);
@@ -42,6 +43,9 @@ const venues = Array.from({ length: 18 }, (_, i) => ({
   owner: i === 0 ? null : { name: 'LongHostName'.repeat(15), bio: mode === 'host-bio' ? 'I enjoy welcoming guests to my venues.' : '', avatar: { url: '/missing-avatar.jpg' } },
   bookings: mode === 'availability-missing' ? undefined : [{ dateFrom: `${addDays(dateKey(), 3)}T00:00:00Z`, dateTo: `${addDays(dateKey(), 6)}T00:00:00Z` }],
 }));
+if (mode.startsWith('manager-')) {
+  for (const venue of mode === 'manager-list' ? venues : venues.slice(2, 8)) venue.owner = { ...fixtureProfile };
+}
 if (mode.startsWith('venue-edit') || mode.startsWith('venue-delete')) {
   venues[2].owner = { ...fixtureProfile };
   venues[2].name = 'Editable cabin';
@@ -123,16 +127,17 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
       const page = Number(url.searchParams.get('page')) || 1;
       return Response.json({ data: all.slice((page - 1) * 5, page * 5), meta: { nextPage: page * 5 < all.length ? page + 1 : null } });
     }
+    if (url.pathname.endsWith('/bookings')) {
+      if (mode === 'own-error' && ++ownReads === 1) return Response.json({ errors: [{ message: 'Fixture bookings unavailable.' }] }, { status: 503 });
+      const all = mode === 'own-empty' ? [] : [...savedBookings.values()].filter(booking => booking.customer?.name === profileName);
+      return Response.json({ data: all, meta: { nextPage: null } });
+    }
     if (profileName !== fixtureUser.name) {
       if (mode === 'host-error' && ++profileReads === 1) return Response.json({ errors: [{ message: 'Fixture host unavailable.' }] }, { status: 503 });
-      return Response.json({ data: { ...fixtureProfile, name: profileName, venueManager: true,
+      return Response.json({ data: { ...fixtureProfile, name: profileName, venueManager: !profileName.startsWith('Guest '),
         avatar: mode === 'host-broken' ? { url: '/missing-host.jpg' } : fixtureProfile.avatar,
         banner: mode === 'host-broken' ? { url: '/missing-banner.jpg' } : fixtureProfile.banner,
       } });
-    }
-    if (url.pathname.endsWith('/bookings')) {
-      if (mode === 'own-error' && ++ownReads === 1) return Response.json({ errors: [{ message: 'Fixture bookings unavailable.' }] }, { status: 503 });
-      return Response.json({ data: mode === 'own-empty' ? [] : [...savedBookings.values()], meta: { nextPage: null } });
     }
     if (method === 'PUT') {
       if (mode === 'profile-save-error') return Response.json({ errors: [{ message: 'Fixture profile update rejected.' }] }, { status: 400 });
@@ -160,7 +165,7 @@ globalThis.fetch = async (input, { signal, method = 'GET', body } = {}) => {
     const booking = savedBookings.get(bookingId) ?? (mode.startsWith('manager-') && bookingId?.startsWith('manager-') ? {
       id: bookingId, dateFrom: addDays(dateKey(), 2), dateTo: addDays(dateKey(), 4), guests: 2, created: dateKey(),
       venue: { ...venues[2], owner: { name: mode === 'manager-other' ? 'AnotherHost' : fixtureUser.name } },
-      customer: { name: 'Guest 1', avatar: { url: photo }, bio: 'Looking forward to my stay.' },
+      customer: { name: 'Guest 1', email: 'guest1@example.com', avatar: { url: photo }, bio: 'Looking forward to my stay.' },
     } : null);
     if (booking && ['PUT', 'DELETE'].includes(method)) {
       if (mode === 'own-save-error') return Response.json({ errors: [{ message: 'Fixture change rejected.' }] }, { status: 400 });
