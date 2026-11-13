@@ -7,10 +7,12 @@ import { readSession, SESSION_KEY, sessionExpiresAt } from './session.js';
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(() => readSession(localStorage));
   const [notice, setNotice] = useState('');
+  const [profile, setProfile] = useState(null);
 
   const logout = useCallback((message = '') => {
     localStorage.removeItem(SESSION_KEY);
     setUser(null);
+    setProfile(null);
     setNotice(message);
   }, []);
 
@@ -20,10 +22,11 @@ export default function AuthProvider({ children }) {
     });
     const session = {
       name: data.name, email: data.email, venueManager: data.venueManager === true,
-      accessToken: data.accessToken,
+      accessToken: data.accessToken, avatar: data.avatar,
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     setNotice('');
+    setProfile(data);
     setUser(session);
     return session;
   }
@@ -47,7 +50,17 @@ export default function AuthProvider({ children }) {
     const session = { ...user, venueManager: data.venueManager === true };
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     setUser(session);
+    setProfile(data);
   }
+
+  // Keep the menu avatar current after a reload on any account page.
+  useEffect(() => {
+    if (!user || profile?.name !== user.name) return;
+    const session = readSession(localStorage);
+    if (session?.accessToken === user.accessToken) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ ...session, avatar: profile.avatar }));
+    }
+  }, [profile, user]);
 
   useEffect(() => {
     if (!user) return;
@@ -58,5 +71,5 @@ export default function AuthProvider({ children }) {
     return () => clearInterval(timer);
   }, [user, logout]);
 
-  return <AuthContext.Provider value={{ user, notice, login, logout, request, becomeManager }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, profile, setProfile, notice, login, logout, request, becomeManager }}>{children}</AuthContext.Provider>;
 }

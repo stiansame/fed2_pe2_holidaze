@@ -35,7 +35,7 @@ export default function BookingConfirmation() {
         {[['Booking reference', booking.id], ['Check-in', booking.dateFrom.slice(0, 10)], ['Check-out', booking.dateTo.slice(0, 10)], ['Guests', booking.guests]].map(([label, value]) => <div key={label}><dt className="text-small text-muted">{label}</dt><dd className="font-semibold wrap-anywhere">{value}</dd></div>)}
       </dl>
     </>}
-    {error && <><p role="alert" className="text-danger">{messages.confirmationLoadFailed(error)}</p><button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Reload confirmation</button></>}
+    {error && <><p role="alert" className="text-danger">{messages.confirmationLoadFailed(error)}</p><button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border px-4 text-primary">Reload confirmation</button></>}
     <div className="flex flex-wrap gap-3">
       {booking?.venue?.id && <Link to={`/venues/${encodeURIComponent(booking.venue.id)}`} className="navigation-link">View venue</Link>}
       <Link to="/bookings" className="navigation-link">My bookings</Link>

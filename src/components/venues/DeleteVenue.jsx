@@ -42,7 +42,7 @@ export default function DeleteVenue({ venue, onDeleted }) {
       <p id={descriptionId} className="wrap-anywhere">{messages.confirmVenueDeletion(venue.name?.trim() || 'Unnamed stay')}</p>
       <div className="flex flex-wrap gap-3">
         <button type="button" autoFocus disabled={pending} onClick={() => dialog.current.close()} className="navigation-link disabled:opacity-60">Cancel</button>
-        <button type="button" disabled={pending} onClick={remove} className="min-h-12 rounded-lg bg-danger px-4 font-semibold text-surface disabled:opacity-60">{pending ? 'Deleting…' : 'Confirm deletion'}</button>
+        <button type="button" disabled={pending} onClick={remove} className="h-11 rounded-lg bg-danger px-4 font-semibold text-surface disabled:opacity-60">{pending ? 'Deleting…' : 'Confirm deletion'}</button>
       </div>
       {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}
     </dialog>

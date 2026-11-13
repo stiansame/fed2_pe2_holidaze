@@ -70,11 +70,11 @@ function Review({ id, search }) {
       <StaySummary venue={venue} stay={stay} summary={summary} />
       {summary.error && <p role="alert" className="text-danger">{summary.error}</p>}
       <form onSubmit={confirm}>
-        <button disabled={pending || uncertain || !!summary.error} className="min-h-12 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{pending ? 'Reserving…' : 'Confirm reservation'}</button>
+        <button disabled={pending || uncertain || !!summary.error} className="h-11 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{pending ? 'Reserving…' : 'Confirm reservation'}</button>
       </form>
     </>}
     {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}
-    {!venue && error && <button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border px-4 text-primary">Try again</button>}
+    {!venue && error && <button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border px-4 text-primary">Try again</button>}
     {!pending && <Link to={edit} state={location.state?.backState} className="navigation-link">Back to dates</Link>}
   </section>;
 }

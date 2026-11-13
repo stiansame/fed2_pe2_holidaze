@@ -10,9 +10,9 @@ import GuestSelect from '../components/GuestSelect.jsx';
 import Icon from '../components/Icon.jsx';
 import { addDays, dateKey, validDate } from '../utils/availability.js';
 
-const buttonClass = 'min-h-12 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60';
-const pillClass = 'inline-flex min-h-12 items-center gap-2 rounded-full border border-border bg-surface px-3 text-small sm:px-4 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2';
-const selectClass = 'min-h-12 min-w-0 w-full rounded-full bg-transparent pr-2 font-normal outline-none!';
+const buttonClass = 'h-11 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60';
+const pillClass = 'inline-flex h-11 items-center gap-2 rounded-full border border-border bg-surface px-3 text-small sm:px-4 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2';
+const selectClass = 'h-11 min-w-0 w-full rounded-full bg-transparent pr-2 font-normal outline-none!';
 
 export default function Venues() {
   const [params, setParams] = useSearchParams();
@@ -73,7 +73,7 @@ export default function Venues() {
       <form role="search" className="mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 sm:mt-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1.6fr)_minmax(0,0.8fr)]" onSubmit={event => event.preventDefault()}>
         <label className={`${pillClass} min-w-0 lg:order-2`}>
           <span className="sr-only">Search venues</span><Icon name="search" />
-          <input name="q" type="search" value={search.value} onChange={event => setSearch({ value: event.target.value, url: q })} aria-describedby="search-hint" placeholder="Search venues, locations or hosts" className="min-h-12 w-full min-w-0 bg-transparent outline-none!" />
+          <input name="q" type="search" value={search.value} onChange={event => setSearch({ value: event.target.value, url: q })} aria-describedby="search-hint" placeholder="Search venues, locations or hosts" className="h-11 w-full min-w-0 bg-transparent outline-none!" />
         </label>
         <button type="button" aria-label={`Filters and sort${activeFilters ? `, ${activeFilters} active` : ''}`} aria-expanded={filtersOpen} aria-controls="venue-filters" onClick={() => setFiltersOpen(value => !value)} className={`${pillClass} relative justify-self-start font-semibold text-primary lg:hidden`}>
           <Icon name="filter" />
@@ -98,10 +98,10 @@ export default function Venues() {
             </summary>
             <div className="mt-2 grid lg:absolute lg:inset-x-0 lg:top-full lg:z-10 gap-3 rounded-xl border border-border bg-surface p-4 shadow-lg sm:grid-cols-2">
               <label className="min-w-0 text-small font-semibold">Check-in
-                <input type="date" value={validDate(from) ? from : ''} min={dateKey()} onChange={event => update('from', event.target.value)} aria-invalid={Boolean(dateError)} aria-describedby="date-hint" className="mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2 font-normal" />
+                <input type="date" value={validDate(from) ? from : ''} min={dateKey()} onChange={event => update('from', event.target.value)} aria-invalid={Boolean(dateError)} aria-describedby="date-hint" className="mt-1 h-11 w-full min-w-0 rounded-lg border border-border bg-surface px-2 font-normal" />
               </label>
               <label className="min-w-0 text-small font-semibold">Check-out
-                <input type="date" value={validDate(to) ? to : ''} min={validDate(from) && from >= dateKey() ? addDays(from, 1) : addDays(dateKey(), 1)} onChange={event => update('to', event.target.value)} aria-invalid={Boolean(dateError)} aria-describedby="date-hint" className="mt-1 min-h-12 w-full min-w-0 rounded-lg border border-border bg-surface px-2 font-normal" />
+                <input type="date" value={validDate(to) ? to : ''} min={validDate(from) && from >= dateKey() ? addDays(from, 1) : addDays(dateKey(), 1)} onChange={event => update('to', event.target.value)} aria-invalid={Boolean(dateError)} aria-describedby="date-hint" className="mt-1 h-11 w-full min-w-0 rounded-lg border border-border bg-surface px-2 font-normal" />
               </label>
             </div>
           </details>

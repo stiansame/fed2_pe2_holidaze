@@ -1,5 +1,6 @@
 import { messages } from '../../constants/messages.js';
 import Loading from '../Loading.jsx';
+import SectionHeading from '../account/SectionHeading.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
@@ -33,13 +34,13 @@ export default function BookingsList({ upcomingOnly = false }) {
   const groups = bookings ? groupBookings(bookings) : null;
   return <div className="space-y-6">
     {notice && <p role="status" className="text-success">{notice}</p>}
-    {bookings?.length > 0 && <p className="text-small text-muted">Prices are estimates based on the venue’s current nightly rate.</p>}
+    {!upcomingOnly && bookings?.length > 0 && <p className="text-muted">Prices are estimates based on the venue’s current nightly rate.</p>}
     {error && <p role="alert" className="text-danger">{error}</p>}
     {!bookings && !error && <Loading>Loading your bookings…</Loading>}
-    {(bookings || error) && <button type="button" onClick={() => { setError(''); setBookings(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border bg-surface px-4 text-small font-semibold text-primary hover:bg-tint">{error ? 'Try again' : 'Refresh bookings'}</button>}
+    {error && <button type="button" onClick={() => { setError(''); setBookings(null); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border bg-surface px-4 text-small font-semibold text-primary hover:bg-tint">Try again</button>}
     {groups && Object.entries(groups).filter(([key, values]) => upcomingOnly ? key === 'upcoming' : key !== 'unknown' || values.length > 0).map(([key, values]) => <BookingGroup
       key={key}
-      title={key === 'upcoming' ? 'Upcoming stays' : key === 'past' ? 'Past stays' : 'Dates unavailable'}
+      title={key === 'upcoming' ? 'My upcoming stays' : key === 'past' ? 'Past stays' : 'Dates unavailable'}
       bookings={values}
       manage={!upcomingOnly}
       allLink={upcomingOnly ? '/bookings?show=upcoming' : undefined}
@@ -51,13 +52,12 @@ export default function BookingsList({ upcomingOnly = false }) {
 
 function BookingGroup({ title, bookings, manage, allLink, initialExpanded, onCancelled }) {
   const [expanded, setExpanded] = useState(initialExpanded && !allLink);
-  return <section aria-label={title} className="space-y-4">
-    <h2 className="text-h3 font-bold">{title} <span className="text-small font-normal text-muted">({bookings.length})</span></h2>
-    {bookings.length === 0 ? <p className="empty-state text-muted">No {title.toLowerCase()} yet.</p> : <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+  return <section aria-label={title} className={allLink ? 'space-y-4' : 'account-section'}>
+    <SectionHeading title={title} count={bookings.length} to={bookings.length > 3 ? allLink : undefined} expanded={expanded} onToggle={!allLink && bookings.length > 3 ? () => setExpanded(value => !value) : undefined} />
+    {bookings.length === 0 ? <p className="empty-state text-muted">No {title.replace(/^My /, '').toLowerCase()} yet.</p> : <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {(expanded ? bookings : bookings.slice(0, 3)).map(booking => <li key={booking.id} className="min-w-0"><BookingCard booking={booking} manage={manage} onCancelled={onCancelled} /></li>)}
     </ul>}
-    {bookings.length > 3 && (allLink ? <Link to={allLink} className="inline-flex min-h-12 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint">Show all ({bookings.length})</Link>
-      : <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint">{expanded ? 'Show less' : `Show all (${bookings.length})`}</button>)}
+
   </section>;
 }
 
@@ -103,8 +103,8 @@ function BookingCard({ booking, manage, onCancelled }) {
     {confirming && <div className="space-y-3 rounded-lg bg-danger/5 p-3">
       <p className="text-small">{messages.confirmBookingCancellation(name)}</p>
       <div className="flex flex-wrap gap-3">
-        <button type="button" autoFocus disabled={pending} onClick={cancel} className="min-h-12 rounded-lg bg-danger px-3 text-small font-semibold text-surface disabled:opacity-60">{pending ? 'Cancelling…' : 'Confirm cancellation'}</button>
-        <button type="button" disabled={pending} onClick={() => { setConfirming(false); setError(''); }} className="min-h-12 rounded-lg border border-border bg-surface px-3 text-small font-semibold text-primary disabled:opacity-60">Keep booking</button>
+        <button type="button" autoFocus disabled={pending} onClick={cancel} className="h-11 rounded-lg bg-danger px-3 text-small font-semibold text-surface disabled:opacity-60">{pending ? 'Cancelling…' : 'Confirm cancellation'}</button>
+        <button type="button" disabled={pending} onClick={() => { setConfirming(false); setError(''); }} className="h-11 rounded-lg border border-border bg-surface px-3 text-small font-semibold text-primary disabled:opacity-60">Keep booking</button>
       </div>
     </div>}
     {error && <p role="alert" className="text-small text-danger">{error}</p>}

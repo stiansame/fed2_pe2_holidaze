@@ -36,7 +36,7 @@ function HostProfile({ name }) {
     {error && <div className="space-y-3">
       <h1 className="text-h3 font-bold">{notFound ? messages.profileNotFound : messages.profileLoadFailed}</h1>
       <p role="alert">{notFound ? messages.profileNotFoundDescription : error.message}</p>
-      {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="min-h-12 rounded-lg border border-border bg-surface px-4 font-semibold text-primary">Try again</button>}
+      {!notFound && <button type="button" onClick={() => { setError(null); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary">Try again</button>}
     </div>}
     {data && <div className="min-w-0 space-y-6">
       <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
@@ -46,7 +46,7 @@ function HostProfile({ name }) {
             <HostAvatar key={profile.avatar?.url} media={profile.avatar} className="-mt-12 size-28 border-4 border-surface bg-surface" />
             <div className="min-w-0 flex-1 pt-3">
               <h1 className="text-h3 font-bold wrap-anywhere">{profile.name}</h1>
-              {profile.venueManager && <span className="mt-2 inline-block rounded-full bg-tint px-3 py-1 text-caption font-semibold text-primary">Venue manager</span>}
+              {profile.venueManager && <span className="mt-2 inline-flex h-8 items-center rounded-full bg-tint px-3 text-caption font-semibold text-primary">Venue manager</span>}
             </div>
           </div>
           <p className="whitespace-pre-line text-muted wrap-anywhere">{profile.bio?.trim() || 'No bio yet.'}</p>
@@ -55,7 +55,7 @@ function HostProfile({ name }) {
       <section aria-label="Host venues" className="min-w-0 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-h3 font-bold">Venues <span className="text-small font-normal text-muted">({data.venues.length})</span></h2>
-          {data.venues.length > 3 && <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="min-h-12 rounded-lg px-2 font-semibold text-primary hover:bg-tint">{expanded ? 'Show less' : 'View all'} <span aria-hidden="true">→</span></button>}
+          {data.venues.length > 3 && <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="h-11 rounded-lg px-2 font-semibold text-primary hover:bg-tint">{expanded ? 'Show less' : 'View all'} <span aria-hidden="true">→</span></button>}
         </div>
         {data.venues.length ? <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => <li key={venue.id} className="min-w-0"><VenueCard venue={venue} /></li>)}
