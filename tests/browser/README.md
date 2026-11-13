@@ -389,3 +389,22 @@ Recorded locally 2026-10-31: host bio/fallback, six/two guest options, invalid U
 
 - On desktop, profile cards and the complete statistic grid share their top and bottom edges, including long bios and profile editing. Manager accounts use a 3 × 3 grid; five-box profiles use two columns and a full-width last box.
 - Below 1024px, each statistic becomes a slim full-width row: icon left, label centre, value right. Verify five/nine rows, both themes, unavailable values and 320/390px without overflow. These visual checks remain manual.
+
+## Manager and access validation — #29, 13 November 2026
+
+Environment: local Vite at localhost:5173 with the in-memory browser fixtures. Checked through the real interface at 320px, 390px and 1440px viewport widths. No Noroff data or real saved session was used. This records local results only; live API persistence, Netlify and physical-device checks remain pending.
+
+- Passed: create a venue; required/whitespace-only fields reject submission; confirm the saved name, price, capacity, rating and amenities on details.
+- Passed: edit fields, cancel without saving, save and reopen the venue; desktop return to My venues preserves the origin.
+- Passed: deletion confirmation, Cancel and Escape, successful removal from My venues, and an announced success. These deletions affect only disposable in-memory records.
+- Passed: rejected create/update/delete responses keep a readable error and allow deliberate recovery; failed update preserves the draft. A lost create response disables repeat submission and reveals one saved venue in My venues. A rapid double-click on a successful retry also produces one venue.
+- Passed: signed-out direct Create/My venues/Edit/Bookings/Booking details routes lead to login; signed-in customers reach My account. No manager destinations appear in the customer account navigation.
+- Passed: direct editing of another host’s venue is rejected; its detail page has no owner menu. Another host’s booking details are rejected.
+- Passed: own booking overview shows current, upcoming, past and unknown-date groups. Open a booking, view its venue and guest profile, and follow the contextual return links. The venue-filtered return retains its query; a booking opened on My account returns there.
+- Passed: guest email appears in the manager booking summary; the public guest profile renders aggregate statistics without email, private booking cards or editing controls.
+- Passed: a 401 during creation ends the session and opens login with a notice, without displaying a successful save.
+- Passed: the inspected mobile create/edit/delete controls and booking views fit without horizontal overflow; desktop overview expands 15 venues to all 18. Standard/Sunny booking details were inspected and retain the same access/navigation behavior.
+
+Fixture corrections made during this run: profile-booking responses are handled before generic profiles and filtered to the requested customer; manager fixtures assign the returned venues to the manager; guest fixtures no longer automatically get manager status; summary fixtures include a sample guest email; Sunny CSS is imported. This fixes the local “data is not iterable” profile failure and inconsistent fixture ownership, without changing production code.
+
+Still unverified: create/update/delete persistence through real Noroff accounts and full reloads, live server-side rejection of an unauthorized mutation, Netlify deployment and physical iOS/Android behavior. The API-helper tests simulate ownership/error responses; they do not prove Noroff’s live authorization.
