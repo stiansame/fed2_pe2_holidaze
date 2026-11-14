@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -43,7 +44,7 @@ function BookingDetails({ id }) {
   const address = [venue?.location?.address, venue?.location?.zip, venue?.location?.city, venue?.location?.country]
     .map(value => value?.trim()).filter(Boolean).join(', ');
   return <section className="min-w-0 space-y-5">
-    <title>Holidaze | Booking details</title>
+    <DocumentTitle>Holidaze | Booking details</DocumentTitle>
     {!booking && <BackLink to="/manager/bookings" label="Back to venue bookings" shortLabel />}
     <h1 className="text-h3 font-bold sm:text-h2">Booking details</h1>
     {error ? <div role="alert" className="space-y-3">

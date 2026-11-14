@@ -423,3 +423,55 @@ Executed against the current local main checkout and the published Netlify site 
 - Responsive samples: 320px booking details and public guest profile, 320/390px Explore, and 1440px manager account were inspected. No horizontal overflow in the measured booking-details/Explore/account views. Both standard and Sunny Mode were exercised; mobile menu/filter disclosure worked. Back to top appeared after scrolling and moved focus to main content. This is viewport emulation, not a physical-device test.
 
 Still open: Firefox/Safari and physical iOS/Android checks; successful live registration/login with new credentials; live booking/venue create-update-delete persistence after a fresh reload; complete theme-by-page matrix, touch swipes and reduced-motion checks. A click on Next photo was exercised, but its eventual counter change was not verified. No full browser-matrix approval is claimed. #30 is not fully validated by this run alone.
+
+
+## Accessibility review — #31, 14 November 2026
+
+Read-only review of local main and the Netlify site. No production code or GitHub issue fields were changed. This is not a WCAG conformance certificate.
+
+### External validators
+
+- WAVE web service, public home URL: 1 error (missing/uninformative page title), 2 alerts (no heading structure and no page regions), 0 contrast errors reported. The report sees the unrendered React shell, not the actual app. Its zero contrast count is not a pass for rendered content. Full rendered-app WAVE/axe analysis is still open; no extension was installed.
+- Nu HTML Checker vnu 26.11.10, public home URL: 1 error, missing head title. Trailing slash messages on void elements were informational only.
+- Nu, serialized rendered production home: no errors or warnings. Only document head/body were included, excluding the browser's unrelated sibling overlay.
+- Nu, rendered local login HTML excluding injected development CSS/browser overlay: no HTML errors. The first unfiltered development dump produced unsupported modern CSS diagnostics and a browser-overlay stray div; these are not counted as production HTML findings.
+- Nu, rendered local venue details: 8 HTML errors in this two-photo example: three generic divs with prohibited aria-label (mobile photo strip, modal photo strip, availability container); four VenueImage div wrappers nested inside photo buttons; one required guest select whose first option is not empty. Hidden responsive variants were included in HTML validation.
+- Nu, rendered local Create venue: 1 HTML error, duplicate title elements. Browser DOM inspection found two identical head titles here and on the live 404 route. Layout and page components both render titles; dynamic routes can also supply different titles.
+
+### Confirmed findings for #32
+
+1. index.html has no static title before React starts.
+2. Layout and page-level titles can coexist, producing duplicate title elements (confirmed Create venue and live 404; shared pattern exists in other pages).
+3. VenueImage uses a div wrapper inside gallery buttons, where phrasing content is required.
+4. Generic gallery/calendar div elements have aria-label without a nameable role.
+5. GuestSelect applies required while its first option has value 1, causing invalid select markup.
+6. Empty form fields have insufficient boundary contrast against the white surface: standard border #e2e8f0 = 1.23:1; Sunny border #d5e3df = 1.32:1. The input surface and surrounding form surface are white, so the outline is the identifying boundary. Required non-text contrast is 3:1. Use a control-specific border rather than darkening every decorative border.
+
+### Manual checks performed
+
+- Tab reached Skip to content with a visible 2px primary outline; Enter focused main-content.
+- Mobile menu opened with Enter, focused Explore, and Escape returned focus to Open menu.
+- Mobile booking dialog opened with focus on Close booking. Calendar dates were selected with Enter/Space; date summaries and total updated. Escape closed it and returned focus to the booking action.
+- Gallery opened with focus on Close gallery; Escape restored the View all photos trigger. Shift+Tab could reach browser chrome; no evidence of focus on inert background controls was observed. Full assistive-technology dialog behavior remains unverified.
+- Venue form fields had associated labels. Submitting empty required fields focused Venue name and exposed native validation messages. The inspected form had no duplicate IDs or unlabelled input/select/textarea elements.
+- Form text/labels, named icon controls and calendar date labels were inspected. Live-region attributes are present in code, but actual announcement timing was not tested with a screen reader.
+- Measured text contrast: standard primary/white 8.44:1; standard muted/white 4.76:1; Sunny primary/white 6.08:1; Sunny muted/white 5.53:1; Sunny dark text/coral action 6.74:1. These are selected solid-colour pairs, not an exhaustive contrast audit of image/gradient backgrounds or every interaction state.
+- 320px venue booking/form samples had no measured horizontal overflow. Both themes were inspected. Viewport checks do not replace browser zoom, text-spacing or physical-device testing.
+
+Still open: full rendered WAVE/axe sweep, NVDA/VoiceOver, 200%/400% browser zoom and text-spacing, reduced-motion runtime checks, and exhaustive contrast/focus coverage. Production fixes and repeat validation belong to #32. #31 is not approved while the confirmed findings remain.
+
+References: https://wave.webaim.org/ ; https://validator.w3.org/nu/ ; https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html ; https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html
+
+
+## Accessibility corrections — #32, 14 November 2026
+
+Branch: m6/tilgjengelighet. The six confirmed findings from #31 are corrected locally; Netlify was not changed.
+
+- index.html has one static Holidaze title. DocumentTitle updates the existing title through document.title. Layout owns titles only for its four static public routes; page components own all other titles. Browser checks found one correct title after loading venue details, My account, My bookings, Create venue, public profile, review and 404 routes.
+- VenueImage now uses a flex span, preserving layout while making gallery button content valid phrasing content. Gallery photo strips and the calendar date-button container use named group roles. Required GuestSelect always retains an empty disabled first option while selecting the valid controlled guest value; Any remains available without required in search.
+- Shared control-border tokens are #7b8492 / #708681, measured at 3.78:1 / 3.88:1 against white. Browser computed styles confirmed both values on the venue form. Decorative card borders retain their original tokens. A temporary HTML before/after preview was shown and removed afterwards.
+- Nu HTML Checker retested serialized rendered local venue details (formerly eight errors) and Create venue (formerly one duplicate-title error): no errors or warnings. Serialization included document head and app root, excluding Vite-injected style blocks and unrelated browser overlays. This validates HTML structure, not stylesheet conformance or the complete site.
+- Browser regression: gallery opened, ArrowRight reached photo 2 of 2, Escape closed it and restored View all photos focus. Calendar accepted Enter/Space selections; required guest selection remained valid with value 2 and an empty first option. Guest Reserve correctly reached login; a signed-in review showed the selected dates, two guests, two nights and NOK 2 980 with one Review booking title.
+- Automated: added a focused rendering regression for photo-button content and guest options. The complete suite, lint and build are rerun before handoff.
+
+The wider #31 checks remain open: full rendered WAVE/axe sweep, actual screen readers, browser zoom/text spacing and reduced-motion runtime checks. Local HTML fixes do not change the earlier WAVE report against the unmodified public build.

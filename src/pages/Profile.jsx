@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useRef, useState } from 'react';
@@ -16,7 +17,7 @@ export default function Profile() {
   const stats = guestSummary(bookings, undefined, true);
   const profile = <ProfileCard />;
   return <section className="min-w-0 space-y-6">
-    <title>Holidaze | My account</title>
+    <DocumentTitle>Holidaze | My account</DocumentTitle>
     <h1 className="text-h3 font-bold sm:text-h2">My account</h1>
     {user.venueManager ? <ManagerOverview stats={stats}>{profile}</ManagerOverview> : <div className="grid items-start gap-4 lg:items-stretch lg:grid-cols-2">{profile}<AccountStats items={stats} /></div>}
     <div className="account-section"><BookingsList upcomingOnly onLoaded={setBookings} /></div>

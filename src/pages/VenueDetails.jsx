@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { lazy, Suspense, useEffect, useState } from 'react';
@@ -53,7 +54,7 @@ function VenueContent({ id }) {
   const venueTitle = <h1 title={name} className="min-w-0 truncate text-body font-bold lg:text-h2 lg:whitespace-normal lg:wrap-anywhere">{name}</h1>;
   return (
     <section className="venue-details space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
-      <title>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : 'Venue details'}`}</title>
+      <DocumentTitle>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : 'Venue details'}`}</DocumentTitle>
       <div className={venue && !error ? 'hidden lg:block' : 'block'}><BackLink to={`/venues${search}`} /></div>
       {error ? <>
         <h1 className="text-h2 font-bold">{notFound ? messages.venueNotFound : messages.venueLoadFailed}</h1>

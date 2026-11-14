@@ -34,7 +34,7 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
       <div className="relative">
       {photos.length ? <>
         <div className="relative lg:hidden">
-          <div ref={strip} onScroll={event => setActive(Math.max(0, Math.min(photos.length - 1, Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth))))} className="photo-strip rounded-lg" aria-label="Swipe venue photos">
+          <div ref={strip} onScroll={event => setActive(Math.max(0, Math.min(photos.length - 1, Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth))))} className="photo-strip rounded-lg" role="group" aria-label="Swipe venue photos">
             {photos.map((item, index) => <button key={`${item.url}-${index}`} type="button" aria-label={`Open photo ${index + 1} of ${photos.length}`} onClick={() => openPhoto(index)} className="w-full shrink-0 snap-center rounded-lg focus-visible:-outline-offset-4">
               <VenueImage media={item} name={item.alt || `${name}, photo ${index + 1}`} loading={index ? 'lazy' : 'eager'} className="relative aspect-square w-full rounded-lg" imageClass="absolute inset-0 object-cover" />
             </button>)}
@@ -61,7 +61,7 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
           <button type="button" aria-label="Close gallery" autoFocus onClick={() => dialog.current.close()} className={`${galleryControl} right-2 top-2`}><Icon name="close" /></button>
           <div className="relative">
             <div aria-hidden="true" className="invisible"><VenueImage key={photo.url} media={photo} name={name} loading="eager" className="min-h-48 min-w-64 rounded-lg has-[>span]:min-h-64" imageClass="!h-auto !w-auto max-h-[94dvh] max-w-[96vw] object-contain" /></div>
-            <div ref={modalStrip} aria-label="Swipe gallery photos" className="photo-strip absolute inset-0" onScrollEnd={event => setActive(Math.max(0, Math.min(photos.length - 1, Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth))))}>
+            <div ref={modalStrip} role="group" aria-label="Swipe gallery photos" className="photo-strip absolute inset-0" onScrollEnd={event => setActive(Math.max(0, Math.min(photos.length - 1, Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth))))}>
               {photos.map((item, index) => <div key={`${item.url}-${index}`} className="h-full w-full shrink-0 snap-center"><VenueImage media={item} name={`${name}, photo ${index + 1}`} className="h-full w-full" imageClass="object-contain" /></div>)}
             </div>
           </div>

@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -28,7 +29,7 @@ export default function VenueBookings() {
 
   const unavailable = data && venueId && !data.venues.some(venue => venue.id === venueId);
   return <section className="min-w-0 space-y-6">
-    <title>Holidaze | Venue bookings</title>
+    <DocumentTitle>Holidaze | Venue bookings</DocumentTitle>
     <div className="flex items-center gap-2">
       <h1 className="text-h3 font-bold sm:text-h2">Venue bookings</h1>
       <button type="button" aria-label="Refresh bookings" title="Refresh bookings" className="navigation-link size-11 shrink-0 justify-center p-0" onClick={() => { setError(''); setData(null); setAttempt(value => value + 1); }}><Icon name="reset" /></button>

@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import SectionHeading from '../components/account/SectionHeading.jsx';
@@ -29,7 +30,7 @@ export default function MyVenues() {
   }, [request, user.name, attempt]);
 
   return <section className="min-w-0 space-y-6">
-    <title>Holidaze | My venues</title>
+    <DocumentTitle>Holidaze | My venues</DocumentTitle>
     <div className="space-y-2">
       <SectionHeading level="h1" title="My venues" count={venues?.length} expanded={expanded} onToggle={venues?.length > 15 ? () => setExpanded(value => !value) : undefined}>
         <Link to="/manager/venues/new" state={navigationOrigin(location)} aria-label="Create venue" title="Create venue" className="navigation-link size-11 shrink-0 justify-center p-0"><Icon name="plus" /></Link>

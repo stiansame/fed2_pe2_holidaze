@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import BackLink from '../components/BackLink.jsx';
@@ -36,7 +37,7 @@ function EditLoader({ id }) {
   }, [id, request, user.name, attempt]);
 
   return <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-4 sm:p-6">
-    <title>Holidaze | Change booking</title>
+    <DocumentTitle>Holidaze | Change booking</DocumentTitle>
     <h1 className="text-h3 font-bold">Change booking</h1>
     {!data && !error && <Loading>Loading your booking…</Loading>}
     {data && <BookingEditor booking={data.booking} initialVenue={data.venue} />}
