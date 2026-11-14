@@ -12,6 +12,16 @@ const icon = L.icon({
   iconSize: [25, 41], iconAnchor: [12, 41], shadowSize: [41, 41],
 });
 
+/**
+ * Displays an OpenStreetMap view and optionally returns selected coordinates through Leaflet.
+ * @param {object} props Component props.
+ * @param {number|string} [props.lat] Venue latitude.
+ * @param {number|string} [props.lng] Venue longitude.
+ * @param {Function} [props.onChange] Receives selected coordinates; omit for a display-only map.
+ * @param {boolean} [props.disabled] Disables map coordinate selection.
+ * @param {boolean} [props.compact] Uses the compact layout.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueLocationMap({ lat, lng, onChange, disabled, compact = false }) {
   const container = useRef(null);
   const map = useRef(null);
@@ -32,6 +42,12 @@ export default function VenueLocationMap({ lat, lng, onChange, disabled, compact
   useEffect(() => {
     const instance = map.current;
     if (disabled || !onChange) return;
+    /**
+     * Wraps the clicked map point and returns coordinates with six decimal places.
+     * @param {object} event Leaflet map click event.
+     * @param {object} event.latlng Clicked latitude/longitude point.
+     * @returns {void}
+     */
     function select({ latlng }) {
       const point = latlng.wrap();
       onChange({ lat: point.lat.toFixed(6), lng: point.lng.toFixed(6) });

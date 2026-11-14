@@ -19,11 +19,21 @@ import { venueMapLinks } from '../utils/venue.js';
 
 const VenueLocationMap = lazy(() => import('../components/venues/VenueLocationMap.jsx'));
 
+/**
+ * Resets venue detail content when the route ID changes.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueDetails() {
   const { id } = useParams();
   return <VenueContent key={id} id={id} />;
 }
 
+/**
+ * Loads and presents venue photos, host details, amenities, booking and optional map.
+ * @param {object} props Component props.
+ * @param {string} props.id Route record ID.
+ * @returns {import('react').ReactNode}
+ */
 function VenueContent({ id }) {
   const routeLocation = useLocation();
   const { search } = routeLocation;

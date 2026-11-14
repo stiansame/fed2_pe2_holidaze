@@ -61,13 +61,58 @@ export const messages = {
   mapLoadFailed: "Map images could not be loaded.",
   mapManualCoordinates: " You can still enter coordinates manually.",
   venueCreationUncertain: "Your venue may have been created. Check My venues before trying again.",
+  /**
+   * Adds saved-reservation context to a loading error.
+   * @param {string} detail Original error detail.
+   * @returns {string}
+   */
   confirmationLoadFailed: detail => `Your reservation may already be saved, but its details could not be loaded: ${detail}`,
+  /**
+   * Adds a verification reminder when cancellation could not be confirmed.
+   * @param {string} detail Original error detail.
+   * @returns {string}
+   */
   cancellationUnclear: detail => `${detail} Refresh your bookings if the cancellation outcome is unclear.`,
+  /**
+   * Adds a verification reminder when venue deletion could not be confirmed.
+   * @param {string} detail Original error detail.
+   * @returns {string}
+   */
   deletionUnclear: detail => `${detail} Refresh My venues if the deletion outcome is unclear.`,
+  /**
+   * Names the stay in the irreversible cancellation confirmation.
+   * @param {string} name Affected venue name.
+   * @returns {string}
+   */
   confirmBookingCancellation: name => `Cancel your stay at ${name}? This removes the booking and cannot be undone.`,
+  /**
+   * Names the venue in the irreversible deletion confirmation.
+   * @param {string} name Affected venue name.
+   * @returns {string}
+   */
   confirmVenueDeletion: name => `Delete "${name}"? This permanently removes the venue and cannot be undone.`,
+  /**
+   * Identifies the venue image whose URL failed validation.
+   * @param {number} number One-based image number.
+   * @returns {string}
+   */
   invalidImageUrl: number => `Image ${number}: use a complete HTTP or HTTPS image URL of at most 300 characters.`,
+  /**
+   * Identifies the venue image whose alt text exceeds the limit.
+   * @param {number} number One-based image number.
+   * @returns {string}
+   */
   imageAltTooLong: number => `Image ${number}: alt text must be 120 characters or fewer.`,
+  /**
+   * Identifies the profile image field whose URL failed validation.
+   * @param {string} field Avatar or banner field name.
+   * @returns {string}
+   */
   invalidProfileImageUrl: field => `Use a complete HTTP or HTTPS URL of at most 300 characters for ${field}.`,
+  /**
+   * Identifies the profile image field whose alt text exceeds the limit.
+   * @param {string} field Avatar or banner field name.
+   * @returns {string}
+   */
   profileImageAltTooLong: field => `${field === 'avatar' ? 'Avatar' : 'Banner'} description must be 120 characters or fewer.`,
 };

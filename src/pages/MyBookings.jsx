@@ -3,6 +3,10 @@ import { useState } from 'react';
 import BookingsList from '../components/bookings/BookingsList.jsx';
 import Icon from '../components/Icon.jsx';
 
+/**
+ * Provides the customer booking heading, refresh action and shared booking list.
+ * @returns {import('react').ReactNode}
+ */
 export default function MyBookings() {
   const [attempt, setAttempt] = useState(0);
   return <section className="space-y-6">

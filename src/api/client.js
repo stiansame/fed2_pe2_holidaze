@@ -1,7 +1,16 @@
 import { messages } from '../constants/messages.js';
 const API_BASE = 'https://v2.api.noroff.dev/';
 
-// Return only complete, deduplicated lists; a failed page must reject the whole load.
+/**
+ * Loads complete pages of 100 records and keeps the latest record for each ID.
+ * @param {Function} request Request function supplied by the API client or account provider.
+ * @param {string} path Noroff collection path.
+ * @param {object} [options={}] Pagination settings.
+ * @param {object} [options.query={}] Additional URL parameters.
+ * @param {AbortSignal} [options.signal] Cancels the complete load.
+ * @returns {Promise<object[]>}
+ * @throws {Error} If any page fails or the load is cancelled.
+ */
 export async function getAllPages(request, path, { query = {}, signal } = {}) {
   const items = new Map();
   let page = 1;
@@ -16,6 +25,12 @@ export async function getAllPages(request, path, { query = {}, signal } = {}) {
 }
 
 export class ApiError extends Error {
+  /**
+   * Keeps an API error message, HTTP status and field errors together.
+   * @param {string} message User-facing error detail.
+   * @param {number} [status=0] HTTP status, or zero without a response.
+   * @param {object[]} [errors=[]] Field errors returned by Noroff.
+   */
   constructor(message, status = 0, errors = []) {
     super(message);
     this.name = 'ApiError';
@@ -36,6 +51,8 @@ export class ApiError extends Error {
  * @param {AbortSignal} [options.signal] Allows the caller to cancel the request.
  * @returns {Promise<object|null>} Full { data, meta } response, or null for 204.
  * @throws {ApiError} API, network or unreadable-response errors; status 0 means a network failure.
+ * @throws {TypeError} If the request targets a different origin.
+ * @throws {Error} If the request is cancelled; the abort reason is preserved.
  */
 export async function apiRequest(path, {
   method = 'GET',

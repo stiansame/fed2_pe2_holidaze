@@ -13,6 +13,13 @@ import VenueImage from '../venues/VenueImage.jsx';
 import Rating from '../venues/Rating.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 
+/**
+ * Loads customer bookings and groups them for account previews or the full booking page.
+ * @param {object} props Component props.
+ * @param {boolean} [props.upcomingOnly] Shows only the account preview of current/upcoming stays.
+ * @param {Function} props.onLoaded Receives the loaded booking list.
+ * @returns {import('react').ReactNode}
+ */
 export default function BookingsList({ upcomingOnly = false, onLoaded }) {
   const { user, request } = useAuth();
   const { search, state } = useLocation();
@@ -50,6 +57,17 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
   </div>;
 }
 
+/**
+ * Displays a customer booking preview or expandable group with shared card actions.
+ * @param {object} props Booking group data and display callbacks.
+ * @param {string} props.title Booking group title.
+ * @param {object[]} props.bookings Booking records used by this view.
+ * @param {boolean} props.manage Enables eligible customer booking actions.
+ * @param {string} props.allLink Destination for the full booking list.
+ * @param {boolean} props.initialExpanded Starts with the entire booking group visible.
+ * @param {Function} props.onCancelled Receives the cancelled booking ID.
+ * @returns {import('react').ReactNode}
+ */
 function BookingGroup({ title, bookings, manage, allLink, initialExpanded, onCancelled }) {
   const [expanded, setExpanded] = useState(initialExpanded && !allLink);
   return <section aria-label={title} className={allLink ? 'space-y-4' : 'account-section'}>
@@ -61,6 +79,14 @@ function BookingGroup({ title, bookings, manage, allLink, initialExpanded, onCan
   </section>;
 }
 
+/**
+ * Displays a customer booking with venue navigation and eligible change/cancel actions.
+ * @param {object} props Component props.
+ * @param {object} props.booking Booking with related venue/customer data.
+ * @param {boolean} props.manage Enables eligible customer booking actions.
+ * @param {Function} props.onCancelled Receives the cancelled booking ID.
+ * @returns {import('react').ReactNode}
+ */
 function BookingCard({ booking, manage, onCancelled }) {
   const routeLocation = useLocation();
   const { user, request } = useAuth();
@@ -73,6 +99,10 @@ function BookingCard({ booking, manage, onCancelled }) {
   const name = booking.venue?.name?.trim() || 'Venue unavailable';
   const venueLink = booking.venue?.id ? `/venues/${encodeURIComponent(booking.venue.id)}` : null;
 
+  /**
+   * Cancels the confirmed customer booking once and updates the parent list.
+   * @returns {Promise<void>}
+   */
   async function cancel() {
     if (submitting.current) return;
     submitting.current = true;

@@ -13,11 +13,21 @@ import AccountStats from '../components/account/AccountStats.jsx';
 import { guestSummary } from '../utils/bookings.js';
 import { hasVenuePhoto } from '../utils/venue.js';
 
+/**
+ * Resets the public profile view when the route name changes.
+ * @returns {import('react').ReactNode}
+ */
 export default function PublicProfile() {
   const { name } = useParams();
   return <HostProfile key={name} name={name} />;
 }
 
+/**
+ * Displays public profile information, aggregate booking statistics and offered venues.
+ * @param {object} props Component props.
+ * @param {string} props.name Profile name from the route.
+ * @returns {import('react').ReactNode}
+ */
 function HostProfile({ name }) {
   const { request } = useAuth();
   const [data, setData] = useState(null);

@@ -1,10 +1,23 @@
 import { useEffect, useRef } from 'react';
 import Icon from './Icon.jsx';
 
+/**
+ * Provides the shared pencil menu with outside-click and Escape dismissal.
+ * @param {object} props Component props.
+ * @param {string} props.label Visible or accessible action label.
+ * @param {import('react').ReactNode} props.children Content supplied by the parent.
+ * @param {boolean} [props.above] Opens actions above the menu trigger.
+ * @returns {import('react').ReactNode}
+ */
 export default function EditMenu({ label, children, above = false }) {
   const menu = useRef(null);
 
   useEffect(() => {
+    /**
+     * Dismisses outside clicks or Escape unless a confirmation dialog is open.
+     * @param {PointerEvent|KeyboardEvent} event Document pointer or keyboard event.
+     * @returns {void}
+     */
     function close(event) {
       if (!menu.current.open || menu.current.querySelector('dialog[open]')) return;
       if (event.type === 'pointerdown' && !menu.current.contains(event.target)) menu.current.open = false;

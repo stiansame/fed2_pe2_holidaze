@@ -11,6 +11,10 @@ const titles = {
   '/register': 'Register',
 };
 
+/**
+ * Wraps routes in the shared header, main landmark, footer and page-title handling.
+ * @returns {import('react').ReactNode}
+ */
 export default function Layout() {
   const { pathname } = useLocation();
   const isVenueDetails = !!matchPath('/venues/:id', pathname);

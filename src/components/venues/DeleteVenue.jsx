@@ -5,6 +5,13 @@ import { useAuth } from '../../auth/AuthContext.js';
 import { deleteVenue } from '../../api/venues.js';
 import Icon from '../Icon.jsx';
 
+/**
+ * Confirms venue deletion, prevents duplicate submission and reports the outcome.
+ * @param {object} props Component props.
+ * @param {object} props.venue Venue data.
+ * @param {Function} [props.onDeleted] Receives the deleted venue ID; otherwise returns to My venues.
+ * @returns {import('react').ReactNode}
+ */
 export default function DeleteVenue({ venue, onDeleted }) {
   const { user, request } = useAuth();
   const navigate = useNavigate();
@@ -15,6 +22,10 @@ export default function DeleteVenue({ venue, onDeleted }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
 
+  /**
+   * Deletes the confirmed venue once and reports success or an uncertain outcome.
+   * @returns {Promise<void>}
+   */
   async function remove() {
     if (submitting.current) return;
     submitting.current = true;

@@ -1,6 +1,20 @@
 import { Link } from 'react-router-dom';
 import Icon from '../Icon.jsx';
 
+/**
+ * Combines a section title, count badge and optional navigation or expansion action.
+ * @param {object} props Component props.
+ * @param {string} props.title Section title used for visible and accessible labels.
+ * @param {number} props.count Total number of section items.
+ * @param {string} props.id Route record ID.
+ * @param {string} props.to Navigation destination.
+ * @param {object} props.state Router state passed to the destination.
+ * @param {boolean} props.expanded Whether all items are currently visible.
+ * @param {Function} props.onToggle Toggles the expanded list.
+ * @param {string} [props.level] Heading element to render.
+ * @param {import('react').ReactNode} props.children Content supplied by the parent.
+ * @returns {import('react').ReactNode}
+ */
 export default function SectionHeading({ title, count, id, to, state, expanded, onToggle, level = 'h2', children }) {
   const Heading = level;
   const actionClass = 'ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-text hover:bg-tint';

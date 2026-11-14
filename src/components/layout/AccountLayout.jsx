@@ -4,6 +4,10 @@ import Icon from '../Icon.jsx';
 import HostAvatar from '../HostAvatar.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 
+/**
+ * Provides role-based account navigation as a desktop sidebar or mobile bottom bar.
+ * @returns {import('react').ReactNode}
+ */
 export default function AccountLayout() {
   const { user, profile } = useAuth();
   const location = useLocation();

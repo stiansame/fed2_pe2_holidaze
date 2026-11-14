@@ -15,6 +15,10 @@ const buttonClass = 'h-11 rounded-lg bg-primary px-5 font-semibold text-surface 
 const pillClass = 'inline-flex h-11 items-center gap-2 rounded-full border border-border bg-surface px-3 text-small sm:px-4 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2';
 const selectClass = 'h-11 min-w-0 w-full rounded-full bg-transparent pr-2 font-normal outline-none!';
 
+/**
+ * Keeps search, filter and sort selections in the URL, debouncing text input.
+ * @returns {import('react').ReactNode}
+ */
 export default function Venues() {
   const [params, setParams] = useSearchParams();
   const q = params.get('q')?.trim() || '';
@@ -50,6 +54,12 @@ export default function Venues() {
     return () => clearTimeout(timer);
   }, [value, q, setParams]);
 
+  /**
+   * Sets or removes one URL parameter while preserving the remaining search selections.
+   * @param {string} name Query parameter name.
+   * @param {string|number|boolean} value New value; falsy values remove the parameter.
+   * @returns {void}
+   */
   function update(name, value) {
     setParams(previous => {
       const next = new URLSearchParams(previous);
@@ -59,6 +69,10 @@ export default function Venues() {
     });
   }
 
+  /**
+   * Clears date, guest, amenity and sort filters while retaining the text query.
+   * @returns {void}
+   */
   function resetFilters() {
     setParams(previous => {
       const next = new URLSearchParams(previous);
@@ -121,6 +135,15 @@ export default function Venues() {
 
 }
 
+/**
+ * Loads the complete venue pool and applies shared photo, filter and sort rules.
+ * @param {object} props Component props.
+ * @param {string} props.order Selected venue sort key.
+ * @param {object} props.filters Text, dates, capacity and amenity filters.
+ * @param {boolean} props.waiting Indicates that debounced text is not yet applied.
+ * @param {boolean} props.tooShort Indicates fewer than three search characters.
+ * @returns {import('react').ReactNode}
+ */
 function VenueResults({ order, filters, waiting, tooShort }) {
   const [venues, setVenues] = useState(null);
   const [error, setError] = useState('');
@@ -148,6 +171,13 @@ function VenueResults({ order, filters, waiting, tooShort }) {
   return <VenueMatches key={JSON.stringify([order, filters])} venues={matches} onImageError={id => setVenues(previous => previous.filter(venue => venue.id !== id))} />;
 }
 
+/**
+ * Shows fifteen matching venue cards at a time and removes failed cover images.
+ * @param {object} props Component props.
+ * @param {object[]} props.venues Venue records to display.
+ * @param {Function} props.onImageError Reports a failed cover image.
+ * @returns {import('react').ReactNode}
+ */
 function VenueMatches({ venues, onImageError }) {
   const [count, setCount] = useState(15);
   const visible = venues.slice(0, count);

@@ -1,3 +1,10 @@
+/**
+ * Displays the animated Holidaze mark and an accessible loading message.
+ * @param {object} props Component props.
+ * @param {import('react').ReactNode} [props.children] Content supplied by the parent.
+ * @param {string} [props.className] Additional styling classes.
+ * @returns {import('react').ReactNode}
+ */
 export default function Loading({ children = 'Loading…', className = '' }) {
   return <div role="status" aria-atomic="true" className={`flex flex-col items-center gap-3 py-6 text-small text-muted ${className}`}>
     <svg aria-hidden="true" focusable="false" viewBox="-20 -20 136 112" fill="none" className="h-24 w-28 shrink-0">

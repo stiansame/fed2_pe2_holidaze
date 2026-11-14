@@ -1,6 +1,12 @@
 import DOMPurify from 'dompurify';
 import { useState } from 'react';
 
+/**
+ * Sanitises venue HTML and provides a compact expandable description on mobile.
+ * @param {object} props Component props.
+ * @param {string} props.description Venue description, optionally containing HTML.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueDescription({ description }) {
   const [expanded, setExpanded] = useState(false);
   const html = DOMPurify.sanitize(description?.trim() || 'No description provided.', {

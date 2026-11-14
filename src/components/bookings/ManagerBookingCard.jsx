@@ -8,6 +8,12 @@ import { navigationOrigin } from '../../utils/navigation.js';
 
 const pillClass = 'inline-flex h-6.5 max-w-full items-center gap-1 rounded-full bg-surface px-2.5 text-caption text-text';
 
+/**
+ * Links a compact guest/venue booking card to the manager booking summary.
+ * @param {object} props Component props.
+ * @param {object} props.booking Booking with related venue/customer data.
+ * @returns {import('react').ReactNode}
+ */
 export default function ManagerBookingCard({ booking }) {
   const location = useLocation();
   const venue = booking.venue;

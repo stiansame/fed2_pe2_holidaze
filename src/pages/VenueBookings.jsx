@@ -10,6 +10,10 @@ import Loading from '../components/Loading.jsx';
 import SectionHeading from '../components/account/SectionHeading.jsx';
 import Icon from '../components/Icon.jsx';
 
+/**
+ * Loads owned-venue bookings and groups current, upcoming and past stays.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueBookings() {
   const { user, request } = useAuth();
   const [params] = useSearchParams();
@@ -45,6 +49,13 @@ export default function VenueBookings() {
   </section>;
 }
 
+/**
+ * Displays an expandable group of manager bookings with shared photo cards.
+ * @param {object} props Booking group data and display callbacks.
+ * @param {string} props.status Booking status used for the group heading.
+ * @param {object[]} props.bookings Booking records used by this view.
+ * @returns {import('react').ReactNode}
+ */
 function BookingGroup({ status, bookings }) {
   const [expanded, setExpanded] = useState(false);
   const title = { upcoming: 'Upcoming bookings', current: 'Current bookings', past: 'Past bookings', unknown: 'Dates unavailable' }[status];

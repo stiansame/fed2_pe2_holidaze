@@ -2,6 +2,13 @@ import { messages } from '../constants/messages.js';
 import { bookingStatus, groupBookings } from './bookings.js';
 import { dateKey } from './availability.js';
 
+/**
+ * Attaches venues to bookings, removes duplicate IDs and separates booking statuses.
+ * @param {object[]} venues Owned venues with complete booking lists.
+ * @param {string} [today=dateKey()] Local date in YYYY-MM-DD format.
+ * @returns {{upcoming: object[], current: object[], past: object[], unknown: object[]}}
+ * @throws {Error} If a venue is missing booking data.
+ */
 export function managerBookingGroups(venues, today = dateKey()) {
   // Missing booking data must never appear as a confirmed zero.
   if (venues.some(venue => !Array.isArray(venue.bookings))) throw new Error(messages.bookingInformationUnavailable);
@@ -16,6 +23,12 @@ export function managerBookingGroups(venues, today = dateKey()) {
   };
 }
 
+/**
+ * Calculates manager booking totals and the average of valid venue ratings.
+ * @param {object[]} venues Owned venues with booking lists.
+ * @param {string} [today=dateKey()] Local date in YYYY-MM-DD format.
+ * @returns {{totalBookings: number, upcoming: object[], current: object[], averageRating: string|null}}
+ */
 export function managerSummary(venues, today = dateKey()) {
   const groups = managerBookingGroups(venues, today);
   const rated = venues.filter(venue => Number.isFinite(venue.rating) && venue.rating > 0 && venue.rating <= 5);

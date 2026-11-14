@@ -1,5 +1,9 @@
 import Logo from '../Logo.jsx';
 
+/**
+ * Displays the shared branding, slogan and copyright.
+ * @returns {import('react').ReactNode}
+ */
 export default function Footer() {
   return (
     <footer className="border-t-4 border-accent bg-accent/10">

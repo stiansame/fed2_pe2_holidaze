@@ -6,6 +6,10 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getOwnBooking } from '../api/bookings.js';
 
+/**
+ * Loads the saved customer booking and presents confirmation with onward navigation.
+ * @returns {import('react').ReactNode}
+ */
 export default function BookingConfirmation() {
   const { id } = useParams();
   const { request, user } = useAuth();

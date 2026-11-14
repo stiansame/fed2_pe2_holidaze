@@ -1,4 +1,7 @@
-/** Restore the saved profile before React renders. Storage is optional. */
+/**
+ * Restores Sunny Mode before React renders; blocked storage leaves the default theme.
+ * @returns {void}
+ */
 export function restoreTheme() {
   try {
     if (localStorage.getItem('holidaze-theme') === 'sunny') document.documentElement.dataset.theme = 'sunny';
@@ -7,7 +10,10 @@ export function restoreTheme() {
   }
 }
 
-/** Switch the colour profile without remounting the app. Storage is optional. */
+/**
+ * Toggles Sunny Mode and saves the choice when storage is available.
+ * @returns {boolean}
+ */
 export function toggleSunnyMode() {
   const sunny = document.documentElement.dataset.theme !== 'sunny';
   const theme = sunny ? 'sunny' : 'default';

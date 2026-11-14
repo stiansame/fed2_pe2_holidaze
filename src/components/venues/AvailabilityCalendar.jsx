@@ -10,6 +10,22 @@ import BookingPrice from './BookingPrice.jsx';
 const inputClass = 'mt-1 h-11 w-full min-w-0 rounded-lg border border-border bg-surface px-2';
 const fullDate = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeZone: 'UTC' });
 
+/**
+ * Displays availability and selects a stay, or presents a saved booking read-only.
+ * @param {object} props Component props.
+ * @param {object[]} props.bookings Booking records used by this view.
+ * @param {number} props.maxGuests Maximum allowed guest count.
+ * @param {object} props.initialStay Initial from/to dates and guest count.
+ * @param {Function} props.onReserve Receives selected dates and guest count instead of opening default review.
+ * @param {Function} props.onStayChange Receives the current date and guest selection.
+ * @param {string} props.formId ID connecting an external reservation button to this form.
+ * @param {number} props.price Current nightly rate.
+ * @param {boolean} [props.compact] Uses the compact layout.
+ * @param {string} [props.actionLabel] Reservation or review button text.
+ * @param {boolean} [props.readOnly] Displays saved dates without reservation controls.
+ * @param {import('react').ReactNode} props.actions Additional actions rendered in the shared layout.
+ * @returns {import('react').ReactNode}
+ */
 export default function AvailabilityCalendar({ bookings, maxGuests, initialStay, onReserve, onStayChange, formId, price, compact = false, actionLabel = 'Reserve', readOnly = false, actions }) {
   const today = dateKey();
   const calendar = useRef(null);
@@ -32,12 +48,22 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
   const days = new Date(Date.UTC(monthDate.getUTCFullYear(), monthDate.getUTCMonth() + 1, 0)).getUTCDate();
   const offset = (monthDate.getUTCDay() + 6) % 7;
 
+  /**
+   * Moves the visible calendar month using UTC arithmetic.
+   * @param {number} direction Month offset, normally -1 or 1.
+   * @returns {void}
+   */
   function changeMonth(direction) {
     const date = new Date(`${start}T00:00:00Z`);
     date.setUTCMonth(date.getUTCMonth() + direction);
     setMonth(date.toISOString().slice(0, 7));
   }
 
+  /**
+   * Starts a new date range or completes its check-out selection.
+   * @param {string} date Selected YYYY-MM-DD calendar key.
+   * @returns {void}
+   */
   function selectDate(date) {
     setChecked(false);
     if (!from || to || date <= from) {

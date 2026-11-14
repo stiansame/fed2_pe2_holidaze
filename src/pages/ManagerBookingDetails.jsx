@@ -14,11 +14,21 @@ import StaySummary from '../components/bookings/StaySummary.jsx';
 import BackLink from '../components/BackLink.jsx';
 import { navigationOrigin } from '../utils/navigation.js';
 
+/**
+ * Resets the manager booking summary when the route ID changes.
+ * @returns {import('react').ReactNode}
+ */
 export default function ManagerBookingDetails() {
   const { id } = useParams();
   return <BookingDetails key={id} id={id} />;
 }
 
+/**
+ * Loads an ownership-checked booking and fresh venue calendar with guest navigation.
+ * @param {object} props Component props.
+ * @param {string} props.id Route record ID.
+ * @returns {import('react').ReactNode}
+ */
 function BookingDetails({ id }) {
   const { request, user } = useAuth();
   const location = useLocation();
@@ -29,6 +39,10 @@ function BookingDetails({ id }) {
   useEffect(() => {
     window.scrollTo(0, 0);
     const controller = new AbortController();
+    /**
+     * Loads an ownership-checked booking and fresh venue availability before updating the view.
+     * @returns {Promise<void>}
+     */
     async function load() {
       const data = await getVenueBooking(request, id, user.name, { signal: controller.signal });
       const { data: venue } = await getVenue(data.venue.id, { signal: controller.signal });
