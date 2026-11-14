@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { beforeEach, test } from 'node:test';
-import { clearVenueCache, filterVenues, getAllVenues, getHighlyRatedVenues, getVenue, sortVenues } from '../../src/api/venues.js';
+import { clearVenueCache, filterVenues, getAllVenues, getVenue, sortVenues } from '../../src/api/venues.js';
+
+import { selectHighlyRatedVenues } from '../../src/utils/venue.js';
 
 beforeEach(clearVenueCache);
 
@@ -24,18 +26,6 @@ test('reuses complete lists for two minutes, separates query data and permits in
   clearVenueCache();
   await getAllVenues({ owner: true });
   assert.equal(fetchMock.mock.callCount(), 5);
-});
-
-test('requests a bounded highest-rating pool and forwards cancellation', async t => {
-  const controller = new AbortController();
-  t.mock.method(globalThis, 'fetch', async (url, options) => {
-    assert.equal(url.searchParams.get('sort'), 'rating');
-    assert.equal(url.searchParams.get('sortOrder'), 'desc');
-    assert.equal(url.searchParams.get('limit'), '100');
-    assert.equal(options.signal, controller.signal);
-    return Response.json({ data: [{ id: 'rated', rating: 5 }], meta: {} });
-  });
-  assert.equal((await getHighlyRatedVenues({ signal: controller.signal })).data[0].rating, 5);
 });
 
 test('fetches venue details with host data and forwards the abort signal and API errors', async t => {
@@ -174,4 +164,21 @@ test('loads host data on all pages so local search can find profile names beyond
   const venues = await getAllVenues({ owner: true });
   assert.ok(calls.every(url => url.searchParams.get('_owner') === 'true' && !url.searchParams.has('q') && url.pathname === '/holidaze/venues'));
   assert.deepEqual(filterVenues(venues, { q: 'targethost' }).map(v => v.id), ['2']);
+});
+
+
+test('selects highly rated venues from later pages and reuses the complete cache', async t => {
+  const fetchMock = t.mock.method(globalThis, 'fetch', async url => {
+    const page = Number(url.searchParams.get('page'));
+    return Response.json({
+      data: [{ id: String(page), rating: page === 1 ? 4 : 4.8,
+        media: [{ url: 'https://example.com/a.jpg' }, { url: 'https://example.com/b.jpg' }],
+        location: { lat: 60, lng: 5 } }],
+      meta: { nextPage: page === 1 ? 2 : null },
+    });
+  });
+  const venues = await getAllVenues();
+  assert.deepEqual(selectHighlyRatedVenues(venues).map(venue => venue.id), ['2']);
+  assert.equal(await getAllVenues(), venues);
+  assert.equal(fetchMock.mock.callCount(), 2);
 });

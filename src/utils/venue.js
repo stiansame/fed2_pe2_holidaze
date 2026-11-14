@@ -18,12 +18,10 @@ export function shuffleVenuesWithPhotos(venues, random = Math.random) {
 }
 
 export function selectHighlyRatedVenues(venues, random = Math.random) {
-  const eligible = venues.filter(venue => venue.rating >= 4
+  const eligible = venues.filter(venue => venue.rating > 4.5
+    && venueMapLinks(venue.location)
     && new Set((venue.media ?? []).map(photo => photo?.url?.trim()).filter(isPhotoUrl)).size >= 2);
-  const pool = shuffleVenuesWithPhotos(eligible, random);
-  // Prioritise up to three mapped venues without fixing the remaining choices.
-  const preferred = pool.filter(venue => venueMapLinks(venue.location)).slice(0, 3);
-  return [...preferred, ...pool.filter(venue => !preferred.includes(venue))];
+  return shuffleVenuesWithPhotos(eligible, random);
 }
 
 export function formatVenuePrice(price) {

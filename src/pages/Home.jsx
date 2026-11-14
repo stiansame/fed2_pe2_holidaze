@@ -2,7 +2,7 @@ import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getHighlyRatedVenues } from '../api/venues.js';
+import { getAllVenues } from '../api/venues.js';
 import { selectHighlyRatedVenues } from '../utils/venue.js';
 import HomeHero from '../components/venues/HomeHero.jsx';
 import VenueCard from '../components/venues/VenueCard.jsx';
@@ -18,9 +18,9 @@ export default function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
-    getHighlyRatedVenues({ signal: controller.signal }).then(result => {
+    getAllVenues({ signal: controller.signal }).then(venues => {
       if (controller.signal.aborted) return;
-      const pool = selectHighlyRatedVenues(result.data);
+      const pool = selectHighlyRatedVenues(venues);
       setHighlyRated(pool);
       // Keep the chosen photo independent of cards removed after image failures.
       setHeroImage(pool[Math.floor(Math.random() * pool.length)]?.media[0]?.url ?? null);

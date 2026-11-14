@@ -9,6 +9,7 @@ import VenueCard from '../components/venues/VenueCard.jsx';
 import GuestSelect from '../components/GuestSelect.jsx';
 import Icon from '../components/Icon.jsx';
 import { addDays, dateKey, validDate } from '../utils/availability.js';
+import { hasVenuePhoto } from '../utils/venue.js';
 
 const buttonClass = 'h-11 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60';
 const pillClass = 'inline-flex h-11 items-center gap-2 rounded-full border border-border bg-surface px-3 text-small sm:px-4 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2';
@@ -129,7 +130,7 @@ function VenueResults({ order, filters, waiting, tooShort }) {
   useEffect(() => {
     const controller = new AbortController();
     getAllVenues({ owner: true, bookings, signal: controller.signal }).then(data => {
-      if (!controller.signal.aborted) setVenues(data);
+      if (!controller.signal.aborted) setVenues(data.filter(hasVenuePhoto));
     }).catch(error => {
       if (!controller.signal.aborted) setError(error.message);
     });
@@ -144,10 +145,10 @@ function VenueResults({ order, filters, waiting, tooShort }) {
   </div>;
   if (!venues) return <Loading className="mt-6">Loading stays…</Loading>;
   const matches = sortVenues(filterVenues(venues, filters), order);
-  return <VenueMatches key={JSON.stringify([order, filters])} venues={matches} />;
+  return <VenueMatches key={JSON.stringify([order, filters])} venues={matches} onImageError={id => setVenues(previous => previous.filter(venue => venue.id !== id))} />;
 }
 
-function VenueMatches({ venues }) {
+function VenueMatches({ venues, onImageError }) {
   const [count, setCount] = useState(15);
   const visible = venues.slice(0, count);
   return (
@@ -156,7 +157,7 @@ function VenueMatches({ venues }) {
         {venues.length ? `Showing ${visible.length} of ${venues.length} matching stays.` : 'No stays match your search and filters. Try adjusting them.'}
       </p>
       {visible.length > 0 && <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {visible.map(venue => <VenueCard key={venue.id} venue={venue} />)}
+        {visible.map(venue => <VenueCard key={venue.id} venue={venue} onImageError={onImageError} />)}
       </div>}
       {visible.length < venues.length && <button type="button" onClick={() => setCount(value => value + 15)} className={`${buttonClass} mt-6`}>Load more</button>}
     </>

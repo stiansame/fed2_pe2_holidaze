@@ -10,6 +10,7 @@ import VenueCard from '../components/venues/VenueCard.jsx';
 import BackLink from '../components/BackLink.jsx';
 import AccountStats from '../components/account/AccountStats.jsx';
 import { guestSummary } from '../utils/bookings.js';
+import { hasVenuePhoto } from '../utils/venue.js';
 
 export default function PublicProfile() {
   const { name } = useParams();
@@ -26,7 +27,7 @@ function HostProfile({ name }) {
     window.scrollTo(0, 0);
     const controller = new AbortController();
     getHostProfile(request, name, { signal: controller.signal }).then(result => {
-      if (!controller.signal.aborted) setData(result);
+      if (!controller.signal.aborted) setData({ ...result, venues: result.venues.filter(hasVenuePhoto) });
     }).catch(error => { if (!controller.signal.aborted) setError(error); });
     return () => controller.abort();
   }, [request, name, attempt]);
@@ -63,7 +64,7 @@ function HostProfile({ name }) {
           {data.venues.length > 3 && <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="h-11 rounded-lg px-2 font-semibold text-primary hover:bg-tint">{expanded ? 'Show less' : 'View all'} <span aria-hidden="true">→</span></button>}
         </div>
         {data.venues.length ? <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => <li key={venue.id} className="min-w-0"><VenueCard venue={venue} /></li>)}
+          {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => <li key={venue.id} className="min-w-0"><VenueCard venue={venue} onImageError={id => setData(previous => ({ ...previous, venues: previous.venues.filter(item => item.id !== id) }))} /></li>)}
         </ul> : <p className="empty-state text-muted">No venues listed yet.</p>}
       </section>}
     </div>}
