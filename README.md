@@ -67,7 +67,7 @@ Check desktop and mobile widths in both standard and Sunny Mode:
 6. Use Tab, Shift+Tab, Enter and Escape to check navigation, menus, forms and dialogs. Check visible focus, 200%/400% browser zoom and reduced motion.
 7. Open an unknown route and a missing venue ID. Temporarily go offline in browser developer tools to check loading errors and retry after reconnecting. Refresh a nested route on the deployed site to verify routing.
 
-These steps use the live Noroff API: reservations and venue changes are real. Use your own test data and remove it afterwards. The development test suite and fixtures were removed after the final 65-test run passed; verification now uses lint, build and the manual checks above.
+These steps use the live Noroff API: reservations and venue changes are real. Use your own test data and remove it afterwards. Verification uses lint, build and the manual checks above.
 
 ## 🌐 Deployment
 
