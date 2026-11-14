@@ -26,6 +26,13 @@ const paths = {
   plus: <path d="M12 4v16M4 12h16" />,
 };
 
+/**
+ * Renders the named decorative SVG icon with the supplied size classes.
+ * @param {object} props Component props.
+ * @param {string} props.name Key identifying the SVG icon.
+ * @param {string} [props.className] Additional styling classes.
+ * @returns {import('react').ReactNode}
+ */
 export default function Icon({ name, className = 'size-5 shrink-0' }) {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>{paths[name]}</svg>;
 }

@@ -6,6 +6,10 @@ import { createVenue } from '../api/venues.js';
 import VenueForm from '../components/venues/VenueForm.jsx';
 import { backDestination } from '../utils/navigation.js';
 
+/**
+ * Connects the shared venue form to creation and navigates only while still mounted.
+ * @returns {import('react').ReactNode}
+ */
 export default function CreateVenue() {
   const location = useLocation();
   const back = backDestination(location.state, '/manager/venues', 'Back to my venues');

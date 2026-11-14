@@ -10,6 +10,13 @@ import AccountStats from './AccountStats.jsx';
 import SectionHeading from './SectionHeading.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 
+/**
+ * Loads owned venues and combines manager statistics with personal booking statistics.
+ * @param {object} props Component props.
+ * @param {import('react').ReactNode} props.children Content supplied by the parent.
+ * @param {Array} props.stats Personal booking statistics added to the manager overview.
+ * @returns {import('react').ReactNode}
+ */
 export default function ManagerOverview({ children, stats }) {
   const location = useLocation();
   const { user, request } = useAuth();

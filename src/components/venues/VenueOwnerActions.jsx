@@ -4,6 +4,14 @@ import DeleteVenue from './DeleteVenue.jsx';
 import EditMenu from '../EditMenu.jsx';
 import { navigationOrigin } from '../../utils/navigation.js';
 
+/**
+ * Groups owner edit/delete actions and optional booking navigation in the shared menu.
+ * @param {object} props Component props.
+ * @param {object} props.venue Venue data.
+ * @param {boolean} [props.card] Includes booking navigation for an owned venue card.
+ * @param {Function} [props.onDeleted] Receives the deleted venue ID; otherwise deletion returns to My venues.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueOwnerActions({ venue, card = false, onDeleted }) {
   const location = useLocation();
   return <EditMenu label="Manage your venue" above>

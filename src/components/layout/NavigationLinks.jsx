@@ -3,6 +3,13 @@ import { useAuth } from '../../auth/AuthContext.js';
 import HostAvatar from '../HostAvatar.jsx';
 import Icon from '../Icon.jsx';
 
+/**
+ * Selects guest or account navigation and shares actions across screen sizes.
+ * @param {object} props Component props.
+ * @param {boolean} [props.mobile] Uses mobile navigation styling.
+ * @param {Function} props.onNavigate Closes mobile navigation after an action.
+ * @returns {import('react').ReactNode}
+ */
 export default function NavigationLinks({ mobile = false, onNavigate }) {
   const { user, profile, logout } = useAuth();
   const navigate = useNavigate();

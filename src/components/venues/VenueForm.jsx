@@ -12,6 +12,14 @@ const fieldClass = 'mt-1 w-full min-w-0 rounded-lg border border-border bg-surfa
 const inputClass = `${fieldClass} h-11`;
 const sectionClass = 'min-w-0 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-6';
 
+/**
+ * Shares venue creation/editing fields, image rows, amenities and coordinate selection.
+ * @param {object} props Component props.
+ * @param {Function} props.onSave Saves validated input or receives saved data.
+ * @param {Function} props.onCancel Returns without saving.
+ * @param {object} [props.venue] Venue data.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueForm({ onSave, onCancel, venue = {} }) {
   const editing = Boolean(venue.id);
   const [mediaKeys, setMediaKeys] = useState(() => Array.from({ length: Math.max(1, venue.media?.length ?? 0) }, (_, index) => index));
@@ -23,6 +31,11 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
   const [coordinates, setCoordinates] = useState(() => ({ lat: venue.location?.lat || venue.location?.lng ? venue.location.lat : '', lng: venue.location?.lat || venue.location?.lng ? venue.location.lng : '' }));
   const [amenities, setAmenities] = useState(() => amenityOptions.filter(item => venue.meta?.[item.key]).map(item => item.key));
 
+  /**
+   * Sends FormData to the page save handler and blocks duplicate or uncertain saves.
+   * @param {import('react').FormEvent<HTMLFormElement>} event Form submission event.
+   * @returns {Promise<void>}
+   */
   async function submit(event) {
     event.preventDefault();
     if (submitting.current || uncertain) return;

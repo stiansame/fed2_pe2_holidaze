@@ -11,6 +11,10 @@ import Icon from '../components/Icon.jsx';
 import VenueOwnerActions from '../components/venues/VenueOwnerActions.jsx';
 import { navigationOrigin } from '../utils/navigation.js';
 
+/**
+ * Lists owned venues with shared owner actions and expandable results.
+ * @returns {import('react').ReactNode}
+ */
 export default function MyVenues() {
   const { user, request } = useAuth();
   const location = useLocation();

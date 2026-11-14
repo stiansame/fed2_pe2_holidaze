@@ -1,5 +1,13 @@
 import { formatPrice, formatVenuePrice } from '../../utils/venue.js';
 
+/**
+ * Displays the same stay and price details for review, editing and manager summaries.
+ * @param {object} props Component props.
+ * @param {object} props.venue Venue data.
+ * @param {object} props.stay Selected from/to dates and guest count.
+ * @param {object} props.summary Validated stay result with nights, total and an optional error.
+ * @returns {import('react').ReactNode}
+ */
 export default function StaySummary({ venue, stay, summary }) {
   return <>
     <h2 className="text-h3 font-semibold wrap-anywhere">{venue.name?.trim() || 'Unnamed stay'}</h2>

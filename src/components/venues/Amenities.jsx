@@ -1,5 +1,12 @@
 import { amenityOptions } from './amenityOptions.js';
 
+/**
+ * Displays enabled venue amenities using the shared labels and icons.
+ * @param {object} props Component props.
+ * @param {object} props.meta Venue amenity flags.
+ * @param {boolean} [props.compact] Uses the compact layout.
+ * @returns {import('react').ReactNode}
+ */
 export default function Amenities({ meta, compact = false }) {
   const available = amenityOptions.filter(item => meta?.[item.key] === true);
   if (!available.length) return null;

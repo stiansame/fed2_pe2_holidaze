@@ -6,6 +6,12 @@ import BookingPrice from './BookingPrice.jsx';
 import { stayFromSearch, staySummary } from '../../utils/availability.js';
 import { formatPrice, formatVenuePrice } from '../../utils/venue.js';
 
+/**
+ * Shares the selected stay between the desktop calendar and mobile booking bar/dialog.
+ * @param {object} props Component props.
+ * @param {object} props.venue Venue data.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueBooking({ venue }) {
   const { search } = useLocation();
   const [stay, setStay] = useState(() => stayFromSearch(search));
@@ -16,6 +22,10 @@ export default function VenueBooking({ venue }) {
   const titleId = useId();
   const summary = staySummary(venue, stay);
 
+  /**
+   * Opens the mobile reservation dialog and activates its scroll handling.
+   * @returns {void}
+   */
   function openBooking() {
     dialog.current.showModal();
     setOpen(true);
@@ -26,6 +36,10 @@ export default function VenueBooking({ venue }) {
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const desktop = window.matchMedia('(min-width: 64rem)');
+    /**
+     * Closes the mobile booking dialog when the viewport switches to desktop.
+     * @returns {void}
+     */
     const closeOnDesktop = () => { if (desktop.matches) dialog.current.close(); };
     desktop.addEventListener('change', closeOnDesktop);
     return () => {

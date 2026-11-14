@@ -3,6 +3,10 @@ import { messages } from '../constants/messages.js';
 import { Link } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 
+/**
+ * Displays a missing-page message and navigation back home.
+ * @returns {import('react').ReactNode}
+ */
 export default function NotFound() {
   return (
     <section className="empty-state mx-auto max-w-xl rounded-xl border border-border bg-surface p-6 sm:p-8">

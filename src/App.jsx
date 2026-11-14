@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import NotFound from './pages/NotFound.jsx';
 import VenueBookings from './pages/VenueBookings.jsx';
@@ -19,6 +19,10 @@ import MyVenues from './pages/MyVenues.jsx';
 import CreateVenue from './pages/CreateVenue.jsx';
 import EditVenue from './pages/EditVenue.jsx';
 
+/**
+ * Defines public, signed-in and manager-only routes.
+ * @returns {import('react').ReactNode}
+ */
 export default function App() {
   return (
     <Routes>
@@ -37,7 +41,6 @@ export default function App() {
             <Route path="/bookings" element={<MyBookings />} />
             <Route path="/bookings/:id/edit" element={<BookingEdit />} />
             <Route element={<RequireAuth manager />}>
-              <Route path="/manager" element={<Navigate to="/profile" replace />} />
               <Route path="/manager/venues" element={<MyVenues />} />
               <Route path="/manager/venues/new" element={<CreateVenue />} />
               <Route path="/manager/venues/:id/edit" element={<EditVenue />} />

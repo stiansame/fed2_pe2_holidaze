@@ -6,6 +6,12 @@ import { useAuth } from '../auth/AuthContext.js';
 
 const inputClass = 'mt-2 h-11 w-full rounded-lg border border-border bg-surface px-3';
 
+/**
+ * Shares registration/login fields, validation and navigation to the intended destination.
+ * @param {object} props Component props.
+ * @param {boolean} [props.register] Shows registration instead of login.
+ * @returns {import('react').ReactNode}
+ */
 export default function AuthForm({ register = false }) {
   const { user, notice, login } = useAuth();
   const navigate = useNavigate();
@@ -19,6 +25,11 @@ export default function AuthForm({ register = false }) {
 
   if (user) return <Navigate to={destination} state={location.state?.returnState} replace />;
 
+  /**
+   * Submits registration or login and displays API field errors beside the form.
+   * @param {import('react').FormEvent<HTMLFormElement>} event Form submission event.
+   * @returns {Promise<void>}
+   */
   async function submit(event) {
     event.preventDefault();
     if (pending) return;

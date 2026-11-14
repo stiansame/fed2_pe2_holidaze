@@ -12,11 +12,21 @@ import { staySummary } from '../utils/availability.js';
 import AvailabilityCalendar from '../components/venues/AvailabilityCalendar.jsx';
 import StaySummary from '../components/bookings/StaySummary.jsx';
 
+/**
+ * Resets the booking editor when the route ID changes.
+ * @returns {import('react').ReactNode}
+ */
 export default function BookingEdit() {
   const { id } = useParams();
   return <EditLoader key={id} id={id} />;
 }
 
+/**
+ * Loads an editable customer booking and fresh venue data before showing its editor.
+ * @param {object} props Component props.
+ * @param {string} props.id Route record ID.
+ * @returns {import('react').ReactNode}
+ */
 function EditLoader({ id }) {
   const { user, request } = useAuth();
   const [data, setData] = useState(null);
@@ -25,6 +35,10 @@ function EditLoader({ id }) {
 
   useEffect(() => {
     const controller = new AbortController();
+    /**
+     * Checks booking ownership and future-stay eligibility before loading fresh venue data.
+     * @returns {Promise<void>}
+     */
     async function load() {
       const booking = await getOwnBooking(request, id, user.name, { signal: controller.signal });
       if (bookingStatus(booking) !== 'upcoming') throw new Error(messages.bookingNotChangeable);
@@ -46,6 +60,13 @@ function EditLoader({ id }) {
   </section>;
 }
 
+/**
+ * Reviews or discards changed dates/guests, requesting another review if the price changed.
+ * @param {object} props Component props.
+ * @param {object} props.booking Booking with related venue/customer data.
+ * @param {object} props.initialVenue Fresh venue data loaded for editing.
+ * @returns {import('react').ReactNode}
+ */
 function BookingEditor({ booking, initialVenue }) {
   const { request, user } = useAuth();
   const navigate = useNavigate();
@@ -57,6 +78,11 @@ function BookingEditor({ booking, initialVenue }) {
   const submitting = useRef(false);
   const summary = staySummary(venue, stay, booking.id);
 
+  /**
+   * Saves reviewed booking changes or asks for review again when the price changed.
+   * @param {import('react').FormEvent<HTMLFormElement>} event Form submission event.
+   * @returns {Promise<void>}
+   */
   async function save(event) {
     event.preventDefault();
     if (submitting.current || summary.error) return;
@@ -79,18 +105,20 @@ function BookingEditor({ booking, initialVenue }) {
     }
   }
 
+  const cancelAction = <button type="button" disabled={pending} onClick={() => navigate('/bookings', { replace: true })} className="navigation-link justify-center text-small disabled:opacity-60">Cancel changes</button>;
+
   return reviewing ? <div className="space-y-5">
     <StaySummary venue={venue} stay={stay} summary={summary} />
     {summary.error && <p role="alert" className="text-danger">{summary.error}</p>}
     <form onSubmit={save}><button disabled={pending || !!summary.error} className="h-11 w-full rounded-lg bg-primary px-4 text-small font-semibold text-surface hover:bg-primary-hover disabled:opacity-60">{pending ? 'Saving…' : 'Save changes'}</button></form>
     <div className="grid grid-cols-2 items-stretch gap-2">
       <button type="button" disabled={pending} onClick={() => { setReviewing(false); setError(''); }} className="navigation-link justify-center text-small disabled:opacity-60">Back to dates</button>
-      <BackLink to="/bookings" label="Back to my bookings" shortLabel />
+      {cancelAction}
     </div>
     {error && <p role="alert" className="text-danger">{error}</p>}
   </div> : <AvailabilityCalendar
     bookings={venue.bookings?.filter(item => item.id !== booking.id)} maxGuests={venue.maxGuests}
-    actions={<BackLink to="/bookings" label="Back to my bookings" shortLabel />}
+    actions={cancelAction}
     initialStay={stay} actionLabel="Review changes" onReserve={selection => { setStay(selection); setReviewing(true); }}
   />;
 }

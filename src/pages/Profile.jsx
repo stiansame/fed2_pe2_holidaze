@@ -11,6 +11,10 @@ import ManagerOverview from '../components/account/ManagerOverview.jsx';
 import AccountStats from '../components/account/AccountStats.jsx';
 import { guestSummary } from '../utils/bookings.js';
 
+/**
+ * Combines the signed-in profile, role-appropriate statistics and upcoming personal stays.
+ * @returns {import('react').ReactNode}
+ */
 export default function Profile() {
   const { user } = useAuth();
   const [bookings, setBookings] = useState(null);
@@ -24,6 +28,10 @@ export default function Profile() {
   </section>;
 }
 
+/**
+ * Loads the shared profile and controls editing and manager registration.
+ * @returns {import('react').ReactNode}
+ */
 function ProfileCard() {
   const { user, profile, setProfile, request, becomeManager } = useAuth();
   const [editing, setEditing] = useState(false);
@@ -43,6 +51,10 @@ function ProfileCard() {
     return () => controller.abort();
   }, [path, request, attempt, setProfile]);
 
+  /**
+   * Enables hosting through the account provider and displays any returned error.
+   * @returns {Promise<void>}
+   */
   async function enableManager() {
     if (pending) return;
     setPending(true);
@@ -89,6 +101,15 @@ function ProfileCard() {
   );
 }
 
+/**
+ * Validates profile changes and reports saved data to its parent.
+ * @param {object} props Component props.
+ * @param {object} props.profile Current profile data.
+ * @param {string} props.path Profile API path.
+ * @param {Function} props.onSave Saves validated input or receives saved data.
+ * @param {Function} props.onCancel Returns without saving.
+ * @returns {import('react').ReactNode}
+ */
 function ProfileForm({ profile, path, onSave, onCancel }) {
   const { request } = useAuth();
   const [pending, setPending] = useState(false);
@@ -97,6 +118,11 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
   const fieldClass = 'mt-1 w-full rounded-lg border border-border bg-surface px-3';
   const inputClass = `${fieldClass} h-11`;
 
+  /**
+   * Validates profile input, saves changes and returns the updated profile to the parent.
+   * @param {import('react').FormEvent<HTMLFormElement>} event Form submission event.
+   * @returns {Promise<void>}
+   */
   async function submit(event) {
     event.preventDefault();
     if (submitting.current) return;

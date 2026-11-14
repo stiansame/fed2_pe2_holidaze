@@ -9,12 +9,23 @@ import { createBooking } from '../api/bookings.js';
 import { stayFromSearch, staySummary } from '../utils/availability.js';
 import StaySummary from '../components/bookings/StaySummary.jsx';
 
+/**
+ * Resets reservation review when the venue or stay query changes.
+ * @returns {import('react').ReactNode}
+ */
 export default function BookingReview() {
   const { id } = useParams();
   const { search } = useLocation();
   return <Review key={id + search} id={id} search={search} />;
 }
 
+/**
+ * Loads the selected venue and confirms a validated reservation without duplicate submission.
+ * @param {object} props Component props.
+ * @param {string} props.id Route record ID.
+ * @param {string} props.search URL query containing the selected stay.
+ * @returns {import('react').ReactNode}
+ */
 function Review({ id, search }) {
   const location = useLocation();
   const { request } = useAuth();
@@ -40,6 +51,11 @@ function Review({ id, search }) {
     return () => controller.abort();
   }, [id, attempt]);
 
+  /**
+   * Confirms the reviewed stay and handles changed prices or uncertain saves.
+   * @param {import('react').FormEvent<HTMLFormElement>} event Form submission event.
+   * @returns {Promise<void>}
+   */
   async function confirm(event) {
     event.preventDefault();
     if (submitting.current || uncertain || !venue || summary.error) return;

@@ -1,5 +1,12 @@
 import { messages } from "../constants/messages.js";
 
+/**
+ * Builds validated profile changes while preserving blank or unchanged media fields.
+ * @param {object} values Bio and avatar/banner URL and alt-text fields.
+ * @param {object} profile Current profile used to detect unchanged media.
+ * @returns {object}
+ * @throws {Error} If the bio or changed media fails validation.
+ */
 export function profileUpdate(values, profile) {
   const body = { bio: values.bio.trim() };
   if (body.bio.length > 160) throw new Error(messages.bioTooLong);

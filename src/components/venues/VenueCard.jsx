@@ -6,6 +6,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { navigationOrigin } from '../../utils/navigation.js';
 import { formatVenuePrice } from '../../utils/venue.js';
 
+/**
+ * Displays shared venue information and preserves the originating route when opened.
+ * @param {object} props Component props.
+ * @param {object} props.venue Venue data.
+ * @param {Function} props.onImageError Reports a failed cover image.
+ * @param {import('react').ReactNode} props.actions Additional actions rendered in the shared layout.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueCard({ venue, onImageError, actions }) {
   const routeLocation = useLocation();
   const { search } = routeLocation;

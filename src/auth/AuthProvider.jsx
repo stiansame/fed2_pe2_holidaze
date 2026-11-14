@@ -4,11 +4,22 @@ import { apiRequest } from '../api/client.js';
 import { AuthContext } from './AuthContext.js';
 import { readSession, SESSION_KEY, sessionExpiresAt } from './session.js';
 
+/**
+ * Shares the current account, profile and authenticated request actions.
+ * @param {object} props Component props.
+ * @param {import('react').ReactNode} props.children Content supplied by the parent.
+ * @returns {import('react').ReactNode}
+ */
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(() => readSession(localStorage));
   const [notice, setNotice] = useState('');
   const [profile, setProfile] = useState(null);
 
+  /**
+   * Clears the saved session and shared profile, optionally showing a notice.
+   * @param {string} [message=""] Notice shown after logout.
+   * @returns {void}
+   */
   const logout = useCallback((message = '') => {
     localStorage.removeItem(SESSION_KEY);
     setUser(null);
@@ -16,6 +27,11 @@ export default function AuthProvider({ children }) {
     setNotice(message);
   }, []);
 
+  /**
+   * Signs in through Noroff and stores the returned account session.
+   * @param {object} credentials Email and password supplied by the login form.
+   * @returns {Promise<object>}
+   */
   async function login(credentials) {
     const { data } = await apiRequest('auth/login', {
       method: 'POST', query: { _holidaze: true }, body: credentials,
@@ -31,7 +47,12 @@ export default function AuthProvider({ children }) {
     return session;
   }
 
-  // Authenticated feature calls use this wrapper so a rejected token ends the session.
+  /**
+   * Adds the current access token and ends the session when Noroff returns HTTP 401.
+   * @param {string} path Noroff API path.
+   * @param {object} [options={}] Settings forwarded to apiRequest.
+   * @returns {Promise<object|null>}
+   */
   const request = useCallback(async (path, options = {}) => {
     try {
       return await apiRequest(path, { ...options, token: user?.accessToken });
@@ -41,6 +62,10 @@ export default function AuthProvider({ children }) {
     }
   }, [user, logout]);
 
+  /**
+   * Enables hosting and updates the session only if the same account is still signed in.
+   * @returns {Promise<void>}
+   */
   async function becomeManager() {
     const { data } = await request(`holidaze/profiles/${encodeURIComponent(user.name)}`, {
       method: 'PUT', body: { venueManager: true },

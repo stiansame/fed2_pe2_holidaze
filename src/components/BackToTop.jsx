@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import Icon from './Icon.jsx';
 
+/**
+ * Shows a return-to-top action after scrolling and respects reduced motion.
+ * @returns {import('react').ReactNode}
+ */
 export default function BackToTop() {
   const [visible, setVisible] = useState(false);
 

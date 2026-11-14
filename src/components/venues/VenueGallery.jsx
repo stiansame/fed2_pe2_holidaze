@@ -6,6 +6,15 @@ const counterClass = 'pointer-events-none absolute bottom-3 left-1/2 -translate-
 const controlClass = 'h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-50';
 const galleryControl = 'absolute z-10 flex size-11 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-sm hover:bg-tint';
 
+/**
+ * Shares desktop previews and swipeable mobile/modal photo navigation.
+ * @param {object} props Component props.
+ * @param {object[]} [props.media=[]] Venue photo URLs and alt text.
+ * @param {string} props.name Venue name used for photo labels.
+ * @param {import('react').ReactNode} [props.children] Owner actions overlaid on the photos.
+ * @param {import('react').ReactNode} [props.backLink] Return control overlaid on the mobile photo.
+ * @returns {import('react').ReactNode}
+ */
 export default function VenueGallery({ media = [], name, children, backLink }) {
   const photos = (media ?? []).filter(photo => typeof photo?.url === 'string' && photo.url.trim());
   const [active, setActive] = useState(0);
@@ -18,12 +27,22 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
     if (dialog.current?.open) modalStrip.current.scrollTo({ left: active * modalStrip.current.clientWidth, behavior: 'instant' });
   }, [active]);
 
+  /**
+   * Opens the gallery at the chosen photo and aligns its strip.
+   * @param {number} [index=active] Zero-based photo index.
+   * @returns {void}
+   */
   function openPhoto(index = active) {
     setActive(index);
     dialog.current.showModal();
     modalStrip.current.scrollTo({ left: index * modalStrip.current.clientWidth, behavior: 'instant' });
   }
 
+  /**
+   * Scrolls to the preceding or next gallery photo, wrapping at either end.
+   * @param {number} step Photo offset, normally -1 or 1.
+   * @returns {void}
+   */
   function move(step) {
     const index = (active + step + photos.length) % photos.length;
     modalStrip.current.scrollTo({ left: index * modalStrip.current.clientWidth });

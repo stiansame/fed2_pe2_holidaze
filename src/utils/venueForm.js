@@ -1,5 +1,11 @@
 import { messages } from "../constants/messages.js";
 
+/**
+ * Reads a complete latitude/longitude pair within geographic bounds.
+ * @param {string|number|null|undefined} lat Latitude.
+ * @param {string|number|null|undefined} lng Longitude.
+ * @returns {[number, number]|null}
+ */
 export function venueCoordinates(lat, lng) {
   if (!String(lat ?? "").trim() || !String(lng ?? "").trim()) return null;
   const point = [Number(lat), Number(lng)];
@@ -10,7 +16,18 @@ export function venueCoordinates(lat, lng) {
     : null;
 }
 
+/**
+ * Builds a validated venue payload from the shared creation/editing form.
+ * @param {FormData} form Venue fields, media rows, amenities and optional location.
+ * @returns {object}
+ * @throws {Error} If a field fails validation.
+ */
 export function venueFormData(form) {
+  /**
+   * Reads a trimmed field from the enclosing venue form.
+   * @param {string} name Form field name.
+   * @returns {string}
+   */
   const text = (name) => String(form.get(name) ?? "").trim();
   const name = text("name");
   const description = text("description");

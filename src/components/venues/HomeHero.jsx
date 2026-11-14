@@ -1,5 +1,12 @@
 const fallbackImage = 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1800&q=85';
 
+/**
+ * Displays the chosen hero background, headline and supplied search form.
+ * @param {object} props Component props.
+ * @param {string} [props.image] Hero image URL; missing values use the fallback photo.
+ * @param {import('react').ReactNode} props.children Content supplied by the parent.
+ * @returns {import('react').ReactNode}
+ */
 export default function HomeHero({ image, children }) {
   return (
     <section aria-labelledby="hero-heading" className="relative isolate overflow-hidden rounded-lg bg-text text-surface">

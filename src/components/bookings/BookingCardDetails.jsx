@@ -2,6 +2,13 @@ import { bookingPrice, formatBookingRange } from '../../utils/bookings.js';
 import { formatPrice, formatVenuePrice } from '../../utils/venue.js';
 import Icon from '../Icon.jsx';
 
+/**
+ * Displays the shared customer-booking dates, location, guest count and prices.
+ * @param {object} props Component props.
+ * @param {object} props.booking Booking with related venue/customer data.
+ * @param {import('react').ReactNode} props.title Heading content.
+ * @returns {import('react').ReactNode}
+ */
 export default function BookingCardDetails({ booking, title }) {
   const venue = booking.venue;
   const place = [venue?.location?.city, venue?.location?.country]

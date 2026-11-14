@@ -6,11 +6,19 @@ import NavigationLinks from './NavigationLinks.jsx';
 import Icon from '../Icon.jsx';
 import { toggleSunnyMode } from '../../utils/theme.js';
 
+/**
+ * Provides shared navigation, theme switching and the mobile menu.
+ * @returns {import('react').ReactNode}
+ */
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sunny, setSunny] = useState(() => typeof document !== 'undefined' && document.documentElement.dataset.theme === 'sunny');
   const menuButton = useRef(null);
 
+  /**
+   * Closes mobile navigation and returns keyboard focus to its trigger.
+   * @returns {void}
+   */
   function closeMenu() {
     setMenuOpen(false);
     menuButton.current.focus();

@@ -8,6 +8,10 @@ import HomeHero from '../components/venues/HomeHero.jsx';
 import VenueCard from '../components/venues/VenueCard.jsx';
 import Icon from '../components/Icon.jsx';
 
+/**
+ * Chooses a hero and up to twelve randomised eligible stays from the cached venue pool.
+ * @returns {import('react').ReactNode}
+ */
 export default function Home() {
   const [highlyRated, setHighlyRated] = useState([]);
   const [heroImage, setHeroImage] = useState(null);

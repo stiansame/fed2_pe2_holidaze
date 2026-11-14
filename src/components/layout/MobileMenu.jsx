@@ -1,6 +1,12 @@
 import { useEffect, useRef } from 'react';
 import NavigationLinks from './NavigationLinks.jsx';
 
+/**
+ * Displays three mobile navigation actions and returns dismissal to the header.
+ * @param {object} props Component props.
+ * @param {Function} props.onClose Closes the mobile menu.
+ * @returns {import('react').ReactNode}
+ */
 export default function MobileMenu({ onClose }) {
   const menuRef = useRef(null);
 
