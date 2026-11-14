@@ -12,6 +12,13 @@ import '../../src/styles/sunny.css';
 import { addDays, dateKey } from '../../src/utils/availability.js';
 
 const params = new URLSearchParams(location.search);
+if (params.get('theme') === 'sunny') document.documentElement.dataset.theme = 'sunny';
+// WCAG text-spacing override for manual browser checks; never shipped with the app.
+if (params.has('textSpacing')) {
+  const style = document.createElement('style');
+  style.textContent = '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }';
+  document.head.append(style);
+}
 const mode = params.get('mode') || 'data';
 const fixtureUser = { name: 'fixture_guest', email: 'fixture@stud.noroff.no', venueManager: params.get('manager') === '1', accessToken: `fixture.${btoa(JSON.stringify({ exp: 9999999999 }))}.test` };
 // Keep fixture sessions in memory; never touch the user's real saved session.

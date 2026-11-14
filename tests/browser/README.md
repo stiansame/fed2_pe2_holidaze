@@ -475,3 +475,13 @@ Branch: m6/tilgjengelighet. The six confirmed findings from #31 are corrected lo
 - Automated: added a focused rendering regression for photo-button content and guest options. The complete suite, lint and build are rerun before handoff.
 
 The wider #31 checks remain open: full rendered WAVE/axe sweep, actual screen readers, browser zoom/text spacing and reduced-motion runtime checks. Local HTML fixes do not change the earlier WAVE report against the unmodified public build.
+
+## Additional accessibility checks — #31, 14 November 2026
+
+- Chrome Lighthouse 12.6.0 Snapshot analysed fully rendered content, rather than the React shell: public Sunny home 27/27 accessibility audits passed; local venue details 29/29; Sunny Create venue 25/25; Sunny Explore 26/26; Sunny manager account 24/24; Sunny My bookings 22/22; Sunny login 20/20. These are page samples, not a completed sweep of every route and interactive state.
+- Text spacing used a test-fixture-only override: line height 1.5, letter spacing .12em, word spacing .16em and paragraph spacing 2em. Forty loaded-page checks covered login, registration, account, My bookings, My venues, venue bookings, manager booking details, public guest profile, booking editing and 404, at 320px and 1440px in both themes. No document overflow or horizontally overflowing form controls was measured. Additional venue, booking-dialog, Create venue and expanded Explore-filter samples were inspected visually. Existing truncated headings retain their full title/accessible names.
+- Actual Chrome zoom reached 200% and 400%, with 400% confirmed in Chrome's UI. Venue details/booking dialog, Sunny login and Sunny Create venue were inspected; manager profile and its fixed account bar were also inspected at 400%. This does not complete zoom verification of every page and control.
+- Chrome DevTools emulated prefers-reduced-motion: reduce. Runtime matchMedia returned true and all three loading-map parts had computed animation-name: none. Emulation was removed afterwards. Gallery smooth scrolling and other motion utilities are guarded by motion-safe/motion-reduce in source.
+- Sunny selected WiFi retained white-on-petrol text. Keyboard Tab moved to Parking with a visible 2px petrol outline and 4px offset. The full contrast/focus state matrix remains incomplete.
+- NVDA 2026.2 was installed with user approval from NV Access through winget. The user then asked to skip it and turn it off. NVDA was exited and absence of its process was verified. No screen-reader pass is claimed.
+- Test tabs were closed, temporary viewport/zoom/emulation settings restored, and the owned local server stopped. No production source files were changed.

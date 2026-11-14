@@ -27,6 +27,11 @@ I used an AI assistant to discuss the assignment, break it into milestones and w
 - AI has also suggested libraries to add that help optimize my code delivery, eg. Leaflet and DOMPurify.
 - AI has also helped writing JSDOCS for all functions.
 
+## Testing and Validation
+
+- AI helped me me write and configure tests, define proper aceptance critera and validation checklists, including e2e tests.
+-
+
 ## Project Management
 
 AI helped me sort through my github-project, and make sure all issues, PR's and deliverables are neatly tied together, and also have proper validation checklists.
