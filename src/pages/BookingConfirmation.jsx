@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
@@ -25,7 +26,7 @@ export default function BookingConfirmation() {
   }, [id, request, user.name, attempt]);
 
   return <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8">
-    <title>Holidaze | Booking confirmation</title>
+    <DocumentTitle>Holidaze | Booking confirmation</DocumentTitle>
     <h1 className="text-h3 font-bold">{booking ? 'Booking confirmed' : 'Booking confirmation'}</h1>
     {!booking && !error && <Loading>Loading your reservation…</Loading>}
     {booking && <>

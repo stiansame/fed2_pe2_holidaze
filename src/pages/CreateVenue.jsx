@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -16,7 +17,7 @@ export default function CreateVenue() {
     return () => { active.current = false; };
   }, []);
   return <section className="min-w-0 space-y-5">
-    <title>Holidaze | Create venue</title>
+    <DocumentTitle>Holidaze | Create venue</DocumentTitle>
     <h1 className="text-h3 font-bold sm:text-h2">Create venue</h1>
     <VenueForm onCancel={() => navigate(back.to, { state: location.state?.backState })} onSave={async form => {
       const venue = await createVenue(request, form);

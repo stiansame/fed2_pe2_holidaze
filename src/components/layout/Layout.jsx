@@ -1,4 +1,4 @@
-import { messages } from '../../constants/messages.js';
+import DocumentTitle from '../DocumentTitle.jsx';
 import { matchPath, Outlet, useLocation } from 'react-router-dom';
 import Header from './Header.jsx';
 import Footer from './Footer.jsx';
@@ -9,22 +9,16 @@ const titles = {
   '/venues': 'Explore venues',
   '/login': 'Log in',
   '/register': 'Register',
-  '/profile': 'My account',
-  '/bookings': 'My bookings',
-  '/manager': 'My account',
-  '/manager/venues': 'My venues',
-  '/manager/venues/new': 'Create venue',
-  '/manager/bookings': 'Venue bookings',
 };
 
 export default function Layout() {
   const { pathname } = useLocation();
   const isVenueDetails = !!matchPath('/venues/:id', pathname);
   const isAccount = /^\/(profile|bookings|manager)(\/|$)/.test(pathname);
-  const title = titles[pathname.replace(/\/+$/, '') || '/'] || messages.pageNotFound;
+  const title = titles[pathname.replace(/\/+$/, '') || '/'];
   return (
     <div className="site-shell flex min-h-dvh flex-col bg-linear-to-br from-accent/10 via-background to-tint/40">
-      {!isVenueDetails && <title>{`Holidaze | ${title}`}</title>}
+      {title && <DocumentTitle>{`Holidaze | ${title}`}</DocumentTitle>}
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:rounded-lg focus:bg-surface focus:p-4">
         Skip to content
       </a>

@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
 import { useEffect, useState } from 'react';
@@ -34,7 +35,7 @@ function HostProfile({ name }) {
   const notFound = error && [400, 404].includes(error.status);
   const profile = data?.profile;
   return <section className="space-y-5">
-    <title>{`Holidaze | ${notFound ? messages.profileNotFound : name}`}</title>
+    <DocumentTitle>{`Holidaze | ${notFound ? messages.profileNotFound : name}`}</DocumentTitle>
     {!data && !error && <Loading>Loading host profile…</Loading>}
     {error && <div className="space-y-3">
       <h1 className="text-h3 font-bold">{notFound ? messages.profileNotFound : messages.profileLoadFailed}</h1>

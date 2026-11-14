@@ -1,3 +1,4 @@
+import DocumentTitle from '../components/DocumentTitle.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
@@ -32,7 +33,7 @@ function VenueEditor({ id }) {
   }, [id, request, user.name, attempt]);
 
   return <section className="min-w-0 space-y-5">
-    <title>Holidaze | Edit venue</title>
+    <DocumentTitle>Holidaze | Edit venue</DocumentTitle>
     <h1 className="text-h3 font-bold sm:text-h2">Edit venue</h1>
     {error ? <div role="alert" className="space-y-3">
       <p className="text-danger">{error}</p>

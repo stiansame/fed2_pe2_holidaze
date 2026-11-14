@@ -62,7 +62,7 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
         <button type="button" aria-label="Next month" onClick={() => changeMonth(1)} className="flex size-11 shrink-0 items-center justify-center rounded-lg text-primary hover:bg-tint"><Icon name="right" /></button>
       </div>
       {!readOnly && <p aria-live="polite" className="text-small font-semibold">{to ? 'Click a date to start a new selection.' : from ? 'Choose check-out' : 'Choose check-in'}</p>}
-      <div className="grid grid-cols-7 gap-1 text-center text-caption" aria-label="Night availability">
+      <div className="grid grid-cols-7 gap-1 text-center text-caption" role="group" aria-label="Night availability">
         {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(day => <span key={day} className="py-2 font-semibold text-muted">{day}</span>)}
         {Array.from({ length: offset }, (_, i) => <span key={`space-${i}`} />)}
         {Array.from({ length: days }, (_, i) => {

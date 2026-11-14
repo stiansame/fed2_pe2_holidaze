@@ -4,7 +4,7 @@ export default function GuestSelect({ value, onChange, maxGuests = 100, allowAny
   return <select value={valid ? value : ''} onChange={event => onChange(Number(event.target.value))}
     required={!allowAny} disabled={!capacity} aria-invalid={!valid} className={className}>
     {!capacity ? <option value="">Guest capacity unavailable</option>
-      : !valid && <option value="" disabled>Choose guests</option>}
+      : (!allowAny || !valid) && <option value="" disabled>Choose guests</option>}
     {allowAny && capacity > 0 && <option value="0">Any</option>}
     {Array.from({ length: capacity }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1} {index === 0 ? 'guest' : 'guests'}</option>)}
   </select>;

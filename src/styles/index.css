@@ -11,6 +11,7 @@
   --color-background: #f8fafc;
   --color-surface: #ffffff;
   --color-border: #e2e8f0;
+  --color-control-border: #7b8492;
   --color-tint: #eef2ff;
   --color-success: #0f766e;
   --color-danger: #b91c1c;
@@ -214,4 +215,12 @@
   width: 2.75rem;
   height: 2.75rem;
   line-height: 2.75rem;
+}
+
+
+/* Form boundaries need more contrast than decorative card borders, in both themes. */
+.site-shell :is(input:not([type='checkbox']):not([type='radio']), select, textarea),
+.site-shell label:has(> input[type='search']),
+.site-shell label:has(> select) {
+  border-color: var(--color-control-border);
 }
