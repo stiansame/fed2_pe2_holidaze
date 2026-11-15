@@ -29,7 +29,7 @@ export default function VenueCard({ venue, onImageError, actions }) {
         to={`/venues/${encodeURIComponent(venue.id)}${search}`}
         state={navigationOrigin(routeLocation)}
         aria-label={`View ${name}`}
-        className="block h-full focus-visible:outline-offset-[-4px]"
+        className="block h-full focus-visible:-outline-offset-4"
       >
         <div className="relative">
           <VenueImage
