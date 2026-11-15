@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import markerUrl from "leaflet/dist/images/marker-icon.png";
 import markerRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
-import { venueCoordinates } from "../../utils/venueForm.js";
+import { venueCoordinates } from "../../utils/venueValidation.js";
 
 const icon = L.icon({
   iconUrl: markerUrl,

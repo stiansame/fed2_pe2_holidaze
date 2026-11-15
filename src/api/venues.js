@@ -1,6 +1,6 @@
 import { messages } from "../constants/messages.js";
 import { apiRequest, ApiError, getAllPages } from "./client.js";
-import { venueFormData } from "../utils/venueForm.js";
+import { venueFormData } from "../utils/venueValidation.js";
 import {
   bookedPeriods,
   overlaps,
