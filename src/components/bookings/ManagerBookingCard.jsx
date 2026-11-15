@@ -34,7 +34,7 @@ export default function ManagerBookingCard({ booking }) {
       <Link
         to={`/manager/bookings/${encodeURIComponent(booking.id)}${location.search}`}
         state={navigationOrigin(location)}
-        className="block h-full focus-visible:outline-offset-[-4px]"
+        className="block h-full focus-visible:-outline-offset-4"
       >
         <VenueImage
           key={venue.media?.[0]?.url}
@@ -54,7 +54,7 @@ export default function ManagerBookingCard({ booking }) {
             </p>
           </div>
           <div className="min-w-0 space-y-1.5">
-            <div className="grid min-w-0 grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-1.5">
+            <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-1.5">
               <p className={pillClass}>
                 <HostAvatar
                   key={booking.customer?.avatar?.url}
@@ -67,7 +67,7 @@ export default function ManagerBookingCard({ booking }) {
               </p>
               <p className={`${pillClass} min-w-0`}>
                 <Icon name="user" className="size-4 shrink-0" />
-                <span className="min-w-0 wrap-anywhere">
+                <span className="whitespace-nowrap">
                   {Number.isInteger(booking.guests) && booking.guests > 0
                     ? `${booking.guests} ${booking.guests === 1 ? "guest" : "guests"}`
                     : "Guests unavailable"}
@@ -75,26 +75,24 @@ export default function ManagerBookingCard({ booking }) {
               </p>
               <p className={`${pillClass} min-w-0`}>
                 <Icon name="moon" className="size-4 shrink-0" />
-                <span className="min-w-0 wrap-anywhere">
+                <span className="whitespace-nowrap">
                   {price
                     ? `${price.nights} ${price.nights === 1 ? "night" : "nights"}`
                     : "Nights unavailable"}
                 </span>
               </p>
             </div>
-            <div className="grid min-w-0 grid-cols-2 items-center gap-1.5">
+            <div className="flex min-w-0 flex-wrap items-center justify-between gap-1.5">
               <p className={pillClass}>
                 <Icon name="calendar" className="size-4 shrink-0" />
-                <span className="min-w-0 wrap-anywhere">
+                <span className="whitespace-nowrap">
                   {formatBookingRange(booking)}
                 </span>
               </p>
               <p
-                className={`${pillClass} justify-self-end font-semibold wrap-anywhere`}
+                className={`${pillClass} ml-auto font-semibold whitespace-nowrap`}
               >
-                {price
-                  ? `${formatPrice(price.total)} total`
-                  : "Total unavailable"}
+                {price ? formatPrice(price.total) : "Total unavailable"}
               </p>
             </div>
           </div>
