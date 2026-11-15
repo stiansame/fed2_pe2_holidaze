@@ -380,6 +380,11 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
           key={preview.revision}
           media={preview}
           name={title}
+          fallback={
+            <span role="img" aria-label="Image preview unavailable">
+              <Icon name="image" className="size-6 text-primary/50" />
+            </span>
+          }
           className="col-start-1 row-start-1 h-10 rounded-lg text-caption lg:row-span-2 lg:h-24"
         />
         <p className="col-start-2 row-start-1 min-w-0 self-start font-semibold">

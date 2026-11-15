@@ -80,6 +80,11 @@
     padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   }
 
+  /* Keep both default and raised positions in the same layer so utilities cannot override the offset. */
+  .back-to-top {
+    bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
   /* Reserve space after the footer, so fixed mobile controls cannot cover it. */
   @media (width < 64rem) {
     .site-shell:has(.mobile-bottom-bar) {

@@ -4,6 +4,7 @@ import Loading from "../components/Loading.jsx";
 import { useEffect, useId, useRef, useState } from "react";
 import { useAuth } from "../auth/AuthContext.js";
 import HostAvatar from "../components/HostAvatar.jsx";
+import Icon from "../components/Icon.jsx";
 import VenueImage from "../components/venues/VenueImage.jsx";
 import { profileUpdate } from "../utils/profile.js";
 import BookingsList from "../components/bookings/BookingsList.jsx";
@@ -90,13 +91,31 @@ function ProfileCard() {
   return (
     <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
       {profile && (
-        <VenueImage
-          key={profile.banner?.url}
-          media={profile.banner}
-          name={`${user.name}'s banner`}
-          className="h-40"
-          loading="eager"
-        />
+        <div className="relative">
+          <VenueImage
+            key={profile.banner?.url}
+            media={profile.banner}
+            name={`${user.name}'s banner`}
+            className="h-40"
+            loading="eager"
+          />
+          {!editing && (
+            <button
+              type="button"
+              disabled={pending}
+              aria-label="Edit profile"
+              title="Edit profile"
+              onClick={() => {
+                setSaved(false);
+                setError("");
+                setEditing(true);
+              }}
+              className="edit-icon-button absolute bottom-3 right-3 disabled:opacity-60"
+            >
+              <Icon name="edit" />
+            </button>
+          )}
+        </div>
       )}
       <div
         className={`space-y-5 px-5 pb-5 sm:px-8 sm:pb-8 ${profile ? "" : "pt-5 sm:pt-8"}`}
@@ -145,18 +164,7 @@ function ProfileCard() {
                     {messages.profileUpdated}
                   </p>
                 )}
-                <button
-                  type="button"
-                  disabled={pending}
-                  onClick={() => {
-                    setSaved(false);
-                    setError("");
-                    setEditing(true);
-                  }}
-                  className="h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60"
-                >
-                  Edit profile
-                </button>
+
                 {!user.venueManager && (
                   <div className="space-y-4 border-t border-border pt-5">
                     <p>

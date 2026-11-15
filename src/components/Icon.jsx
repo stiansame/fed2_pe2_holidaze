@@ -1,4 +1,10 @@
 const paths = {
+  building: (
+    <>
+      <rect x="5" y="3" width="14" height="18" rx="1.5" />
+      <path d="M9 7h1m4 0h1M9 11h1m4 0h1M9 15h1m4 0h1M10 21v-3h4v3" />
+    </>
+  ),
   image: (
     <>
       <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -107,12 +113,6 @@ const paths = {
     <>
       <path d="M3 18v3m18-3v3M3 18h18V9a3 3 0 0 0-3-3h-6v8H3V6m9 8h9" />
       <circle cx="7" cy="10" r="2" />
-    </>
-  ),
-  home: (
-    <>
-      <path d="m3 10 9-7 9 7v11H3Z" />
-      <path d="M9 21v-8h6v8" />
     </>
   ),
   plus: <path d="M12 4v16M4 12h16" />,

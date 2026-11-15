@@ -17,7 +17,7 @@ export default function AccountLayout() {
     { to: "/bookings", label: "My stays", icon: "calendar" },
     ...(user.venueManager
       ? [
-          { to: "/manager/venues", label: "My venues", icon: "home" },
+          { to: "/manager/venues", label: "My venues", icon: "building" },
           {
             to: "/manager/bookings",
             label: "Bookings",

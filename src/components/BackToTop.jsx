@@ -21,7 +21,7 @@ export default function BackToTop() {
         type="button"
         aria-label="Back to top"
         title="Back to top"
-        className="back-to-top fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 flex size-11 items-center justify-center rounded-full border border-border bg-surface text-primary hover:bg-tint"
+        className="back-to-top fixed right-4 z-30 flex size-11 items-center justify-center rounded-full border border-border bg-surface text-primary hover:bg-tint"
         onClick={() => {
           window.scrollTo({
             top: 0,

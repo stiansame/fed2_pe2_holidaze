@@ -16,7 +16,7 @@ import Icon from "../components/Icon.jsx";
  */
 export default function VenueBookings() {
   const { user, request } = useAuth();
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const venueId = params.get("venue") || "";
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
@@ -47,10 +47,21 @@ export default function VenueBookings() {
         <h1 className="text-h3 font-bold sm:text-h2">Venue bookings</h1>
         <button
           type="button"
-          aria-label="Refresh bookings"
-          title="Refresh bookings"
+          aria-label={
+            venueId
+              ? "Refresh bookings and clear venue filter"
+              : "Refresh bookings"
+          }
+          title={
+            venueId
+              ? "Refresh bookings and clear venue filter"
+              : "Refresh bookings"
+          }
           className="navigation-link size-11 shrink-0 justify-center p-0"
           onClick={() => {
+            const nextParams = new URLSearchParams(params);
+            nextParams.delete("venue");
+            setParams(nextParams, { replace: true });
             setError("");
             setData(null);
             setAttempt((value) => value + 1);

@@ -230,7 +230,7 @@ function BookingCard({ booking, manage, onCancelled }) {
                   state={navigationOrigin(routeLocation)}
                   className="edit-menu-item"
                 >
-                  <Icon name="home" />
+                  <Icon name="building" />
                   View venue
                 </Link>
               )}

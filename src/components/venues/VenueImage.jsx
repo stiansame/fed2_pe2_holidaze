@@ -9,6 +9,7 @@ import { useState } from "react";
  * @param {string} [props.imageClass] Classes applied to the image itself.
  * @param {string} [props.loading] Native image loading strategy.
  * @param {Function} [props.onImageError] Reports a failed image.
+ * @param {import('react').ReactNode} [props.fallback] Content shown for missing or failed images.
  * @returns {import('react').ReactNode}
  */
 export default function VenueImage({
@@ -18,6 +19,7 @@ export default function VenueImage({
   imageClass = "object-cover",
   loading = "lazy",
   onImageError,
+  fallback = <span>Image not available</span>,
 }) {
   const [failed, setFailed] = useState(false);
   const url = media?.url;
@@ -37,7 +39,7 @@ export default function VenueImage({
           className={`h-full w-full ${imageClass}`}
         />
       ) : (
-        <span>Image not available</span>
+        fallback
       )}
     </span>
   );

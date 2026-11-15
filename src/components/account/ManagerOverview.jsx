@@ -79,7 +79,7 @@ export default function ManagerOverview({ children, stats }) {
           ) : (
             <AccountStats
               items={[
-                ["My venues", data.venues.length, "home"],
+                ["My venues", data.venues.length, "building"],
                 ["Total bookings", data.totalBookings, "calendar"],
                 ["Upcoming bookings", data.upcoming.length, "bed"],
                 [
