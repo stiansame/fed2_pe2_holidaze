@@ -139,19 +139,19 @@ Set `VITE_NOROFF_API_KEY` in Netlify with the Builds scope and redeploy after ch
 - [x] Merge all final changes into the default branch before submission.
 - [ ] Submit the required links in Moodle using the delivery template.
 
-### 🔔 The Bells & Whistles
+### The Bells & Whistles
 
-- 🔔 **My account overview:** a combined profile and statistics overview, with additional venue and booking summaries for managers.
-- 🔔 **Guest and host profiles:** signed-in users can view other profiles, aggregate stay statistics and a host's listed venues.
-- 🔔 **Booking changes and cancellation:** customers can review changes to future stays or cancel them after confirmation.
-- 🔔 **Combined filters and sorting:** narrow results by dates, guest capacity and amenities, then sort by name, price or newest listings.
-- 🔔 **Live search:** debounced search includes venue descriptions, locations and host names, with selections preserved in the URL.
-- 🔔 **Sunny Mode:** switch to a warmer colour palette and typography, with the preference saved between visits when browser storage is available.
-- 🔔 **Interactive maps:** view venue locations and select coordinates on a map when creating or editing a venue.
-- 🔔 **Photo galleries:** swipe through venue images and open a larger gallery with arrows, keyboard navigation and swipe support.
-- 🔔 **Profile customisation:** edit the profile bio and banner as well as the required avatar.
-- 🔔 **Become a host later:** existing customer accounts can enable venue-manager access without registering again.
-- 🔔 **Function documentation:** all project functions are described in the local Function reference, including how they relate to one another. Named functions also have English JSDoc in the source code; small inline callbacks are covered by their owning function.
+✦ **My account overview:** a combined profile and statistics overview, with additional venue and booking summaries for managers.  
+✦ **Guest and host profiles:** signed-in users can view other profiles, aggregate stay statistics and a host's listed venues.  
+✦ **Booking changes and cancellation:** customers can review changes to future stays or cancel them after confirmation.  
+✦ **Combined filters and sorting:** narrow results by dates, guest capacity and amenities, then sort by name, price or newest listings.  
+✦ **Live search:** debounced search includes venue descriptions, locations and host names, with selections preserved in the URL.  
+✦ **Sunny Mode:** switch to a warmer colour palette and typography, with the preference saved between visits when browser storage is available.  
+✦ **Interactive maps:** view venue locations and select coordinates on a map when creating or editing a venue.  
+✦ **Photo galleries:** swipe through venue images and open a larger gallery with arrows, keyboard navigation and swipe support.  
+✦ **Profile customisation:** edit the profile bio and banner as well as the required avatar.  
+✦ **Become a host later:** existing customer accounts can enable venue-manager access without registering again.  
+✦ **Function documentation:** all project functions are described in the local Function reference, including how they relate to one another. Named functions also have English JSDoc in the source code; small inline callbacks are covered by their owning function.  
 
 ## 🎨 Design and resources
 
