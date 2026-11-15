@@ -56,7 +56,7 @@ export default function Home() {
           <Link to="/venues" className="navigation-link gap-2">View all venues<Icon name="right" /></Link>
         </div>
         {loading ? <Loading>Loading stays…</Loading> : error ? <div role="alert" className="space-y-3"><p>{messages.staysLoadFailed} {error}</p><button type="button" onClick={() => { setError(''); setLoading(true); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint">Try again</button></div>
-          : highlyRated.length ? <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{highlyRated.slice(0, 12).map(venue => <VenueCard key={venue.id} venue={venue} onImageError={id => setHighlyRated(previous => previous.filter(item => item.id !== id))} />)}</div>
+          : highlyRated.length ? <div className="card-grid gap-6 lg:grid-cols-3">{highlyRated.slice(0, 12).map(venue => <VenueCard key={venue.id} venue={venue} onImageError={id => setHighlyRated(previous => previous.filter(item => item.id !== id))} />)}</div>
           : <p>No highly rated stays with multiple photos are available right now. Explore all venues to find your next stay.</p>}
       </section>
     </div>

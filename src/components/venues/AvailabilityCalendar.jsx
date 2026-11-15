@@ -117,7 +117,7 @@ export default function AvailabilityCalendar({ bookings, maxGuests, initialStay,
       }}>
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 gap-y-3">
           <div className="col-span-2 min-w-0">{dates}</div>
-          <label className={`${compact ? 'flex items-center justify-start gap-3 lg:block' : 'block'} min-w-0 text-left text-small`}>{compact ? <strong className="shrink-0">Who’s coming?</strong> : 'Guests'}<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={compact ? 'h-11 w-36 min-w-0 rounded-lg border border-border bg-surface px-2 lg:mt-1 lg:w-full' : inputClass} /></label>
+          <label className={`${compact ? 'flex items-center justify-start gap-3 lg:block' : 'block'} min-w-0 text-left text-small`}>{compact ? <strong className="shrink-0">No. of guests</strong> : 'Guests'}<GuestSelect value={guests} onChange={setGuests} maxGuests={maxGuests} className={compact ? 'h-11 w-36 min-w-0 rounded-lg border border-border bg-surface px-2 lg:mt-1 lg:w-full' : inputClass} /></label>
           <button type="button" aria-label="Reset selection" title="Reset selection" disabled={!from && !to} onClick={() => { setFrom(''); setTo(''); setChecked(false); }} className="inline-flex size-11 items-center justify-center rounded-lg border border-border bg-surface text-primary hover:bg-tint disabled:opacity-40"><Icon name="reset" /></button>
         </div>
         <div className={compact ? 'booking-action-row sticky bottom-0 bg-surface pt-2 lg:block' : actions ? 'grid grid-cols-2 items-stretch gap-2' : ''}>

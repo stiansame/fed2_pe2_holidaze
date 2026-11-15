@@ -1,4 +1,5 @@
-import { getProfileBookings } from './bookings.js';
+import { getProfileBookings } from "./bookings.js";
+
 /**
  * Loads a profile and its complete venue/booking lists for public profile statistics.
  * @param {Function} request Request function supplied by the API client or account provider.
@@ -24,10 +25,22 @@ export async function getHostProfile(request, name, { signal } = {}) {
  * @param {AbortSignal} [options.signal] Cancels the load.
  * @returns {Promise<object[]>}
  */
-export function getProfileVenues(request, name, { bookings = false, signal } = {}) {
-  return getAllPages(request, `holidaze/profiles/${encodeURIComponent(name)}/venues`, {
-    query: { sort: 'created', sortOrder: 'desc', ...(bookings && { _bookings: true }) }, signal,
-  });
+export function getProfileVenues(
+  request,
+  name,
+  { bookings = false, signal } = {},
+) {
+  return getAllPages(
+    request,
+    `holidaze/profiles/${encodeURIComponent(name)}/venues`,
+    {
+      query: {
+        sort: "created",
+        sortOrder: "desc",
+        ...(bookings && { _bookings: true }),
+      },
+      signal,
+    },
+  );
 }
-import { getAllPages } from './client.js';
-
+import { getAllPages } from "./client.js";

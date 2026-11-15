@@ -53,6 +53,24 @@
 }
 
 @layer components {
+  /* Shared grid for venue and booking cards. */
+  .card-grid {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3;
+  }
+
+  /* Shared card surface, border and rounded corners. */
+  .card {
+    @apply h-full min-w-0 overflow-hidden rounded-lg border border-border bg-surface;
+  }
+
+  /* Shared hover and focus treatment for cards that link as a whole. */
+  .card-interactive {
+    @apply shadow-sm transition-[translate,box-shadow] duration-200
+      hover:shadow-xl focus-within:shadow-xl
+      motion-safe:hover:-translate-y-1 motion-safe:focus-within:-translate-y-1
+      motion-reduce:transition-none;
+  }
+
   /* Shared surface, border, spacing and safe area for mobile account and booking bars. */
   .mobile-bottom-bar {
     @apply fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface p-3;

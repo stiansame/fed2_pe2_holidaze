@@ -22,7 +22,7 @@ export function backDestination(state, to = '/venues', label = 'Back to venues')
   if (typeof target !== 'string' || !target.startsWith('/') || target.startsWith('//') || target.includes('\\')) return { to, label };
   const path = target.split('?')[0];
   const names = {
-    '/': 'home', '/venues': 'venues', '/profile': 'my account', '/bookings': 'my bookings',
+    '/': 'home', '/venues': 'venues', '/profile': 'my account', '/bookings': 'my stays',
     '/manager/venues': 'my venues', '/manager/bookings': 'venue bookings',
     '/manager/venues/new': 'create venue',
   };

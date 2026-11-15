@@ -6,7 +6,7 @@ import Icon from '../Icon.jsx';
  * @param {object} props Component props.
  * @param {string} props.title Section title used for visible and accessible labels.
  * @param {number} props.count Total number of section items.
- * @param {string} props.id Route record ID.
+ * @param {string} props.id Heading ID used to label its section.
  * @param {string} props.to Navigation destination.
  * @param {object} props.state Router state passed to the destination.
  * @param {boolean} props.expanded Whether all items are currently visible.

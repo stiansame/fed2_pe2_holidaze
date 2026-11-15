@@ -1,7 +1,7 @@
 import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
 import Loading from '../components/Loading.jsx';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.js';
 import HostAvatar from '../components/HostAvatar.jsx';
 import VenueImage from '../components/venues/VenueImage.jsx';
@@ -16,6 +16,8 @@ import { guestSummary } from '../utils/bookings.js';
  * @returns {import('react').ReactNode}
  */
 export default function Profile() {
+  const id = useId();
+  const overviewHeadingId = `account-overview-heading-${id}`;
   const { user } = useAuth();
   const [bookings, setBookings] = useState(null);
   const stats = guestSummary(bookings, undefined, true);
@@ -23,8 +25,11 @@ export default function Profile() {
   return <section className="min-w-0 space-y-6">
     <DocumentTitle>Holidaze | My account</DocumentTitle>
     <h1 className="text-h3 font-bold sm:text-h2">My account</h1>
-    {user.venueManager ? <ManagerOverview stats={stats}>{profile}</ManagerOverview> : <div className="grid items-start gap-4 lg:items-stretch lg:grid-cols-2">{profile}<AccountStats items={stats} /></div>}
-    <div className="account-section"><BookingsList upcomingOnly onLoaded={setBookings} /></div>
+    {user.venueManager ? <ManagerOverview stats={stats}>{profile}</ManagerOverview> : <section className="grid items-start gap-4 lg:items-stretch lg:grid-cols-2" aria-labelledby={overviewHeadingId}>
+      <h2 id={overviewHeadingId} className="sr-only">Account overview</h2>
+      {profile}<AccountStats items={stats} />
+    </section>}
+    <BookingsList upcomingOnly onLoaded={setBookings} />
   </section>;
 }
 
@@ -77,7 +82,7 @@ function ProfileCard() {
           <div className="relative flex flex-col gap-3 xl:flex-row xl:items-start xl:gap-6">
             <HostAvatar key={profile.avatar?.url} media={profile.avatar} className="-mt-14 size-28 border-4 border-surface bg-surface sm:-mt-16 sm:size-32" />
             <div className="min-w-0 flex-1 xl:pt-3">
-              <h2 className="text-h3 font-bold wrap-anywhere">{profile.name}</h2>
+              <h3 className="text-h3 font-bold wrap-anywhere">{profile.name}</h3>
               {user.venueManager && <span className="mt-2 inline-flex h-8 items-center rounded-full bg-tint px-3 text-caption font-semibold text-primary">Venue manager</span>}
             </div>
           </div>

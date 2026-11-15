@@ -48,7 +48,7 @@ export default function MyVenues() {
       <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
     </div> : !venues ? <Loading>Loading your venues…</Loading> : venues.length ? <>
       <p role="status" className="text-small text-muted">Showing {expanded ? venues.length : Math.min(15, venues.length)} of {venues.length} venues.</p>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="card-grid">
         {(expanded ? venues : venues.slice(0, 15)).map(venue => <VenueCard key={venue.id} venue={venue} actions={<VenueOwnerActions card venue={venue} onDeleted={id => { setVenues(values => values.filter(item => item.id !== id)); setNotice(messages.venueDeleted); }} />} />)}
       </div>
     </> : <p className="empty-state rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. Create your first venue to get started.</p>}

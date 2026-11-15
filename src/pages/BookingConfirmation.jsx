@@ -43,7 +43,7 @@ export default function BookingConfirmation() {
     {error && <><p role="alert" className="text-danger">{messages.confirmationLoadFailed(error)}</p><button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border px-4 text-primary">Reload confirmation</button></>}
     <div className="flex flex-wrap gap-3">
       {booking?.venue?.id && <Link to={`/venues/${encodeURIComponent(booking.venue.id)}`} className="navigation-link">View venue</Link>}
-      <Link to="/bookings" className="navigation-link">My bookings</Link>
+      <Link to="/bookings" className="navigation-link">My stays</Link>
       <Link to="/venues" className="navigation-link">Explore venues</Link>
     </div>
   </section>;

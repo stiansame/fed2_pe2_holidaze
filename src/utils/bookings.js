@@ -76,7 +76,7 @@ export function formatBookingRange(booking) {
  * Builds five profile statistics; invalid booking dates leave the night total unknown.
  * @param {object[]|null|undefined} bookings Bookings, or an unavailable list.
  * @param {string} [today=dateKey()] Local date in YYYY-MM-DD format.
- * @param {boolean} [personal=false] Uses My bookings instead of Total bookings.
+ * @param {boolean} [personal=false] Uses My stays instead of Total bookings.
  * @returns {Array<[string, number|null|undefined, string, boolean]>}
  */
 export function guestSummary(bookings, today = dateKey(), personal = false) {
@@ -91,7 +91,7 @@ export function guestSummary(bookings, today = dateKey(), personal = false) {
     }
   }
   return [
-    [personal ? 'My bookings' : 'Total bookings', bookings?.length, 'calendar', true],
+    [personal ? 'My stays' : 'Total bookings', bookings?.length, 'calendar', true],
     ['Completed stays', bookings ? counts.past : null, 'calendar-check', true],
     ['Upcoming stays', bookings ? counts.upcoming : null, 'bed', true],
     ['Nights booked', bookings && !counts.unknown ? nights : null, 'moon', true],

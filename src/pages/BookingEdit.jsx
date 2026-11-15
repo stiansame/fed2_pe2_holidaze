@@ -56,7 +56,7 @@ function EditLoader({ id }) {
     {!data && !error && <Loading>Loading your booking…</Loading>}
     {data && <BookingEditor booking={data.booking} initialVenue={data.venue} />}
     {error && <><p role="alert" className="text-danger">{error}</p><button type="button" onClick={() => { setError(''); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border px-4 text-primary">Try again</button></>}
-    {!data && <BackLink to="/bookings" label="Back to my bookings" shortLabel />}
+    {!data && <BackLink to="/bookings" label="Back to my stays" shortLabel />}
   </section>;
 }
 

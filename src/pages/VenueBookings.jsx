@@ -1,6 +1,6 @@
 import DocumentTitle from '../components/DocumentTitle.jsx';
 import { messages } from '../constants/messages.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { getProfileVenues } from '../api/profiles.js';
@@ -58,11 +58,13 @@ export default function VenueBookings() {
  */
 function BookingGroup({ status, bookings }) {
   const [expanded, setExpanded] = useState(false);
+  const id = useId();
+  const headingId = `${status}-bookings-heading-${id}`;
   const title = { upcoming: 'Upcoming bookings', current: 'Current bookings', past: 'Past bookings', unknown: 'Dates unavailable' }[status];
-  return <section aria-label={title} className="account-section">
-    <SectionHeading title={title} count={bookings.length} expanded={expanded} onToggle={bookings.length > 3 ? () => setExpanded(value => !value) : undefined} />
-    {!bookings.length ? <p className="empty-state text-muted">No {title.toLowerCase()}.</p> : <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {(expanded ? bookings : bookings.slice(0, 3)).map(booking => <li key={booking.id} className="min-w-0"><ManagerBookingCard booking={booking} /></li>)}
-    </ul>}
+  return <section className="account-section" aria-labelledby={headingId}>
+    <SectionHeading id={headingId} title={title} count={bookings.length} expanded={expanded} onToggle={bookings.length > 3 ? () => setExpanded(value => !value) : undefined} />
+    {!bookings.length ? <p className="empty-state text-muted">No {title.toLowerCase()}.</p> : <div className="card-grid">
+      {(expanded ? bookings : bookings.slice(0, 3)).map(booking => <ManagerBookingCard key={booking.id} booking={booking} />)}
+    </div>}
   </section>;
 }

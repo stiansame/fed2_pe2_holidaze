@@ -62,7 +62,7 @@ Check desktop and mobile widths in both standard and Sunny Mode:
 1. Open Home and Explore. Search using at least three characters, including a location or host name. Combine dates, guests, amenities and sorting; reset filters and load more results.
 2. Open a venue. Browse photos, expand its description and check its map when available. Select valid dates and guests; verify the total and that booked/past nights cannot be reserved.
 3. Register with an `@stud.noroff.no` address, or log in with your own account. Check invalid form input, page refresh, account navigation and logout.
-4. Reserve a test stay and check its confirmation, My bookings entry and account statistics. Change a future stay and cancel it after checking the confirmation prompt.
+4. Reserve a test stay and check its confirmation, My stays entry and account statistics. Change a future stay and cancel it after checking the confirmation prompt.
 5. On a customer account, enable venue-manager access. Create a test venue, edit its fields/photos/amenities/location and check My venues. Verify venue bookings and guest profiles where booking data is available, then delete only your test venue.
 6. Use Tab, Shift+Tab, Enter and Escape to check navigation, menus, forms and dialogs. Check visible focus, 200%/400% browser zoom and reduced motion.
 7. Open an unknown route and a missing venue ID. Temporarily go offline in browser developer tools to check loading errors and retry after reconnecting. Refresh a nested route on the deployed site to verify routing.

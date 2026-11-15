@@ -1,7 +1,7 @@
 import { messages } from '../../constants/messages.js';
 import Loading from '../Loading.jsx';
 import SectionHeading from '../account/SectionHeading.jsx';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
 import { cancelBooking, getProfileBookings } from '../../api/bookings.js';
@@ -39,7 +39,7 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
   }, [request, user.name, attempt, onLoaded]);
 
   const groups = bookings ? groupBookings(bookings) : null;
-  return <div className="space-y-6">
+  return <>
     {notice && <p role="status" className="text-success">{notice}</p>}
     {!upcomingOnly && bookings?.length > 0 && <p className="text-muted">Prices are estimates based on the venue’s current nightly rate.</p>}
     {error && <p role="alert" className="text-danger">{error}</p>}
@@ -54,7 +54,7 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
       initialExpanded={new URLSearchParams(search).get('show') === key}
       onCancelled={id => { setBookings(current => current?.filter(booking => booking.id !== id) ?? current); setNotice(messages.bookingCancelled); }}
     />)}
-  </div>;
+  </>;
 }
 
 /**
@@ -70,11 +70,13 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
  */
 function BookingGroup({ title, bookings, manage, allLink, initialExpanded, onCancelled }) {
   const [expanded, setExpanded] = useState(initialExpanded && !allLink);
-  return <section aria-label={title} className={allLink ? 'space-y-4' : 'account-section'}>
-    <SectionHeading title={title} count={bookings.length} to={bookings.length > 3 ? allLink : undefined} expanded={expanded} onToggle={!allLink && bookings.length > 3 ? () => setExpanded(value => !value) : undefined} />
-    {bookings.length === 0 ? <p className="empty-state text-muted">No {title.replace(/^My /, '').toLowerCase()} yet.</p> : <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {(expanded ? bookings : bookings.slice(0, 3)).map(booking => <li key={booking.id} className="min-w-0"><BookingCard booking={booking} manage={manage} onCancelled={onCancelled} /></li>)}
-    </ul>}
+  const id = useId();
+  const headingId = `${title.toLowerCase().replaceAll(' ', '-')}-heading-${id}`;
+  return <section className="account-section" aria-labelledby={headingId}>
+    <SectionHeading id={headingId} title={title} count={bookings.length} to={bookings.length > 3 ? allLink : undefined} expanded={expanded} onToggle={!allLink && bookings.length > 3 ? () => setExpanded(value => !value) : undefined} />
+    {bookings.length === 0 ? <p className="empty-state text-muted">No {title.replace(/^My /, '').toLowerCase()} yet.</p> : <div className="card-grid">
+      {(expanded ? bookings : bookings.slice(0, 3)).map(booking => <BookingCard key={booking.id} booking={booking} manage={manage} onCancelled={onCancelled} />)}
+    </div>}
 
   </section>;
 }
@@ -119,7 +121,7 @@ function BookingCard({ booking, manage, onCancelled }) {
     }
   }
 
-  return <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-surface" aria-label={name}>
+  return <article className="card flex flex-col" aria-label={name}>
     <div className="relative shrink-0">
       <VenueImage key={booking.venue?.media?.[0]?.url} media={booking.venue?.media?.[0]} name={name} className="relative aspect-video" imageClass={`absolute inset-0 object-cover ${status === 'past' ? 'saturate-25' : ''}`} />
       <Rating rating={booking.venue?.rating} className="absolute top-3 right-3" />

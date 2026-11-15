@@ -74,9 +74,9 @@ function HostProfile({ name }) {
           <h2 className="text-h3 font-bold">Venues <span className="text-small font-normal text-muted">({data.venues.length})</span></h2>
           {data.venues.length > 3 && <button type="button" aria-expanded={expanded} onClick={() => setExpanded(value => !value)} className="h-11 rounded-lg px-2 font-semibold text-primary hover:bg-tint">{expanded ? 'Show less' : 'View all'} <span aria-hidden="true">→</span></button>}
         </div>
-        {data.venues.length ? <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => <li key={venue.id} className="min-w-0"><VenueCard venue={venue} onImageError={id => setData(previous => ({ ...previous, venues: previous.venues.filter(item => item.id !== id) }))} /></li>)}
-        </ul> : <p className="empty-state text-muted">No venues listed yet.</p>}
+        {data.venues.length ? <div className="card-grid">
+          {(expanded ? data.venues : data.venues.slice(0, 3)).map(venue => <VenueCard key={venue.id} venue={venue} onImageError={id => setData(previous => ({ ...previous, venues: previous.venues.filter(item => item.id !== id) }))} />)}
+        </div> : <p className="empty-state text-muted">No venues listed yet.</p>}
       </section>}
     </div>}
     <BackLink />

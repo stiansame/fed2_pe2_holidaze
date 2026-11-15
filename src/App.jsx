@@ -12,7 +12,7 @@ import VenueDetails from './pages/VenueDetails.jsx';
 import BookingReview from './pages/BookingReview.jsx';
 import BookingConfirmation from './pages/BookingConfirmation.jsx';
 import AccountLayout from './components/layout/AccountLayout.jsx';
-import MyBookings from './pages/MyBookings.jsx';
+import MyStays from './pages/MyStays.jsx';
 import BookingEdit from './pages/BookingEdit.jsx';
 import PublicProfile from './pages/PublicProfile.jsx';
 import MyVenues from './pages/MyVenues.jsx';
@@ -38,7 +38,7 @@ export default function App() {
           <Route element={<AccountLayout />}>
             <Route path="/bookings/:id/confirmation" element={<BookingConfirmation />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/bookings" element={<MyBookings />} />
+            <Route path="/bookings" element={<MyStays />} />
             <Route path="/bookings/:id/edit" element={<BookingEdit />} />
             <Route element={<RequireAuth manager />}>
               <Route path="/manager/venues" element={<MyVenues />} />

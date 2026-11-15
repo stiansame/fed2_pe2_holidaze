@@ -20,7 +20,8 @@ export default function ManagerBookingCard({ booking }) {
   const name = venue.name?.trim() || 'Venue unavailable';
   const place = [venue.location?.city, venue.location?.country].map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified';
   const price = bookingPrice(booking);
-  return <Link to={`/manager/bookings/${encodeURIComponent(booking.id)}${location.search}`} state={navigationOrigin(location)} className="relative block h-full min-w-0 overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[translate,box-shadow] duration-200 hover:shadow-xl focus-within:shadow-xl motion-safe:hover:-translate-y-1 motion-safe:focus-within:-translate-y-1 motion-reduce:transition-none">
+  return <article className="card card-interactive relative">
+    <Link to={`/manager/bookings/${encodeURIComponent(booking.id)}${location.search}`} state={navigationOrigin(location)} className="block h-full focus-visible:outline-offset-[-4px]">
     <VenueImage key={venue.media?.[0]?.url} media={venue.media?.[0]} name={name} className="absolute inset-0" imageClass={`object-cover ${bookingStatus(booking) === 'past' ? 'saturate-25' : ''}`} />
     <div className="relative flex min-h-72 min-w-0 flex-col justify-between gap-8 bg-linear-to-t from-black/50 via-transparent to-transparent p-3">
       <div className="flex min-w-0 flex-col items-start gap-1.5">
@@ -39,5 +40,6 @@ export default function ManagerBookingCard({ booking }) {
         </div>
       </div>
     </div>
-  </Link>;
+    </Link>
+  </article>;
 }

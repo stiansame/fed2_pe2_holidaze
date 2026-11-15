@@ -1,5 +1,6 @@
-import { messages } from '../constants/messages.js';
-const API_BASE = 'https://v2.api.noroff.dev/';
+import { messages } from "../constants/messages.js";
+
+const API_BASE = "https://v2.api.noroff.dev/";
 
 /**
  * Loads complete pages of 100 records and keeps the latest record for each ID.
@@ -16,7 +17,10 @@ export async function getAllPages(request, path, { query = {}, signal } = {}) {
   let page = 1;
   do {
     signal?.throwIfAborted();
-    const { data, meta } = await request(path, { query: { ...query, page, limit: 100 }, signal });
+    const { data, meta } = await request(path, {
+      query: { ...query, page, limit: 100 },
+      signal,
+    });
     for (const item of data) items.set(item.id, item);
     page = meta?.nextPage;
   } while (page);
@@ -33,7 +37,7 @@ export class ApiError extends Error {
    */
   constructor(message, status = 0, errors = []) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.status = status;
     this.errors = errors;
   }
@@ -54,15 +58,18 @@ export class ApiError extends Error {
  * @throws {TypeError} If the request targets a different origin.
  * @throws {Error} If the request is cancelled; the abort reason is preserved.
  */
-export async function apiRequest(path, {
-  method = 'GET',
-  query = {},
-  body,
-  token,
-  apiKey = import.meta.env?.VITE_NOROFF_API_KEY,
-  signal,
-} = {}) {
-  const url = new URL(path.replace(/^\/+/, ''), API_BASE);
+export async function apiRequest(
+  path,
+  {
+    method = "GET",
+    query = {},
+    body,
+    token,
+    apiKey = import.meta.env?.VITE_NOROFF_API_KEY,
+    signal,
+  } = {},
+) {
+  const url = new URL(path.replace(/^\/+/, ""), API_BASE);
   if (url.origin !== new URL(API_BASE).origin) {
     throw new TypeError(messages.invalidApiOrigin);
   }
@@ -70,10 +77,10 @@ export async function apiRequest(path, {
     if (value !== undefined && value !== null) url.searchParams.set(key, value);
   }
 
-  const headers = { Accept: 'application/json' };
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  const headers = { Accept: "application/json" };
+  if (body !== undefined) headers["Content-Type"] = "application/json";
   if (token) headers.Authorization = `Bearer ${token}`;
-  if (apiKey) headers['X-Noroff-API-Key'] = apiKey;
+  if (apiKey) headers["X-Noroff-API-Key"] = apiKey;
 
   let response;
   try {
@@ -85,7 +92,7 @@ export async function apiRequest(path, {
     });
   } catch (error) {
     // Cancellation is intentional; callers can ignore it instead of showing an API error.
-    if (signal?.aborted || error.name === 'AbortError') throw error;
+    if (signal?.aborted || error.name === "AbortError") throw error;
     throw new ApiError(messages.networkError);
   }
 
@@ -95,14 +102,14 @@ export async function apiRequest(path, {
   try {
     result = await response.json();
   } catch (error) {
-    if (signal?.aborted || error.name === 'AbortError') throw error;
+    if (signal?.aborted || error.name === "AbortError") throw error;
     throw new ApiError(messages.unreadableResponse, response.status);
   }
   // fetch resolves even for HTTP errors such as 400 or 401.
   if (!response.ok) {
     const errors = result?.errors ?? [];
     throw new ApiError(
-      errors.map(error => error.message).join('\n') || messages.requestFailed,
+      errors.map((error) => error.message).join("\n") || messages.requestFailed,
       response.status,
       errors,
     );

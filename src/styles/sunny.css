@@ -73,12 +73,15 @@
 [data-theme='sunny'] .guest-pill { background-color: #fff1b8; }
 [data-theme='sunny'] .rating-star { color: #a96500; }
 
-/* Cream card surfaces and warm shadows complement the existing hover lift. */
-[data-theme='sunny'] .venue-card {
+/* Shared cream surface for all three card types. */
+[data-theme='sunny'] .card {
   background-color: #fffdf6;
+}
+/* Warm shadows for cards that link as a whole. */
+[data-theme='sunny'] .card-interactive {
   box-shadow: 0 2px 8px rgb(119 78 35 / 10%);
 }
-[data-theme='sunny'] .venue-card:is(:hover, :focus-within) {
+[data-theme='sunny'] .card-interactive:is(:hover, :focus-within) {
   box-shadow: 0 8px 24px rgb(119 78 35 / 14%), 0 0 18px rgb(244 211 94 / 20%);
 }
 
@@ -107,6 +110,6 @@
   .theme-toggle svg { transition: transform 250ms ease; }
   [data-theme='sunny'] .theme-toggle svg { transform: rotate(45deg); }
   /* A smaller lift and slower shadow transition make card hover gentler. */
-  [data-theme='sunny'] .venue-card { transition-duration: 300ms; }
-  [data-theme='sunny'] .venue-card:is(:hover, :focus-within) { translate: 0 -2px; }
+  [data-theme='sunny'] .card-interactive { transition-duration: 300ms; }
+  [data-theme='sunny'] .card-interactive:is(:hover, :focus-within) { translate: 0 -2px; }
 }

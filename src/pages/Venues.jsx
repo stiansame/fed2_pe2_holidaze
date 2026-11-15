@@ -186,7 +186,7 @@ function VenueMatches({ venues, onImageError }) {
       <p role="status" className={`mt-6 text-small text-muted ${venues.length ? '' : 'empty-state'}`}>
         {venues.length ? `Showing ${visible.length} of ${venues.length} matching stays.` : 'No stays match your search and filters. Try adjusting them.'}
       </p>
-      {visible.length > 0 && <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {visible.length > 0 && <div className="card-grid mt-6 gap-6 lg:grid-cols-3">
         {visible.map(venue => <VenueCard key={venue.id} venue={venue} onImageError={onImageError} />)}
       </div>}
       {visible.length < venues.length && <button type="button" onClick={() => setCount(value => value + 15)} className={`${buttonClass} mt-6`}>Load more</button>}

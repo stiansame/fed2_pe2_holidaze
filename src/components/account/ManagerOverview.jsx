@@ -1,5 +1,5 @@
 import Loading from '../Loading.jsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
 import { getProfileVenues } from '../../api/profiles.js';
@@ -18,6 +18,10 @@ import { navigationOrigin } from '../../utils/navigation.js';
  * @returns {import('react').ReactNode}
  */
 export default function ManagerOverview({ children, stats }) {
+  const id = useId();
+  const overviewHeadingId = `account-overview-heading-${id}`;
+  const venuesHeadingId = `my-venues-heading-${id}`;
+  const bookingsHeadingId = `venue-bookings-heading-${id}`;
   const location = useLocation();
   const { user, request } = useAuth();
   const [data, setData] = useState(null);
@@ -33,8 +37,9 @@ export default function ManagerOverview({ children, stats }) {
   }, [request, user.name, attempt]);
 
   const bookings = data ? [...data.current, ...data.upcoming].sort((a, b) => a.dateFrom.localeCompare(b.dateFrom)) : [];
-  return <section className="min-w-0 space-y-6">
-    <div className="grid items-start gap-4 lg:items-stretch lg:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]">
+  return <>
+    <section className="grid items-start gap-4 lg:items-stretch lg:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]" aria-labelledby={overviewHeadingId}>
+      <h2 id={overviewHeadingId} className="sr-only">Account overview</h2>
       {children}
       <div className="min-w-0 self-stretch">
         {error ? <div role="alert" className="space-y-3">
@@ -48,20 +53,20 @@ export default function ManagerOverview({ children, stats }) {
           ...stats,
         ]} />}
       </div>
-    </div>
+    </section>
     {data && <>
-      <section className="account-section" aria-labelledby="manager-venues-heading">
-        <SectionHeading id="manager-venues-heading" title="My venues" count={data.venues.length} to="/manager/venues" state={navigationOrigin(location)} />
-        {data.venues.length ? <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <section className="account-section" aria-labelledby={venuesHeadingId}>
+        <SectionHeading id={venuesHeadingId} title="My venues" count={data.venues.length} to="/manager/venues" state={navigationOrigin(location)} />
+        {data.venues.length ? <div className="card-grid">
           {data.venues.slice(0, 3).map(venue => <VenueCard key={venue.id} venue={venue} />)}
         </div> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. Create your first venue to get started.</p>}
       </section>
-      <section className="account-section" aria-labelledby="manager-bookings-heading">
-        <SectionHeading id="manager-bookings-heading" title="Venue bookings" count={bookings.length} to="/manager/bookings" state={navigationOrigin(location)} />
-        {bookings.length ? <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {bookings.slice(0, 3).map(booking => <li key={booking.id} className="min-w-0"><ManagerBookingCard booking={booking} /></li>)}
-        </ul> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">No current or upcoming bookings for your venues.</p>}
+      <section className="account-section" aria-labelledby={bookingsHeadingId}>
+        <SectionHeading id={bookingsHeadingId} title="Venue bookings" count={bookings.length} to="/manager/bookings" state={navigationOrigin(location)} />
+        {bookings.length ? <div className="card-grid">
+          {bookings.slice(0, 3).map(booking => <ManagerBookingCard key={booking.id} booking={booking} />)}
+        </div> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">No current or upcoming bookings for your venues.</p>}
       </section>
     </>}
-  </section>;
+  </>;
 }

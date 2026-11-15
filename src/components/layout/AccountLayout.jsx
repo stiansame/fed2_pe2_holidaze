@@ -14,7 +14,7 @@ export default function AccountLayout() {
   const { pathname } = location;
   const links = [
     { to: '/profile', label: user.name },
-    { to: '/bookings', label: 'My bookings', icon: 'calendar' },
+    { to: '/bookings', label: 'My stays', icon: 'calendar' },
     ...(user.venueManager ? [
       { to: '/manager/venues', label: 'My venues', icon: 'home' },
       { to: '/manager/bookings', label: 'Bookings', icon: 'calendar-users' },
