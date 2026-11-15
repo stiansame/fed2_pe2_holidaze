@@ -1,4 +1,7 @@
-const priceFormat = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const priceFormat = new Intl.NumberFormat("nb-NO", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 /**
  * Checks whether a value has the HTTP(S) URL shape used for photo selection.
@@ -6,7 +9,7 @@ const priceFormat = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 2, m
  * @returns {boolean}
  */
 function isPhotoUrl(url) {
-  return /^https?:\/\/\S+$/i.test(url?.trim() ?? '');
+  return /^https?:\/\/\S+$/i.test(url?.trim() ?? "");
 }
 
 /**
@@ -40,9 +43,16 @@ export function shuffleVenuesWithPhotos(venues, random = Math.random) {
  * @returns {object[]}
  */
 export function selectHighlyRatedVenues(venues, random = Math.random) {
-  const eligible = venues.filter(venue => venue.rating > 4.5
-    && venueMapLinks(venue.location)
-    && new Set((venue.media ?? []).map(photo => photo?.url?.trim()).filter(isPhotoUrl)).size >= 2);
+  const eligible = venues.filter(
+    (venue) =>
+      venue.rating > 4.5 &&
+      venueMapLinks(venue.location) &&
+      new Set(
+        (venue.media ?? [])
+          .map((photo) => photo?.url?.trim())
+          .filter(isPhotoUrl),
+      ).size >= 2,
+  );
   return shuffleVenuesWithPhotos(eligible, random);
 }
 
@@ -52,16 +62,18 @@ export function selectHighlyRatedVenues(venues, random = Math.random) {
  * @returns {string}
  */
 export function formatVenuePrice(price) {
-  return Number.isFinite(price) ? `${formatPrice(price)} / night` : 'Price not specified';
+  return Number.isFinite(price)
+    ? `${formatPrice(price)} / night`
+    : "Price not specified";
 }
 
 /**
- * Formats NOK amounts with Norwegian separators and ,- for whole amounts.
+ * Formats NOK amounts with separators and ,- for whole amounts.
  * @param {number} price Amount to format.
  * @returns {string}
  */
 export function formatPrice(price) {
-  return `NOK ${priceFormat.format(price).replace(/,00$/, ',-')}`;
+  return `NOK ${priceFormat.format(price).replace(/,00$/, ",-")}`;
 }
 
 /**
@@ -71,8 +83,14 @@ export function formatPrice(price) {
  */
 export function venueMapLinks(location) {
   const { lat, lng } = location ?? {};
-  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 85
-    || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return null;
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lng) ||
+    Math.abs(lat) > 85 ||
+    Math.abs(lng) > 180 ||
+    (lat === 0 && lng === 0)
+  )
+    return null;
   return {
     full: `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`,
   };

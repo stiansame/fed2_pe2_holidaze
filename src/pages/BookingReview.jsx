@@ -53,7 +53,7 @@ function Review({ id, search }) {
 
   /**
    * Confirms the reviewed stay and handles changed prices or uncertain saves.
-   * @param {import('react').FormEvent<HTMLFormElement>} event Form submission event.
+   * @param {import('react').SubmitEvent<HTMLFormElement>} event Form submission event.
    * @returns {Promise<void>}
    */
   async function confirm(event) {

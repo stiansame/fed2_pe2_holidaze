@@ -1,14 +1,14 @@
-import Loading from '../Loading.jsx';
-import { useEffect, useId, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useAuth } from '../../auth/AuthContext.js';
-import { getProfileVenues } from '../../api/profiles.js';
-import { managerSummary } from '../../utils/manager.js';
-import ManagerBookingCard from '../bookings/ManagerBookingCard.jsx';
-import VenueCard from '../venues/VenueCard.jsx';
-import AccountStats from './AccountStats.jsx';
-import SectionHeading from './SectionHeading.jsx';
-import { navigationOrigin } from '../../utils/navigation.js';
+import Loading from "../Loading.jsx";
+import { useEffect, useId, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext.js";
+import { getProfileVenues } from "../../api/profiles.js";
+import { managerSummary } from "../../utils/manager.js";
+import ManagerBookingCard from "../bookings/ManagerBookingCard.jsx";
+import VenueCard from "../venues/VenueCard.jsx";
+import AccountStats from "./AccountStats.jsx";
+import SectionHeading from "./SectionHeading.jsx";
+import { navigationOrigin } from "../../utils/navigation.js";
 
 /**
  * Loads owned venues and combines manager statistics with personal booking statistics.
@@ -25,48 +25,125 @@ export default function ManagerOverview({ children, stats }) {
   const location = useLocation();
   const { user, request } = useAuth();
   const [data, setData] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
-    getProfileVenues(request, user.name, { bookings: true, signal: controller.signal }).then(venues => {
-      if (!controller.signal.aborted) setData({ venues, ...managerSummary(venues) });
-    }).catch(error => { if (!controller.signal.aborted) setError(error.message); });
+    getProfileVenues(request, user.name, {
+      bookings: true,
+      signal: controller.signal,
+    })
+      .then((venues) => {
+        if (!controller.signal.aborted)
+          setData({ venues, ...managerSummary(venues) });
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(error.message);
+      });
     return () => controller.abort();
   }, [request, user.name, attempt]);
 
-  const bookings = data ? [...data.current, ...data.upcoming].sort((a, b) => a.dateFrom.localeCompare(b.dateFrom)) : [];
-  return <>
-    <section className="grid items-start gap-4 lg:items-stretch lg:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]" aria-labelledby={overviewHeadingId}>
-      <h2 id={overviewHeadingId} className="sr-only">Account overview</h2>
-      {children}
-      <div className="min-w-0 self-stretch">
-        {error ? <div role="alert" className="space-y-3">
-          <p>Unable to load your venue overview. {error}</p>
-          <button type="button" className="navigation-link" onClick={() => { setError(''); setAttempt(value => value + 1); }}>Try again</button>
-        </div> : !data ? <Loading>Loading your venue overview…</Loading> : <AccountStats items={[
-          ['My venues', data.venues.length, 'home'],
-          ['Total bookings', data.totalBookings, 'calendar'],
-          ['Upcoming bookings', data.upcoming.length, 'bed'],
-          ['Average venue rating', data.averageRating ?? 'Not rated yet', 'star'],
-          ...stats,
-        ]} />}
-      </div>
-    </section>
-    {data && <>
-      <section className="account-section" aria-labelledby={venuesHeadingId}>
-        <SectionHeading id={venuesHeadingId} title="My venues" count={data.venues.length} to="/manager/venues" state={navigationOrigin(location)} />
-        {data.venues.length ? <div className="card-grid">
-          {data.venues.slice(0, 3).map(venue => <VenueCard key={venue.id} venue={venue} />)}
-        </div> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">You haven’t listed any venues yet. Create your first venue to get started.</p>}
+  const bookings = data
+    ? [...data.current, ...data.upcoming].sort((a, b) =>
+        a.dateFrom.localeCompare(b.dateFrom),
+      )
+    : [];
+  return (
+    <>
+      <section
+        className="grid items-start gap-4 lg:items-stretch lg:grid-cols-[minmax(0,1fr)_minmax(0,1.8fr)]"
+        aria-labelledby={overviewHeadingId}
+      >
+        <h2 id={overviewHeadingId} className="sr-only">
+          Account overview
+        </h2>
+        {children}
+        <div className="min-w-0 self-stretch">
+          {error ? (
+            <div role="alert" className="space-y-3">
+              <p>Unable to load your venue overview. {error}</p>
+              <button
+                type="button"
+                className="navigation-link"
+                onClick={() => {
+                  setError("");
+                  setAttempt((value) => value + 1);
+                }}
+              >
+                Try again
+              </button>
+            </div>
+          ) : !data ? (
+            <Loading>Loading your venue overview…</Loading>
+          ) : (
+            <AccountStats
+              items={[
+                ["My venues", data.venues.length, "home"],
+                ["Total bookings", data.totalBookings, "calendar"],
+                ["Upcoming bookings", data.upcoming.length, "bed"],
+                [
+                  "Average venue rating",
+                  data.averageRating ?? "Not rated yet",
+                  "star",
+                ],
+                ...stats,
+              ]}
+            />
+          )}
+        </div>
       </section>
-      <section className="account-section" aria-labelledby={bookingsHeadingId}>
-        <SectionHeading id={bookingsHeadingId} title="Venue bookings" count={bookings.length} to="/manager/bookings" state={navigationOrigin(location)} />
-        {bookings.length ? <div className="card-grid">
-          {bookings.slice(0, 3).map(booking => <ManagerBookingCard key={booking.id} booking={booking} />)}
-        </div> : <p className="rounded-xl border border-border bg-surface p-5 text-muted">No current or upcoming bookings for your venues.</p>}
-      </section>
-    </>}
-  </>;
+      {data && (
+        <>
+          <section
+            className="account-section"
+            aria-labelledby={venuesHeadingId}
+          >
+            <SectionHeading
+              id={venuesHeadingId}
+              title="My venues"
+              count={data.venues.length}
+              to="/manager/venues"
+              state={navigationOrigin(location)}
+            />
+            {data.venues.length ? (
+              <div className="card-grid">
+                {data.venues.slice(0, 3).map((venue) => (
+                  <VenueCard key={venue.id} venue={venue} />
+                ))}
+              </div>
+            ) : (
+              <p className="rounded-xl border border-border bg-surface p-5 text-muted">
+                You haven’t listed any venues yet. Create your first venue to
+                get started.
+              </p>
+            )}
+          </section>
+          <section
+            className="account-section"
+            aria-labelledby={bookingsHeadingId}
+          >
+            <SectionHeading
+              id={bookingsHeadingId}
+              title="Venue bookings"
+              count={bookings.length}
+              to="/manager/bookings"
+              state={navigationOrigin(location)}
+            />
+            {bookings.length ? (
+              <div className="card-grid">
+                {bookings.slice(0, 3).map((booking) => (
+                  <ManagerBookingCard key={booking.id} booking={booking} />
+                ))}
+              </div>
+            ) : (
+              <p className="rounded-xl border border-border bg-surface p-5 text-muted">
+                No current or upcoming bookings for your venues.
+              </p>
+            )}
+          </section>
+        </>
+      )}
+    </>
+  );
 }

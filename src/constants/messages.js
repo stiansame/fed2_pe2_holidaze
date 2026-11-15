@@ -1,4 +1,5 @@
 // Shared errors, validation messages and notices. API messages pass through unchanged.
+
 export const messages = {
   networkError: "Unable to connect. Please try again.",
   unreadableResponse: "The server returned an unreadable response.",
@@ -14,105 +15,139 @@ export const messages = {
   shortSearch: "Enter at least 3 characters.",
   bookingAccessDenied: "This booking is not available for your account.",
   managerBookingAccessDenied: "This booking is not available for your venues.",
-  bookingNotEditable: "Only stays that have not started can be changed or cancelled.",
+  bookingNotEditable:
+    "Only stays that have not started can be changed or cancelled.",
   bookingNotChangeable: "Only stays that have not started can be changed.",
   venueUnavailable: "This venue is no longer available.",
   missingBookingReference: "The server did not return a booking reference.",
   missingVenueReference: "The server did not return a venue reference.",
   venueAccessDenied: "You can only manage your own venues.",
-  venueUpdateUnconfirmed: "The update could not be confirmed. Check My venues before saving again.",
-  bookingInformationUnavailable: "Booking information is unavailable. Please try again.",
-  availabilityUnavailable: "Availability is unavailable. Please try again later.",
-  invalidBookingDates: "Some booking dates are invalid. Known bookings are shown, but availability cannot be confirmed.",
+  venueUpdateUnconfirmed:
+    "The update could not be confirmed. Check My venues before saving again.",
+  bookingInformationUnavailable:
+    "Booking information is unavailable. Please try again.",
+  availabilityUnavailable:
+    "Availability is unavailable. Please try again later.",
+  invalidBookingDates:
+    "Some booking dates are invalid. Known bookings are shown, but availability cannot be confirmed.",
   invalidStayDates: "Choose a valid check-in and check-out date.",
   pastCheckIn: "Check-in cannot be in the past.",
   invalidCheckOut: "Check-out must be after check-in (at least one night).",
   invalidStayGuests: "Choose a guest count within this stay’s capacity.",
-  overlappingStay: "These dates overlap an existing booking. Choose another stay.",
+  overlappingStay:
+    "These dates overlap an existing booking. Choose another stay.",
   invalidStayPrice: "A valid price is unavailable for this stay.",
   requiredVenueDetails: "Enter a venue name and description.",
-  invalidVenuePrice: "Enter a price of zero or more, with at most two decimal places.",
+  invalidVenuePrice:
+    "Enter a price of zero or more, with at most two decimal places.",
   invalidVenueGuests: "Enter a whole guest count of at least one.",
   invalidRating: "Enter a rating from 0 to 5.",
-  invalidCoordinates: "Enter both coordinates: latitude from −90 to 90 and longitude from −180 to 180.",
+  invalidCoordinates:
+    "Enter both coordinates: latitude from −90 to 90 and longitude from −180 to 180.",
   bioTooLong: "Bio must be 160 characters or fewer.",
   bookingUpdated: "Booking updated.",
   bookingCancelled: "Booking cancelled.",
   venueDeleted: "Venue deleted.",
   profileUpdated: "Profile updated.",
   reservationSaved: "Your reservation is saved.",
-  bookingPriceChanged: "The price has changed. Review the updated total before confirming again.",
-  bookingEditPriceChanged: "The price has changed. Review the updated total before saving again.",
-  bookingUncertain: "We could not confirm whether your reservation was saved. Please verify your booking before reserving again.",
+  bookingPriceChanged:
+    "The price has changed. Review the updated total before confirming again.",
+  bookingEditPriceChanged:
+    "The price has changed. Review the updated total before saving again.",
+  bookingUncertain:
+    "We could not confirm whether your reservation was saved. Please verify your booking before reserving again.",
   incompleteSearchDates: "Choose both check-in and check-out dates.",
   invalidSearchDates: "Choose a future stay with check-out after check-in.",
   pageNotFound: "Page not found",
-  pageNotFoundDescription: "This address doesn't lead to a page. Check the link, or explore our places to stay.",
+  pageNotFoundDescription:
+    "This address doesn't lead to a page. Check the link, or explore our places to stay.",
   venueNotFound: "Venue not found",
-  venueNotFoundDescription: "This stay may have been removed or the link is incorrect.",
+  venueNotFoundDescription:
+    "This stay may have been removed or the link is incorrect.",
   venueLoadFailed: "Unable to load this stay",
   profileNotFound: "Profile not found",
-  profileNotFoundDescription: "This profile may have been removed or the link is incorrect.",
+  profileNotFoundDescription:
+    "This profile may have been removed or the link is incorrect.",
   profileLoadFailed: "Unable to load host profile",
   staysLoadFailed: "Unable to load stays.",
   ownVenuesLoadFailed: "Unable to load your venues.",
   venueBookingsLoadFailed: "Unable to load your venue bookings.",
-  unavailableVenueFilter: "This venue is unavailable or does not belong to you. Open Bookings from the account menu to view all your venues.",
+  unavailableVenueFilter:
+    "This venue is unavailable or does not belong to you. Open Bookings from the account menu to view all your venues.",
   mapLoadFailed: "Map images could not be loaded.",
   mapManualCoordinates: " You can still enter coordinates manually.",
-  venueCreationUncertain: "Your venue may have been created. Check My venues before trying again.",
+  venueCreationUncertain:
+    "Your venue may have been created. Check My venues before trying again.",
+
   /**
    * Adds saved-reservation context to a loading error.
    * @param {string} detail Original error detail.
    * @returns {string}
    */
-  confirmationLoadFailed: detail => `Your reservation may already be saved, but its details could not be loaded: ${detail}`,
+  confirmationLoadFailed: (detail) =>
+    `Your reservation may already be saved, but its details could not be loaded: ${detail}`,
+
   /**
    * Adds a verification reminder when cancellation could not be confirmed.
    * @param {string} detail Original error detail.
    * @returns {string}
    */
-  cancellationUnclear: detail => `${detail} Refresh your bookings if the cancellation outcome is unclear.`,
+  cancellationUnclear: (detail) =>
+    `${detail} Refresh your bookings if the cancellation outcome is unclear.`,
+
   /**
    * Adds a verification reminder when venue deletion could not be confirmed.
    * @param {string} detail Original error detail.
    * @returns {string}
    */
-  deletionUnclear: detail => `${detail} Refresh My venues if the deletion outcome is unclear.`,
+  deletionUnclear: (detail) =>
+    `${detail} Refresh My venues if the deletion outcome is unclear.`,
+
   /**
    * Names the stay in the irreversible cancellation confirmation.
    * @param {string} name Affected venue name.
    * @returns {string}
    */
-  confirmBookingCancellation: name => `Cancel your stay at ${name}? This removes the booking and cannot be undone.`,
+  confirmBookingCancellation: (name) =>
+    `Cancel your stay at ${name}? This removes the booking and cannot be undone.`,
+
   /**
    * Names the venue in the irreversible deletion confirmation.
    * @param {string} name Affected venue name.
    * @returns {string}
    */
-  confirmVenueDeletion: name => `Delete "${name}"? This permanently removes the venue and cannot be undone.`,
+  confirmVenueDeletion: (name) =>
+    `Delete "${name}"? This permanently removes the venue and cannot be undone.`,
+
   /**
    * Identifies the venue image whose URL failed validation.
    * @param {number} number One-based image number.
    * @returns {string}
    */
-  invalidImageUrl: number => `Image ${number}: use a complete HTTP or HTTPS image URL of at most 300 characters.`,
+  invalidImageUrl: (number) =>
+    `Image ${number}: use a complete HTTP or HTTPS image URL of at most 300 characters.`,
+
   /**
    * Identifies the venue image whose alt text exceeds the limit.
    * @param {number} number One-based image number.
    * @returns {string}
    */
-  imageAltTooLong: number => `Image ${number}: alt text must be 120 characters or fewer.`,
+  imageAltTooLong: (number) =>
+    `Image ${number}: alt text must be 120 characters or fewer.`,
+
   /**
    * Identifies the profile image field whose URL failed validation.
    * @param {string} field Avatar or banner field name.
    * @returns {string}
    */
-  invalidProfileImageUrl: field => `Use a complete HTTP or HTTPS URL of at most 300 characters for ${field}.`,
+  invalidProfileImageUrl: (field) =>
+    `Use a complete HTTP or HTTPS URL of at most 300 characters for ${field}.`,
+
   /**
    * Identifies the profile image field whose alt text exceeds the limit.
    * @param {string} field Avatar or banner field name.
    * @returns {string}
    */
-  profileImageAltTooLong: field => `${field === 'avatar' ? 'Avatar' : 'Banner'} description must be 120 characters or fewer.`,
+  profileImageAltTooLong: (field) =>
+    `${field === "avatar" ? "Avatar" : "Banner"} description must be 120 characters or fewer.`,
 };

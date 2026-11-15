@@ -1,7 +1,7 @@
-import DocumentTitle from '../components/DocumentTitle.jsx';
-import { messages } from '../constants/messages.js';
-import { Link } from 'react-router-dom';
-import Icon from '../components/Icon.jsx';
+import DocumentTitle from "../components/DocumentTitle.jsx";
+import { messages } from "../constants/messages.js";
+import { Link } from "react-router-dom";
+import Icon from "../components/Icon.jsx";
 
 /**
  * Displays a missing-page message and navigation back home.
@@ -16,8 +16,15 @@ export default function NotFound() {
       <h1 className="text-h2 font-bold">{messages.pageNotFound}</h1>
       <p className="mt-4 text-muted">{messages.pageNotFoundDescription}</p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link to="/venues" className="inline-flex h-11 items-center rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover">Explore venues</Link>
-        <Link to="/" className="navigation-link">Back to home</Link>
+        <Link
+          to="/venues"
+          className="inline-flex h-11 items-center rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover"
+        >
+          Explore venues
+        </Link>
+        <Link to="/" className="navigation-link">
+          Back to home
+        </Link>
       </div>
     </section>
   );

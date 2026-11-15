@@ -1,8 +1,8 @@
-import { messages } from '../constants/messages.js';
-import { ApiError, getAllPages } from './client.js';
-import { clearVenueCache, getVenue } from './venues.js';
-import { staySummary } from '../utils/availability.js';
-import { bookingStatus } from '../utils/bookings.js';
+import { messages } from "../constants/messages.js";
+import { ApiError, getAllPages } from "./client.js";
+import { clearVenueCache, getVenue } from "./venues.js";
+import { staySummary } from "../utils/availability.js";
+import { bookingStatus } from "../utils/bookings.js";
 
 /**
  * Loads every booking page for a profile, including its venue data.
@@ -13,9 +13,14 @@ import { bookingStatus } from '../utils/bookings.js';
  * @returns {Promise<object[]>}
  */
 export function getProfileBookings(request, name, { signal } = {}) {
-  return getAllPages(request, `holidaze/profiles/${encodeURIComponent(name)}/bookings`, {
-    query: { _venue: true, sort: 'dateFrom', sortOrder: 'desc' }, signal,
-  });
+  return getAllPages(
+    request,
+    `holidaze/profiles/${encodeURIComponent(name)}/bookings`,
+    {
+      query: { _venue: true, sort: "dateFrom", sortOrder: "desc" },
+      signal,
+    },
+  );
 }
 
 /**
@@ -29,10 +34,15 @@ export function getProfileBookings(request, name, { signal } = {}) {
  * @throws {ApiError} If the booking belongs to another customer.
  */
 export async function getOwnBooking(request, id, name, { signal } = {}) {
-  const { data } = await request(`holidaze/bookings/${encodeURIComponent(id)}`, {
-    query: { _venue: true, _customer: true }, signal,
-  });
-  if (data.customer?.name?.toLowerCase() !== name.toLowerCase()) throw new ApiError(messages.bookingAccessDenied, 403);
+  const { data } = await request(
+    `holidaze/bookings/${encodeURIComponent(id)}`,
+    {
+      query: { _venue: true, _customer: true },
+      signal,
+    },
+  );
+  if (data.customer?.name?.toLowerCase() !== name.toLowerCase())
+    throw new ApiError(messages.bookingAccessDenied, 403);
   return data;
 }
 
@@ -47,9 +57,13 @@ export async function getOwnBooking(request, id, name, { signal } = {}) {
  * @throws {ApiError} If the account does not own the booked venue.
  */
 export async function getVenueBooking(request, id, name, { signal } = {}) {
-  const { data } = await request(`holidaze/bookings/${encodeURIComponent(id)}`, {
-    query: { _venue: true, _customer: true }, signal,
-  });
+  const { data } = await request(
+    `holidaze/bookings/${encodeURIComponent(id)}`,
+    {
+      query: { _venue: true, _customer: true },
+      signal,
+    },
+  );
   if (!name || data?.venue?.owner?.name?.toLowerCase() !== name.toLowerCase()) {
     throw new ApiError(messages.managerBookingAccessDenied, 403);
   }
@@ -65,7 +79,8 @@ export async function getVenueBooking(request, id, name, { signal } = {}) {
  */
 async function getEditableBooking(request, id, name) {
   const booking = await getOwnBooking(request, id, name);
-  if (bookingStatus(booking) !== 'upcoming') throw new ApiError(messages.bookingNotEditable, 400);
+  if (bookingStatus(booking) !== "upcoming")
+    throw new ApiError(messages.bookingNotEditable, 400);
   return booking;
 }
 
@@ -86,9 +101,17 @@ export async function updateBooking(request, id, name, stay, expectedPrice) {
   if (summary.error) throw new ApiError(summary.error, 400);
   if (venue.price !== expectedPrice) return { venue, booking: null };
   clearVenueCache();
-  const { data: booking } = await request(`holidaze/bookings/${encodeURIComponent(id)}`, {
-    method: 'PUT', body: { dateFrom: `${stay.from}T00:00:00.000Z`, dateTo: `${stay.to}T00:00:00.000Z`, guests: stay.guests },
-  });
+  const { data: booking } = await request(
+    `holidaze/bookings/${encodeURIComponent(id)}`,
+    {
+      method: "PUT",
+      body: {
+        dateFrom: `${stay.from}T00:00:00.000Z`,
+        dateTo: `${stay.to}T00:00:00.000Z`,
+        guests: stay.guests,
+      },
+    },
+  );
   return { venue, booking };
 }
 
@@ -102,7 +125,9 @@ export async function updateBooking(request, id, name, stay, expectedPrice) {
 export async function cancelBooking(request, id, name) {
   await getEditableBooking(request, id, name);
   clearVenueCache();
-  await request(`holidaze/bookings/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  await request(`holidaze/bookings/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
 }
 
 /**
@@ -121,16 +146,23 @@ export async function createBooking(request, venueId, stay, expectedPrice) {
   if (venue.price !== expectedPrice) return { venue, booking: null };
   clearVenueCache();
   try {
-    const { data: booking } = await request('holidaze/bookings', {
-      method: 'POST', body: {
-        venueId, dateFrom: `${stay.from}T00:00:00.000Z`, dateTo: `${stay.to}T00:00:00.000Z`, guests: stay.guests,
+    const { data: booking } = await request("holidaze/bookings", {
+      method: "POST",
+      body: {
+        venueId,
+        dateFrom: `${stay.from}T00:00:00.000Z`,
+        dateTo: `${stay.to}T00:00:00.000Z`,
+        guests: stay.guests,
       },
     });
     if (!booking?.id) throw new ApiError(messages.missingBookingReference);
     return { venue, booking };
   } catch (error) {
     // A lost response may follow a saved booking. Do not invite an unsafe second POST.
-    error.bookingUncertain = !error.status || error.status >= 500 || (error.status >= 200 && error.status < 300);
+    error.bookingUncertain =
+      !error.status ||
+      error.status >= 500 ||
+      (error.status >= 200 && error.status < 300);
     throw error;
   }
 }

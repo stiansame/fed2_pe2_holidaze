@@ -80,7 +80,7 @@ function BookingEditor({ booking, initialVenue }) {
 
   /**
    * Saves reviewed booking changes or asks for review again when the price changed.
-   * @param {import('react').FormEvent<HTMLFormElement>} event Form submission event.
+   * @param {import('react').SubmitEvent<HTMLFormElement>} event Form submission event.
    * @returns {Promise<void>}
    */
   async function save(event) {

@@ -1,23 +1,23 @@
-import { Route, Routes } from 'react-router-dom';
-import Home from './pages/Home.jsx';
-import NotFound from './pages/NotFound.jsx';
-import VenueBookings from './pages/VenueBookings.jsx';
-import ManagerBookingDetails from './pages/ManagerBookingDetails.jsx';
-import Layout from './components/layout/Layout.jsx';
-import AuthForm from './pages/AuthForm.jsx';
-import RequireAuth from './auth/RequireAuth.jsx';
-import Profile from './pages/Profile.jsx';
-import Venues from './pages/Venues.jsx';
-import VenueDetails from './pages/VenueDetails.jsx';
-import BookingReview from './pages/BookingReview.jsx';
-import BookingConfirmation from './pages/BookingConfirmation.jsx';
-import AccountLayout from './components/layout/AccountLayout.jsx';
-import MyStays from './pages/MyStays.jsx';
-import BookingEdit from './pages/BookingEdit.jsx';
-import PublicProfile from './pages/PublicProfile.jsx';
-import MyVenues from './pages/MyVenues.jsx';
-import CreateVenue from './pages/CreateVenue.jsx';
-import EditVenue from './pages/EditVenue.jsx';
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import VenueBookings from "./pages/VenueBookings.jsx";
+import ManagerBookingDetails from "./pages/ManagerBookingDetails.jsx";
+import Layout from "./components/layout/Layout.jsx";
+import AuthForm from "./pages/AuthForm.jsx";
+import RequireAuth from "./auth/RequireAuth.jsx";
+import Profile from "./pages/Profile.jsx";
+import Venues from "./pages/Venues.jsx";
+import VenueDetails from "./pages/VenueDetails.jsx";
+import BookingReview from "./pages/BookingReview.jsx";
+import BookingConfirmation from "./pages/BookingConfirmation.jsx";
+import AccountLayout from "./components/layout/AccountLayout.jsx";
+import MyStays from "./pages/MyStays.jsx";
+import BookingEdit from "./pages/BookingEdit.jsx";
+import PublicProfile from "./pages/PublicProfile.jsx";
+import MyVenues from "./pages/MyVenues.jsx";
+import CreateVenue from "./pages/CreateVenue.jsx";
+import EditVenue from "./pages/EditVenue.jsx";
 
 /**
  * Defines public, signed-in and manager-only routes.
@@ -31,12 +31,18 @@ export default function App() {
         <Route path="/venues" element={<Venues />} />
         <Route path="/venues/:id" element={<VenueDetails />} />
         <Route path="/login" element={<AuthForm key="login" />} />
-        <Route path="/register" element={<AuthForm key="register" register />} />
+        <Route
+          path="/register"
+          element={<AuthForm key="register" register />}
+        />
         <Route element={<RequireAuth />}>
           <Route path="/profiles/:name" element={<PublicProfile />} />
           <Route path="/venues/:id/reserve" element={<BookingReview />} />
           <Route element={<AccountLayout />}>
-            <Route path="/bookings/:id/confirmation" element={<BookingConfirmation />} />
+            <Route
+              path="/bookings/:id/confirmation"
+              element={<BookingConfirmation />}
+            />
             <Route path="/profile" element={<Profile />} />
             <Route path="/bookings" element={<MyStays />} />
             <Route path="/bookings/:id/edit" element={<BookingEdit />} />
@@ -45,7 +51,10 @@ export default function App() {
               <Route path="/manager/venues/new" element={<CreateVenue />} />
               <Route path="/manager/venues/:id/edit" element={<EditVenue />} />
               <Route path="/manager/bookings" element={<VenueBookings />} />
-              <Route path="/manager/bookings/:id" element={<ManagerBookingDetails />} />
+              <Route
+                path="/manager/bookings/:id"
+                element={<ManagerBookingDetails />}
+              />
             </Route>
           </Route>
         </Route>

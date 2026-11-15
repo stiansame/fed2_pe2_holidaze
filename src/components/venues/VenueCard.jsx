@@ -1,10 +1,10 @@
-import Amenities from './Amenities.jsx';
-import Rating from './Rating.jsx';
-import Icon from '../Icon.jsx';
-import VenueImage from './VenueImage.jsx';
-import { Link, useLocation } from 'react-router-dom';
-import { navigationOrigin } from '../../utils/navigation.js';
-import { formatVenuePrice } from '../../utils/venue.js';
+import Amenities from "./Amenities.jsx";
+import Rating from "./Rating.jsx";
+import Icon from "../Icon.jsx";
+import VenueImage from "./VenueImage.jsx";
+import { Link, useLocation } from "react-router-dom";
+import { navigationOrigin } from "../../utils/navigation.js";
+import { formatVenuePrice } from "../../utils/venue.js";
 
 /**
  * Displays shared venue information and preserves the originating route when opened.
@@ -17,31 +17,74 @@ import { formatVenuePrice } from '../../utils/venue.js';
 export default function VenueCard({ venue, onImageError, actions }) {
   const routeLocation = useLocation();
   const { search } = routeLocation;
-  const name = venue.name?.trim() || 'Unnamed stay';
-  const location = [venue.location?.city, venue.location?.country]
-    .map(value => value?.trim()).filter(Boolean).join(', ') || 'Location not specified';
+  const name = venue.name?.trim() || "Unnamed stay";
+  const location =
+    [venue.location?.city, venue.location?.country]
+      .map((value) => value?.trim())
+      .filter(Boolean)
+      .join(", ") || "Location not specified";
   return (
     <article className="card card-interactive relative">
-      <Link to={`/venues/${encodeURIComponent(venue.id)}${search}`} state={navigationOrigin(routeLocation)} aria-label={`View ${name}`} className="block h-full focus-visible:outline-offset-[-4px]">
-      <div className="relative">
-        <VenueImage key={venue.media?.[0]?.url || 'missing'} media={venue.media?.[0]} name={name} className="h-65 rounded-t-lg" imageClass="venue-photo object-cover" onImageError={() => onImageError?.(venue.id)} />
-        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-          <span className="guest-pill inline-flex h-8 min-w-0 items-center gap-1.5 rounded-full bg-surface px-2.5 text-caption font-semibold text-text"><Icon name="user" className="size-4 shrink-0 text-primary" />{venue.maxGuests > 0 ? `${venue.maxGuests} ${venue.maxGuests === 1 ? 'guest' : 'guests'}` : 'Capacity not specified'}</span>
-          <Rating rating={venue.rating} />
+      <Link
+        to={`/venues/${encodeURIComponent(venue.id)}${search}`}
+        state={navigationOrigin(routeLocation)}
+        aria-label={`View ${name}`}
+        className="block h-full focus-visible:outline-offset-[-4px]"
+      >
+        <div className="relative">
+          <VenueImage
+            key={venue.media?.[0]?.url || "missing"}
+            media={venue.media?.[0]}
+            name={name}
+            className="h-65 rounded-t-lg"
+            imageClass="venue-photo object-cover"
+            onImageError={() => onImageError?.(venue.id)}
+          />
+          <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+            <span className="guest-pill inline-flex h-8 min-w-0 items-center gap-1.5 rounded-full bg-surface px-2.5 text-caption font-semibold text-text">
+              <Icon name="user" className="size-4 shrink-0 text-primary" />
+              {venue.maxGuests > 0
+                ? `${venue.maxGuests} ${venue.maxGuests === 1 ? "guest" : "guests"}`
+                : "Capacity not specified"}
+            </span>
+            <Rating rating={venue.rating} />
+          </div>
+          <div
+            className={`absolute inset-x-0 bottom-0 bg-linear-to-t from-black/45 to-transparent px-3 pt-8 pb-3 ${actions ? "pr-16" : ""}`}
+          >
+            <Amenities meta={venue.meta} />
+          </div>
         </div>
-        <div className={`absolute inset-x-0 bottom-0 bg-linear-to-t from-black/45 to-transparent px-3 pt-8 pb-3 ${actions ? 'pr-16' : ''}`}>
-          <Amenities meta={venue.meta} />
+        <div className="grid items-start gap-2 p-4">
+          <div className="min-w-0 space-y-2">
+            <h2 className="truncate text-h3 font-semibold" title={name}>
+              {name}
+            </h2>
+            <p
+              title={location}
+              className="flex min-w-0 items-center gap-2 text-small text-muted"
+            >
+              <Icon name="pin" className="size-4 shrink-0 text-success" />
+              <span className="truncate">{location}</span>
+            </p>
+          </div>
+          <p className="text-small font-semibold wrap-anywhere">
+            {formatVenuePrice(venue.price).split(" / night")[0]}
+            {Number.isFinite(venue.price) && (
+              <span className="ml-1 text-caption font-normal text-muted">
+                / night
+              </span>
+            )}
+          </p>
         </div>
-      </div>
-      <div className="grid items-start gap-2 p-4">
-        <div className="min-w-0 space-y-2">
-          <h2 className="truncate text-h3 font-semibold" title={name}>{name}</h2>
-          <p title={location} className="flex min-w-0 items-center gap-2 text-small text-muted"><Icon name="pin" className="size-4 shrink-0 text-success" /><span className="truncate">{location}</span></p>
-        </div>
-        <p className="text-small font-semibold wrap-anywhere">{formatVenuePrice(venue.price).split(' / night')[0]}{Number.isFinite(venue.price) && <span className="ml-1 text-caption font-normal text-muted">/ night</span>}</p>
-      </div>
       </Link>
-      {actions && <div className="pointer-events-none absolute inset-x-0 top-0 h-65"><div className="pointer-events-auto absolute bottom-3 right-3 z-10">{actions}</div></div>}
+      {actions && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-65">
+          <div className="pointer-events-auto absolute bottom-3 right-3 z-10">
+            {actions}
+          </div>
+        </div>
+      )}
     </article>
   );
 }

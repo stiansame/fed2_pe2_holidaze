@@ -1,4 +1,4 @@
-import Logo from '../Logo.jsx';
+import Logo from "../Logo.jsx";
 
 /**
  * Displays the shared branding, slogan and copyright.
@@ -11,7 +11,9 @@ export default function Footer() {
         <div className="space-y-4">
           <Logo />
           <p className="text-small text-muted">Find somewhere worth staying.</p>
-          <p className="text-caption text-muted">© Stian Rostad 2026 | Noroff FED2 | PE2</p>
+          <p className="text-caption text-muted">
+            © Stian Rostad 2026 | Noroff FED2 | PE2
+          </p>
         </div>
       </div>
     </footer>

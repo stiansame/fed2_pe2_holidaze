@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 /**
  * Displays a venue image or fallback and reports image failures when requested.
@@ -11,13 +11,34 @@ import { useState } from 'react';
  * @param {Function} [props.onImageError] Reports a failed image.
  * @returns {import('react').ReactNode}
  */
-export default function VenueImage({ media, name, className = 'h-50 rounded-t-lg', imageClass = 'object-cover', loading = 'lazy', onImageError }) {
+export default function VenueImage({
+  media,
+  name,
+  className = "h-50 rounded-t-lg",
+  imageClass = "object-cover",
+  loading = "lazy",
+  onImageError,
+}) {
   const [failed, setFailed] = useState(false);
   const url = media?.url;
   return (
-    <span className={`flex items-center justify-center overflow-hidden bg-tint text-small text-muted ${className}`}>
-      {url && !failed ? <img src={url} alt={media.alt?.trim() || name} loading={loading} onError={() => { setFailed(true); onImageError?.(); }} className={`h-full w-full ${imageClass}`} />
-        : <span>Image not available</span>}
+    <span
+      className={`flex items-center justify-center overflow-hidden bg-tint text-small text-muted ${className}`}
+    >
+      {url && !failed ? (
+        <img
+          src={url}
+          alt={media.alt?.trim() || name}
+          loading={loading}
+          onError={() => {
+            setFailed(true);
+            onImageError?.();
+          }}
+          className={`h-full w-full ${imageClass}`}
+        />
+      ) : (
+        <span>Image not available</span>
+      )}
     </span>
   );
 }

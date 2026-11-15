@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 /**
  * Updates the browser tab title without rendering page content.
@@ -7,6 +7,8 @@ import { useEffect } from 'react';
  * @returns {null}
  */
 export default function DocumentTitle({ children }) {
-  useEffect(() => { document.title = children; }, [children]);
+  useEffect(() => {
+    document.title = children;
+  }, [children]);
   return null;
 }
