@@ -165,6 +165,7 @@ Design overview includes the style guide, components, desktop/mobile pages and p
 
 - [Sources](documentation/Sources.md)
 - [Notes on AI](documentation/Notes%20on%20AI.md)
+- [![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/stiansame/fed2_pe2_holidaze?utm_source=readme&utm_medium=badge)
 
 ## 📅 Project planning
 
