@@ -13,6 +13,8 @@ logs/
 
 # Coverage and diagnostic reports
 coverage/
+test-results/
+playwright-report/
 *.lcov
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 

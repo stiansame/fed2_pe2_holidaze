@@ -46,12 +46,33 @@ Public venue requests require no credentials. For authenticated requests, set `V
 
 ## 📋 Commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Start the development server |
-| `npm run build` | Build the application into `dist/` |
-| `npm run preview` | Preview the production build locally |
-| `npm run lint` | Check JavaScript and React code |
+| Command            | Purpose                                                       |
+| ------------------ | ------------------------------------------------------------- |
+| `npm run dev`      | Start the development server                                  |
+| `npm run build`    | Build the application into `dist/`                            |
+| `npm run preview`  | Preview the production build locally                          |
+| `npm run lint`     | Check JavaScript and React code                               |
+| `npm test`         | Run booking date, availability and price tests with Vitest    |
+| `npm run test:e2e` | Run Playwright navigation checks at desktop and mobile widths |
+
+## 🧪 Automated tests
+
+Tests and their configuration live in `tests/`. [Vitest](https://vitest.dev/guide/) checks booking logic; [Playwright](https://playwright.dev/docs/intro) checks the 404 page and signed-out account access in headless Chromium at desktop and mobile widths.
+
+After `npm ci`, install the test browser once:
+
+```sh
+npx playwright install chromium --only-shell
+```
+
+Run the checks:
+
+```sh
+npm test
+npm run test:e2e
+```
+
+Playwright starts and stops its own Vite server on port 4174; keep that port free. These initial tests need no credentials and create no API records. Generated results are ignored by Git. They cover a small regression baseline; use the manual checks below for complete booking/manager flows, themes and accessibility.
 
 ## ✅ Verify locally
 
@@ -67,7 +88,7 @@ Check desktop and mobile widths in both standard and Sunny Mode:
 6. Use Tab, Shift+Tab, Enter and Escape to check navigation, menus, forms and dialogs. Check visible focus, 200%/400% browser zoom and reduced motion.
 7. Open an unknown route and a missing venue ID. Temporarily go offline in browser developer tools to check loading errors and retry after reconnecting. Refresh a nested route on the deployed site to verify routing.
 
-These steps use the live Noroff API: reservations and venue changes are real. Use your own test data and remove it afterwards. Verification uses lint, build and the manual checks above.
+These manual steps use the live Noroff API: reservations and venue changes are real. Use your own test data and remove it afterwards. Verification combines the automated tests, lint, build and the manual checks above.
 
 ## 🌐 Deployment
 
@@ -115,7 +136,7 @@ Set `VITE_NOROFF_API_KEY` in Netlify with the Builds scope and redeploy after ch
 - [x] Provide the repository link.
 - [x] Provide the hosted application link.
 - [x] Document local setup, startup and instructions for testers in README.
-- [ ] Merge all final changes into the default branch before submission.
+- [x] Merge all final changes into the default branch before submission.
 - [ ] Submit the required links in Moodle using the delivery template.
 
 ### 🔔 The Bells & Whistles
@@ -149,8 +170,8 @@ Design overview includes the style guide, components, desktop/mobile pages and p
 
 [GitHub Project](https://github.com/users/stiansame/projects/6)
 
-| View | Purpose |
-| --- | --- |
+| View                                                               | Purpose                          |
+| ------------------------------------------------------------------ | -------------------------------- |
 | [Task List](https://github.com/users/stiansame/projects/6/views/1) | Tasks, priorities and milestones |
-| [KanBan](https://github.com/users/stiansame/projects/6/views/2) | Task status |
-| [Timeline](https://github.com/users/stiansame/projects/6/views/3) | Schedule and dates |
+| [KanBan](https://github.com/users/stiansame/projects/6/views/2)    | Task status                      |
+| [Timeline](https://github.com/users/stiansame/projects/6/views/3)  | Schedule and dates               |
