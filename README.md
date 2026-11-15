@@ -57,7 +57,7 @@ Public venue requests require no credentials. For authenticated requests, set `V
 
 ## 🧪 Automated tests
 
-Tests and their configuration live in `tests/`. [Vitest](https://vitest.dev/guide/) checks booking logic; [Playwright](https://playwright.dev/docs/intro) checks the 404 page and signed-out account access in headless Chromium at desktop and mobile widths.
+Tests and their configuration live in `tests/`. [Vitest](https://vitest.dev/guide/) checks booking logic; [Playwright](https://playwright.dev/docs/intro) checks the 404 page, signed-out account access and venue photo previews in headless Chromium at desktop and mobile widths.
 
 After `npm ci`, install the test browser once:
 
@@ -72,7 +72,7 @@ npm test
 npm run test:e2e
 ```
 
-Playwright starts and stops its own Vite server on port 4174; keep that port free. These initial tests need no credentials and create no API records. Generated results are ignored by Git. They cover a small regression baseline; use the manual checks below for complete booking/manager flows, themes and accessibility.
+Playwright starts and stops its own Vite server on port 4174; keep that port free. These tests need no real credentials and create no API records; photo editing uses intercepted API responses and a local test session. Generated results are ignored by Git. They cover a small regression baseline; use the manual checks below for complete booking/manager flows, themes and accessibility.
 
 ## ✅ Verify locally
 

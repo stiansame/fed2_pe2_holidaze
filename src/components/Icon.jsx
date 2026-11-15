@@ -1,4 +1,11 @@
 const paths = {
+  image: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8" cy="8" r="1.5" />
+      <path d="m3 16 5-5 4 4 3-3 6 6" />
+    </>
+  ),
   "calendar-check": (
     <>
       <rect x="3" y="5" width="18" height="16" rx="2" />

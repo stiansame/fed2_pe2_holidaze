@@ -33,6 +33,7 @@
 }
 
 @layer base {
+
   /* Set the default page colours and typography. */
   body {
     @apply bg-background font-sans text-body text-text;
@@ -46,6 +47,7 @@
 
   /* Keep mobile form text legible and avoid automatic focus zoom in Safari. */
   @media (width < 64rem) {
+
     input:not([type="checkbox"]):not([type="radio"]),
     select,
     textarea {
@@ -55,6 +57,7 @@
 }
 
 @layer components {
+
   /* Shared grid for venue and booking cards. */
   .card-grid {
     @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3;
@@ -67,7 +70,8 @@
 
   /* Shared hover and focus treatment for cards that link as a whole. */
   .card-interactive {
-    @apply shadow-sm transition-[translate, box-shadow] duration-200 hover:shadow-xl focus-within:shadow-xl motion-safe:hover:-translate-y-1 motion-safe:focus-within:-translate-y-1 motion-reduce:transition-none;
+    transition-property: translate, box-shadow;
+    @apply shadow-sm duration-200 hover:shadow-xl focus-within:shadow-xl motion-safe:hover:-translate-y-1 motion-safe:focus-within:-translate-y-1 motion-reduce:transition-none;
   }
 
   /* Shared surface, border, spacing and safe area for mobile account and booking bars. */
@@ -79,9 +83,7 @@
   /* Reserve space after the footer, so fixed mobile controls cannot cover it. */
   @media (width < 64rem) {
     .site-shell:has(.mobile-bottom-bar) {
-      padding-bottom: calc(
-        3.5625rem + max(0.75rem, env(safe-area-inset-bottom))
-      );
+      padding-bottom: calc(3.5625rem + max(0.75rem, env(safe-area-inset-bottom)));
     }
 
     /* Keep the return-to-top control above fixed account and booking navigation. */
@@ -118,7 +120,8 @@
 
   /* Reserve space for the price, edit icon and primary booking action. */
   .booking-action-row {
-    @apply grid grid-cols-[minmax(0, 1fr)_2.75rem_7rem] items-center gap-2;
+    @apply grid items-center gap-2;
+    grid-template-columns: minmax(0, 1fr) 2.75rem 7rem;
   }
 
   /* Keep Select dates and Reserve identical in size. */
@@ -209,16 +212,15 @@
     gap: 2px;
   }
 
-  .compact-calendar [aria-label="Night availability"] > span {
+  .compact-calendar [aria-label="Night availability"]>span {
     padding-block: 2px;
   }
 
-  .compact-calendar [aria-label="Night availability"] > button {
+  .compact-calendar [aria-label="Night availability"]>button {
     min-height: clamp(24px, 5dvh, 36px);
   }
 
-  .compact-calendar
-    button:is([aria-label="Previous month"], [aria-label="Next month"]) {
+  .compact-calendar button:is([aria-label="Previous month"], [aria-label="Next month"]) {
     width: 36px;
     height: 36px;
   }
@@ -269,6 +271,7 @@
 
 /* Move the left panel across the stack, then return it to its starting position. */
 @keyframes map-shuffle-left {
+
   0%,
   10%,
   90%,
@@ -292,6 +295,7 @@
 
 /* Lift the middle panel and alternate its position within the stack. */
 @keyframes map-shuffle-middle {
+
   0%,
   10%,
   90%,
@@ -315,6 +319,7 @@
 
 /* Move the right panel across the stack in the opposite direction. */
 @keyframes map-shuffle-right {
+
   0%,
   10%,
   90%,
@@ -338,6 +343,7 @@
 
 /* Keep the loading logo still when reduced motion is requested. */
 @media (prefers-reduced-motion: reduce) {
+
   .loading-map-left,
   .loading-map-middle,
   .loading-map-right {
@@ -353,8 +359,7 @@
 }
 
 /* Form boundaries need more contrast than decorative card borders, in both themes. */
-.site-shell
-  :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+.site-shell :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
 .site-shell label:has(> input[type="search"]),
 .site-shell label:has(> select) {
   border-color: var(--color-control-border);

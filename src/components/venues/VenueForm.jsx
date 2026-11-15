@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { amenityOptions } from "./amenityOptions.js";
 import AmenityPill from "./AmenityPill.jsx";
 import Icon from "../Icon.jsx";
+import VenueImage from "./VenueImage.jsx";
 
 const VenueLocationMap = lazy(() => import("./VenueLocationMap.jsx"));
 
@@ -44,6 +45,25 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
       .filter((item) => venue.meta?.[item.key])
       .map((item) => item.key),
   );
+
+  /**
+   * Moves a stable photo row one position, keeping its fields and preview together.
+   * @param {number} index Current photo position.
+   * @param {number} direction One position up (-1) or down (1).
+   * @returns {void}
+   */
+  function movePhoto(index, direction) {
+    setMediaKeys((keys) => {
+      const target = index + direction;
+      if (target < 0 || target >= keys.length) return keys;
+      const reordered = [...keys];
+      [reordered[index], reordered[target]] = [
+        reordered[target],
+        reordered[index],
+      ];
+      return reordered;
+    });
+  }
 
   /**
    * Sends FormData to the page save handler and blocks duplicate or uncertain saves.
@@ -187,43 +207,16 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
             the cover photo.
           </p>
           {mediaKeys.map((key, index) => (
-            <fieldset
+            <VenuePhotoRow
               key={key}
-              className="grid min-w-0 items-end gap-3 rounded-lg border border-border p-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_auto] lg:border-0 lg:p-0"
-            >
-              <legend className="px-1 text-small font-semibold">
-                Image {index + 1}
-              </legend>
-              <label className="block min-w-0 text-small font-semibold">
-                Image URL
-                <input
-                  name="mediaUrl"
-                  defaultValue={venue.media?.[key]?.url ?? ""}
-                  type="url"
-                  maxLength={300}
-                  className={inputClass}
-                />
-              </label>
-              <label className="block min-w-0 text-small font-semibold">
-                Alt text
-                <input
-                  name="mediaAlt"
-                  defaultValue={venue.media?.[key]?.alt ?? ""}
-                  maxLength={120}
-                  className={inputClass}
-                />
-              </label>
-              <button
-                type="button"
-                onClick={() =>
-                  setMediaKeys((keys) => keys.filter((value) => value !== key))
-                }
-                aria-label={`Remove image ${index + 1}`}
-                className="inline-flex size-11 items-center justify-center rounded-lg border border-border text-danger hover:bg-danger/10"
-              >
-                <Icon name="trash" />
-              </button>
-            </fieldset>
+              media={venue.media?.[key]}
+              index={index}
+              total={mediaKeys.length}
+              onMove={(direction) => movePhoto(index, direction)}
+              onRemove={() =>
+                setMediaKeys((keys) => keys.filter((value) => value !== key))
+              }
+            />
           ))}
           <button
             type="button"
@@ -340,5 +333,124 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
         </div>
       )}
     </form>
+  );
+}
+
+/**
+ * Edits one photo URL and alt text, with an explicit thumbnail preview and removal action.
+ * @param {object} props Component props.
+ * @param {object} [props.media] Existing photo URL and alt text.
+ * @param {number} props.index Current zero-based position in the photo list.
+ * @param {number} props.total Number of photo rows.
+ * @param {Function} props.onMove Moves this row up or down.
+ * @param {Function} props.onRemove Removes this photo row.
+ * @returns {import('react').ReactNode}
+ */
+function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
+  const urlInput = useRef(null);
+  const altInput = useRef(null);
+  const [preview, setPreview] = useState(() => ({ ...media, revision: 0 }));
+  const title = `Image ${index + 1}`;
+
+  /**
+   * Validates the entered URL and refreshes only this row's thumbnail, without saving.
+   * @returns {void}
+   */
+  function showPreview() {
+    const input = urlInput.current;
+    const url = input.value.trim();
+    input.setCustomValidity(
+      url && !/^https?:\/\//i.test(url)
+        ? messages.invalidImageUrl(index + 1)
+        : "",
+    );
+    if (!input.reportValidity()) return;
+    setPreview((previous) => ({
+      url,
+      alt: altInput.current.value,
+      revision: previous.revision + 1,
+    }));
+  }
+
+  return (
+    <fieldset className="min-w-0 border-t border-border pt-4 first-of-type:border-0 first-of-type:pt-0">
+      <legend className="sr-only">{title}</legend>
+      <div className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)_auto] items-start gap-2 min-[375px]:grid-cols-[2.5rem_minmax(0,1fr)_auto] lg:grid-cols-[6rem_minmax(0,1fr)_6rem] lg:gap-x-4 lg:gap-y-2">
+        <VenueImage
+          key={preview.revision}
+          media={preview}
+          name={title}
+          className="col-start-1 row-start-1 h-10 rounded-lg text-caption lg:row-span-2 lg:h-24"
+        />
+        <p className="col-start-2 row-start-1 min-w-0 self-start font-semibold">
+          {title}
+          {index === 0 && (
+            <span className="block text-caption font-normal text-muted">
+              Cover photo
+            </span>
+          )}
+        </p>
+        <div className="col-span-full row-start-2 grid min-w-0 items-end gap-3 lg:col-span-1 lg:col-start-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <label className="block min-w-0 text-small font-semibold">
+            Image URL
+            <input
+              ref={urlInput}
+              name="mediaUrl"
+              defaultValue={media?.url ?? ""}
+              type="url"
+              maxLength={300}
+              onInput={(event) => event.currentTarget.setCustomValidity("")}
+              className={inputClass}
+            />
+          </label>
+          <label className="block min-w-0 text-small font-semibold">
+            Alt text
+            <input
+              ref={altInput}
+              name="mediaAlt"
+              defaultValue={media?.alt ?? ""}
+              maxLength={120}
+              className={inputClass}
+            />
+          </label>
+        </div>
+        <div className="col-start-3 row-start-1 grid grid-cols-4 lg:row-span-2 lg:grid-cols-2 lg:gap-2">
+          <button
+            type="button"
+            onClick={showPreview}
+            aria-label={`Preview image ${index + 1}`}
+            title="Preview image from URL"
+            className="navigation-link h-11 w-8 shrink-0 justify-center p-0 min-[375px]:w-11 lg:col-start-1 lg:row-start-2 lg:w-11"
+          >
+            <Icon name="image" />
+          </button>
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label={`Remove image ${index + 1}`}
+            title="Remove image"
+            className="inline-flex h-11 w-8 shrink-0 min-[375px]:w-11 lg:col-start-2 lg:row-start-2 lg:w-11 items-center justify-center rounded-lg border border-border text-danger hover:bg-danger/10"
+          >
+            <Icon name="trash" />
+          </button>
+          {[-1, 1].map((direction) => (
+            <button
+              key={direction}
+              type="button"
+              onClick={() => onMove(direction)}
+              disabled={direction === -1 ? index === 0 : index === total - 1}
+              aria-label={`Move image ${index + 1} ${direction === -1 ? "up" : "down"}`}
+              title={`Move image ${direction === -1 ? "up" : "down"}`}
+              className={`navigation-link h-11 w-8 shrink-0 justify-center p-0 disabled:opacity-40 min-[375px]:w-11 lg:w-11 lg:row-start-1 ${direction === -1 ? "lg:col-start-1" : "lg:col-start-2"}`}
+            >
+              <Icon
+                name="right"
+                className={`size-5 ${direction === -1 ? "-rotate-90" : "rotate-90"}`}
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+    </fieldset>
   );
 }
