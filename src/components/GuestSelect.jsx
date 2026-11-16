@@ -1,10 +1,13 @@
+import { guestCountError } from "../utils/availability.js";
+
 /**
- * Renders a native guest selector bounded by the venue capacity.
+ * Renders a numeric guest field bounded by the allowed capacity.
  * @param {object} props Component props.
- * @param {number} props.value Selected guest count.
- * @param {Function} props.onChange Receives the selected value.
+ * @param {number|string} props.value Guest count, or an empty input.
+ * @param {Function} props.onChange Receives a number or an empty input.
  * @param {number} [props.maxGuests] Maximum allowed guest count.
- * @param {boolean} [props.allowAny] Adds the unrestricted search choice.
+ * @param {boolean} [props.allowAny] An empty search field means any capacity.
+ * @param {string} [props.describedBy] ID of the field's hint or error message.
  * @param {string} [props.className] Additional styling classes.
  * @returns {import('react').ReactNode}
  */
@@ -13,38 +16,35 @@ export default function GuestSelect({
   onChange,
   maxGuests = 100,
   allowAny = false,
+  describedBy,
   className = "",
 }) {
   const capacity = Number.isInteger(maxGuests) && maxGuests > 0 ? maxGuests : 0;
-  const valid =
-    capacity > 0 &&
-    Number.isInteger(value) &&
-    value >= (allowAny ? 0 : 1) &&
-    value <= capacity;
+  const minimum = allowAny ? 0 : 1;
+  const error = guestCountError(value, capacity, minimum);
   return (
-    <select
-      value={valid ? value : ""}
-      onChange={(event) => onChange(Number(event.target.value))}
+    <input
+      type="number"
+      inputMode="numeric"
+      min={minimum}
+      max={capacity}
+      step="1"
+      value={allowAny && value === 0 ? "" : Number.isNaN(value) ? "" : value}
+      placeholder={allowAny ? "Any" : "Guests"}
+      onChange={(event) =>
+        onChange(
+          event.target.value === ""
+            ? allowAny
+              ? 0
+              : ""
+            : event.target.valueAsNumber,
+        )
+      }
       required={!allowAny}
       disabled={!capacity}
-      aria-invalid={!valid}
+      aria-invalid={Boolean(error)}
+      aria-describedby={describedBy}
       className={className}
-    >
-      {!capacity ? (
-        <option value="">Guest capacity unavailable</option>
-      ) : (
-        (!allowAny || !valid) && (
-          <option value="" disabled>
-            Choose guests
-          </option>
-        )
-      )}
-      {allowAny && capacity > 0 && <option value="0">Any</option>}
-      {Array.from({ length: capacity }, (_, index) => (
-        <option key={index + 1} value={index + 1}>
-          {index + 1} {index === 0 ? "guest" : "guests"}
-        </option>
-      ))}
-    </select>
+    />
   );
 }

@@ -1,5 +1,5 @@
 import { messages } from "../../constants/messages.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon.jsx";
 import GuestSelect from "../GuestSelect.jsx";
@@ -7,6 +7,7 @@ import {
   addDays,
   bookedPeriods,
   dateKey,
+  guestCountError,
   overlaps,
   stayFromSearch,
   stayPrice,
@@ -53,6 +54,7 @@ export default function AvailabilityCalendar({
 }) {
   const today = dateKey();
   const calendar = useRef(null);
+  const guestHintId = useId();
   const { id } = useParams();
   const location = useLocation();
   const { search } = location;
@@ -66,6 +68,7 @@ export default function AvailabilityCalendar({
   const [from, setFrom] = useState(initial.from);
   const [to, setTo] = useState(initial.to);
   const [guests, setGuests] = useState(initial.guests);
+  const guestError = guestCountError(guests, maxGuests);
   const [checked, setChecked] = useState(false);
   useEffect(() => {
     onStayChange?.({ from, to, guests });
@@ -83,12 +86,13 @@ export default function AvailabilityCalendar({
     today,
   });
   const selectedPrice = stayPrice(price, from, to);
-  const summary = !compact && price === undefined
-    ? null
-    : {
-        ...selectedPrice,
-        error: error || (selectedPrice ? "" : messages.invalidStayPrice),
-      };
+  const summary =
+    !compact && price === undefined
+      ? null
+      : {
+          ...selectedPrice,
+          error: error || (selectedPrice ? "" : messages.invalidStayPrice),
+        };
   const start = `${month}-01`;
   const monthDate = new Date(`${start}T00:00:00Z`);
   const days = new Date(
@@ -279,9 +283,7 @@ export default function AvailabilityCalendar({
                 const params = new URLSearchParams(search);
                 for (const [key, value] of Object.entries({ from, to, guests }))
                   params.set(key, value);
-                navigate(
-                  `/venues/${encodeURIComponent(id)}/reserve?${params}`,
-                );
+                navigate(`/venues/${encodeURIComponent(id)}/reserve?${params}`);
               }}
             >
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-2 gap-y-3">
@@ -298,6 +300,7 @@ export default function AvailabilityCalendar({
                     value={guests}
                     onChange={setGuests}
                     maxGuests={maxGuests}
+                    describedBy={guestHintId}
                     className={
                       compact
                         ? "h-11 w-36 min-w-0 rounded-lg border border-border bg-surface px-2 lg:mt-1 lg:w-full"
@@ -319,6 +322,13 @@ export default function AvailabilityCalendar({
                 >
                   <Icon name="reset" />
                 </button>
+                <p
+                  id={guestHintId}
+                  aria-live="polite"
+                  className={`col-span-2 text-caption ${guestError ? "text-danger" : "text-muted"}`}
+                >
+                  {guestError || `Maximum ${maxGuests} guests`}
+                </p>
               </div>
               <div
                 className={

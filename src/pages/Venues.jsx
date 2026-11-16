@@ -13,7 +13,12 @@ import AmenityPill from "../components/venues/AmenityPill.jsx";
 import VenueCard from "../components/venues/VenueCard.jsx";
 import GuestSelect from "../components/GuestSelect.jsx";
 import Icon from "../components/Icon.jsx";
-import { addDays, dateKey, validDate } from "../utils/availability.js";
+import {
+  addDays,
+  dateKey,
+  guestCountError,
+  validDate,
+} from "../utils/availability.js";
 import { hasVenuePhoto } from "../utils/venue.js";
 
 const buttonClass =
@@ -33,10 +38,8 @@ export default function Venues() {
   const order = Object.hasOwn(venueSorts, params.get("order"))
     ? params.get("order")
     : "newest";
-  const guests = Math.min(
-    100,
-    Math.max(0, Number.parseInt(params.get("guests"), 10) || 0),
-  );
+  const guests = Number(params.get("guests") || 0);
+  const guestError = guestCountError(guests, 100, 0);
   const amenities = amenityOptions
     .filter((item) => params.get(item.key) === "true")
     .map((item) => item.key);
@@ -266,6 +269,7 @@ export default function Venues() {
               value={guests}
               onChange={(value) => update("guests", value || "")}
               allowAny
+              describedBy="guest-hint"
               className={selectClass}
             />
           </label>
@@ -282,6 +286,13 @@ export default function Venues() {
           {tooShort ? messages.shortSearch : ""}
         </p>
         <p
+          id="guest-hint"
+          role="status"
+          className="col-span-2 text-small text-danger lg:order-6 lg:col-span-3"
+        >
+          {guestError}
+        </p>
+        <p
           id="date-hint"
           role="status"
           className="col-span-2 text-small text-danger lg:order-6 lg:col-span-3"
@@ -289,7 +300,7 @@ export default function Venues() {
           {dateError}
         </p>
       </form>
-      {!dateError && (
+      {!dateError && !guestError && (
         <VenueResults
           key={String(datesSelected)}
           order={order}

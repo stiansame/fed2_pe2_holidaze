@@ -128,11 +128,26 @@ export function overlaps(from, to, periods) {
 }
 
 /**
+ * Checks whole guest counts against known capacity and the allowed minimum.
+ * @param {number|string} guests Requested count, or an empty input.
+ * @param {number} maxGuests Maximum allowed count.
+ * @param {number} [minimum=1] Minimum count; zero allows unrestricted search.
+ * @returns {string} A validation message, or an empty string for a valid count.
+ */
+export function guestCountError(guests, maxGuests, minimum = 1) {
+  if (!Number.isInteger(maxGuests) || maxGuests < 1)
+    return messages.invalidStayGuests;
+  if (!Number.isInteger(guests) || guests < minimum || guests > maxGuests)
+    return messages.guestCountRange(minimum, maxGuests);
+  return "";
+}
+
+/**
  * Checks dates, guest capacity and availability before a reservation proceeds.
  * @param {object} stay Stay and availability values.
  * @param {string} stay.from Check-in date in YYYY-MM-DD format.
  * @param {string} stay.to Check-out date in YYYY-MM-DD format.
- * @param {number} stay.guests Requested guest count.
+ * @param {number|string} stay.guests Requested guest count, or an empty input.
  * @param {number} stay.maxGuests Venue capacity.
  * @param {Array<[string, string]>|null} stay.periods Booked ranges, or null when availability is unknown.
  * @param {string} [stay.today=dateKey()] Local calendar date.
@@ -150,13 +165,8 @@ export function validateStay({
   if (!validDate(from) || !validDate(to)) return messages.invalidStayDates;
   if (from < today) return messages.pastCheckIn;
   if (to <= from) return messages.invalidCheckOut;
-  if (
-    !Number.isInteger(guests) ||
-    guests < 1 ||
-    !Number.isInteger(maxGuests) ||
-    guests > maxGuests
-  )
-    return messages.invalidStayGuests;
+  const guestError = guestCountError(guests, maxGuests);
+  if (guestError) return guestError;
   if (overlaps(from, to, periods)) return messages.overlappingStay;
   return "";
 }

@@ -34,6 +34,8 @@ export const messages = {
   pastCheckIn: "Check-in cannot be in the past.",
   invalidCheckOut: "Check-out must be after check-in (at least one night).",
   invalidStayGuests: "Choose a guest count within this stay’s capacity.",
+  guestCountRange: (minimum, maximum) =>
+    `Enter a whole number of guests from ${minimum} to ${maximum}.`,
   overlappingStay:
     "These dates overlap an existing booking. Choose another stay.",
   invalidStayPrice: "A valid price is unavailable for this stay.",
