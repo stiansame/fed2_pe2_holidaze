@@ -61,7 +61,7 @@ for (const editing of [false, true]) {
     if (isMobile && !editing)
       await page.getByRole("button", { name: "Change dates and guests" }).click();
     const guests = page.getByRole("spinbutton", { name: /guests/i });
-    const submit = page.getByRole("button", {
+    const submit = page.getByRole("region", { name: "Availability", exact: true }).getByRole("button", {
       name: editing ? "Review changes" : "Reserve",
       exact: true,
     }).filter({ visible: true });
