@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import {
+  guestCountError,
   overlaps,
   stayPrice,
   validDate,
@@ -33,7 +34,7 @@ test.each([
   [{ periods: null }, messages.availabilityUnavailable],
   [{ from: "2027-05-31" }, messages.pastCheckIn],
   [{ to: "2027-06-10" }, messages.invalidCheckOut],
-  [{ guests: 5 }, messages.invalidStayGuests],
+  [{ guests: 5 }, messages.guestCountRange(1, 4)],
   [{ periods: [["2027-06-11", "2027-06-14"]] }, messages.overlappingStay],
 ])("validates a reservation before proceeding: %j", (changes, expected) => {
   expect(
@@ -47,4 +48,13 @@ test.each([
       ...changes,
     }),
   ).toBe(expected);
+});
+
+test("guest counts must be whole numbers within known capacity", () => {
+  for (const guests of ["", 0, -1, 1.5, 5, NaN, "2"])
+    expect(guestCountError(guests, 4)).toBe(messages.guestCountRange(1, 4));
+  for (const guests of [1, 4]) expect(guestCountError(guests, 4)).toBe("");
+  expect(guestCountError(0, 100, 0)).toBe("");
+  for (const capacity of [0, -1, undefined, 2.5])
+    expect(guestCountError(1, capacity)).toBe(messages.invalidStayGuests);
 });
