@@ -100,7 +100,13 @@ for (const editing of [false, true]) {
 
 test("guest search accepts typed numbers, rejects fractions and resets to Any", async ({ page, isMobile }) => {
   await page.goto("/venues");
-  if (isMobile) await page.getByRole("button", { name: /Filters and sort/ }).click();
+  if (isMobile) {
+    const filterButton = page.getByRole("button", { name: /Filters and sort/ });
+    await expect(filterButton).toHaveCSS("width", "44px");
+    await expect(filterButton).toHaveCSS("height", "44px");
+    await expect(filterButton).toHaveCSS("border-radius", "8px");
+    await filterButton.click();
+  }
   const guests = page.getByRole("spinbutton", { name: "Guests", exact: true });
   await expect(guests).toHaveValue("");
   await guests.fill("3");

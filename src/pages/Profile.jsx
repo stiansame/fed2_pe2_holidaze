@@ -134,7 +134,7 @@ function ProfileCard() {
                   {profile.name}
                 </h3>
                 {user.venueManager && (
-                  <span className="mt-2 inline-flex h-8 items-center rounded-full bg-tint px-3 text-caption font-semibold text-primary">
+                  <span className="pill mt-2 bg-tint text-caption font-semibold text-primary">
                     Venue manager
                   </span>
                 )}

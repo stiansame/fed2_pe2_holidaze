@@ -23,10 +23,10 @@ import { hasVenuePhoto } from "../utils/venue.js";
 
 const buttonClass =
   "h-11 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60";
-const pillClass =
-  "inline-flex h-11 items-center gap-2 rounded-full border border-border bg-surface px-3 text-small sm:px-4 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2";
+const fieldClass =
+  "flex h-11 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-body focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2";
 const selectClass =
-  "h-11 min-w-0 w-full rounded-full bg-transparent pr-2 font-normal outline-none!";
+  "h-full min-w-0 w-full rounded-lg bg-transparent p-0 text-body font-normal outline-none!";
 
 /**
  * Keeps search, filter and sort selections in the URL, debouncing text input.
@@ -130,7 +130,7 @@ export default function Venues() {
         className="mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 sm:mt-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1.6fr)_minmax(0,0.8fr)]"
         onSubmit={(event) => event.preventDefault()}
       >
-        <label className={`${pillClass} min-w-0 lg:order-2`}>
+        <label className={`${fieldClass} min-w-0 lg:order-2`}>
           <span className="sr-only">Search venues</span>
           <Icon name="search" />
           <input
@@ -142,7 +142,7 @@ export default function Venues() {
             }
             aria-describedby="search-hint"
             placeholder="Search venues, locations or hosts"
-            className="h-11 w-full min-w-0 bg-transparent outline-none!"
+            className="h-full w-full min-w-0 bg-transparent outline-none!"
           />
         </label>
         <button
@@ -151,7 +151,7 @@ export default function Venues() {
           aria-expanded={filtersOpen}
           aria-controls="venue-filters"
           onClick={() => setFiltersOpen((value) => !value)}
-          className={`${pillClass} relative justify-self-start font-semibold text-primary lg:hidden`}
+          className="navigation-link relative size-11 justify-center p-0 lg:hidden"
         >
           <Icon name="filter" />
           {activeFilters > 0 && (
@@ -168,7 +168,7 @@ export default function Venues() {
           className={`${filtersOpen ? "grid" : "hidden"} col-span-2 min-w-0 gap-3 rounded-xl border border-border bg-surface/60 p-3 lg:contents`}
         >
           <div className="flex flex-wrap items-center gap-2 lg:order-1 lg:col-span-3">
-            <label className={`${pillClass} min-w-0 max-w-full`}>
+            <label className={`${fieldClass} min-w-0 max-w-full`}>
               <span className="sr-only">Sort by</span>
               <Icon name="sort" />
               <select
@@ -207,11 +207,13 @@ export default function Venues() {
             <button
               type="button"
               disabled={!activeFilters}
-              className={`${pillClass} text-primary hover:bg-tint disabled:opacity-50 sm:ml-auto`}
+              aria-label="Reset filters"
+              title="Reset filters"
+              className="navigation-link size-11 justify-center gap-2 p-0 text-body disabled:opacity-50 lg:ml-auto lg:w-auto lg:px-4"
               onClick={resetFilters}
             >
               <Icon name="reset" />
-              Reset filters
+              <span className="sr-only lg:not-sr-only">Reset filters</span>
             </button>
           </div>
           <details
@@ -224,7 +226,7 @@ export default function Venues() {
             }}
           >
             <summary
-              className={`${pillClass} w-full cursor-pointer lg:h-full list-none [&::-webkit-details-marker]:hidden`}
+              className={`${fieldClass} w-full cursor-pointer lg:h-full list-none [&::-webkit-details-marker]:hidden`}
             >
               <Icon name="calendar" />
               <span className="min-w-0 truncate">
@@ -241,7 +243,7 @@ export default function Venues() {
                   onChange={(event) => update("from", event.target.value)}
                   aria-invalid={Boolean(dateError)}
                   aria-describedby="date-hint"
-                  className="mt-1 h-11 w-full min-w-0 rounded-lg border border-border bg-surface px-2 font-normal"
+                  className="mt-1 h-11 w-full min-w-0 rounded-lg border border-border bg-surface px-2 text-body font-normal"
                 />
               </label>
               <label className="min-w-0 text-small font-semibold">
@@ -257,12 +259,12 @@ export default function Venues() {
                   onChange={(event) => update("to", event.target.value)}
                   aria-invalid={Boolean(dateError)}
                   aria-describedby="date-hint"
-                  className="mt-1 h-11 w-full min-w-0 rounded-lg border border-border bg-surface px-2 font-normal"
+                  className="mt-1 h-11 w-full min-w-0 rounded-lg border border-border bg-surface px-2 text-body font-normal"
                 />
               </label>
             </div>
           </details>
-          <label className={`${pillClass} min-w-0 lg:order-4`}>
+          <label className={`${fieldClass} min-w-0 lg:order-4`}>
             <span className="sr-only">Guests</span>
             <Icon name="user" />
             <GuestSelect

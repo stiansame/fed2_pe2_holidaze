@@ -1,3 +1,4 @@
+import { formatAddress } from "../utils/venue.js";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -63,15 +64,7 @@ function BookingDetails({ id }) {
   const venue = booking?.venue;
   const guest = booking?.customer;
   const price = booking ? bookingPrice(booking) : null;
-  const address = [
-    venue?.location?.address,
-    venue?.location?.zip,
-    venue?.location?.city,
-    venue?.location?.country,
-  ]
-    .map((value) => value?.trim())
-    .filter(Boolean)
-    .join(", ");
+  const address = formatAddress(venue?.location);
   return (
     <section className="min-w-0 space-y-5">
       <DocumentTitle>Holidaze | Booking details</DocumentTitle>

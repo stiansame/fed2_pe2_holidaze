@@ -6,7 +6,7 @@ import { managerSummary } from "../../utils/manager.js";
 import ManagerBookingCard from "../bookings/ManagerBookingCard.jsx";
 import VenueCard from "../venues/VenueCard.jsx";
 import AccountStats from "./AccountStats.jsx";
-import SectionHeading from "./SectionHeading.jsx";
+import CollapsibleSection from "./CollapsibleSection.jsx";
 
 /**
  * Loads owned venues and combines manager statistics with personal booking statistics.
@@ -18,8 +18,6 @@ import SectionHeading from "./SectionHeading.jsx";
 export default function ManagerOverview({ children, stats }) {
   const id = useId();
   const overviewHeadingId = `account-overview-heading-${id}`;
-  const venuesHeadingId = `my-venues-heading-${id}`;
-  const bookingsHeadingId = `venue-bookings-heading-${id}`;
   const { user, request } = useAuth();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
@@ -92,16 +90,11 @@ export default function ManagerOverview({ children, stats }) {
       </section>
       {data && (
         <>
-          <section
-            className="account-section"
-            aria-labelledby={venuesHeadingId}
+          <CollapsibleSection
+            title="My venues"
+            count={data.venues.length}
+            to="/manager/venues"
           >
-            <SectionHeading
-              id={venuesHeadingId}
-              title="My venues"
-              count={data.venues.length}
-              to="/manager/venues"
-            />
             {data.venues.length ? (
               <div className="card-grid">
                 {data.venues.slice(0, 3).map((venue) => (
@@ -114,17 +107,12 @@ export default function ManagerOverview({ children, stats }) {
                 get started.
               </p>
             )}
-          </section>
-          <section
-            className="account-section"
-            aria-labelledby={bookingsHeadingId}
+          </CollapsibleSection>
+          <CollapsibleSection
+            title="Venue bookings"
+            count={bookings.length}
+            to="/manager/bookings"
           >
-            <SectionHeading
-              id={bookingsHeadingId}
-              title="Venue bookings"
-              count={bookings.length}
-              to="/manager/bookings"
-            />
             {bookings.length ? (
               <div className="card-grid">
                 {bookings.slice(0, 3).map((booking) => (
@@ -136,7 +124,7 @@ export default function ManagerOverview({ children, stats }) {
                 No current or upcoming bookings for your venues.
               </p>
             )}
-          </section>
+          </CollapsibleSection>
         </>
       )}
     </>

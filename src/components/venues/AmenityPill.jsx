@@ -12,13 +12,13 @@ export default function AmenityPill({ item, selected, onClick }) {
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`amenity-pill inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-small sm:px-2 ${selected ? "border-primary bg-primary text-surface" : "border-border bg-surface hover:bg-tint"}`}
+      className={`pill amenity-pill ${selected ? "border-primary bg-primary text-surface" : "border-border bg-surface text-text hover:bg-tint"}`}
     >
       <img
         src={item.icon}
         alt=""
-        width="16"
-        height="16"
+        width="18"
+        height="18"
         className={selected ? "brightness-0 invert" : ""}
       />
       {item.label}

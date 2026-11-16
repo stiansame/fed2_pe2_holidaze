@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import {
+  formatAddress,
   formatLocation,
   formatPrice,
   selectHighlyRatedVenues,
@@ -11,6 +12,8 @@ test("formats complete, partial and missing locations consistently", () => {
   );
   expect(formatLocation({ country: "Norway" })).toBe("Norway");
   expect(formatLocation()).toBe("Location not specified");
+  expect(formatAddress({ address: " Main road 1 ", zip: " ", city: "Oslo", country: " Norway " })).toBe("Main road 1, Oslo, Norway");
+  expect(formatAddress()).toBe("");
   expect(formatPrice(1500).replaceAll("\u00a0", " ")).toBe("NOK 1 500,-");
 });
 

@@ -20,10 +20,10 @@ export default function Amenities({ meta, compact = false }) {
           key={key}
           aria-label={label}
           title={label}
-          className="inline-flex h-8 shrink-0 items-center gap-0.5 rounded-full border border-border bg-surface px-0.5 text-[11px] leading-4 text-text min-[375px]:px-2"
+          className="pill amenity-pill shrink-0 border-border bg-surface text-text"
         >
           <img src={icon} alt="" width="18" height="18" className="shrink-0" />
-          {key === "pets" ? "Pets" : label}
+          {label}
         </li>
       ))}
     </ul>
