@@ -72,7 +72,7 @@ npm test
 npm run test:e2e
 ```
 
-Playwright starts and stops its own Vite server on port 4174; keep that port free. These tests need no real credentials and create no API records; photo editing uses intercepted API responses and a local test session. Generated results are ignored by Git. They cover a small regression baseline; use the manual checks below for complete booking/manager flows, themes and accessibility.
+Playwright starts and stops its own Vite server on port 4174; keep that port free. This test need no real credentials and create no API records. Generated results are ignored by Git. It covers a small regression baseline; use the manual checks below for complete booking/manager flows, themes and accessibility.
 
 ## ✅ Verify locally
 
