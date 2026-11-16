@@ -1,7 +1,7 @@
 import { messages } from "../../constants/messages.js";
 import Loading from "../Loading.jsx";
-import SectionHeading from "../account/SectionHeading.jsx";
-import { useEffect, useId, useRef, useState } from "react";
+import BookingGroup from "./BookingGroup.jsx";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext.js";
 import { cancelBooking, getProfileBookings } from "../../api/bookings.js";
@@ -11,7 +11,6 @@ import EditMenu from "../EditMenu.jsx";
 import Icon from "../Icon.jsx";
 import VenueImage from "../venues/VenueImage.jsx";
 import Rating from "../venues/Rating.jsx";
-import { navigationOrigin } from "../../utils/navigation.js";
 
 /**
  * Loads customer bookings and groups them for account previews or the full booking page.
@@ -82,86 +81,40 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
               ? key === "upcoming"
               : key !== "unknown" || values.length > 0,
           )
-          .map(([key, values]) => (
-            <BookingGroup
-              key={key}
-              title={
-                key === "upcoming"
-                  ? "My upcoming stays"
-                  : key === "past"
-                    ? "Past stays"
-                    : "Dates unavailable"
-              }
-              bookings={values}
-              manage={!upcomingOnly}
-              allLink={upcomingOnly ? "/bookings?show=upcoming" : undefined}
-              initialExpanded={new URLSearchParams(search).get("show") === key}
-              onCancelled={(id) => {
-                setBookings(
-                  (current) =>
-                    current?.filter((booking) => booking.id !== id) ?? current,
-                );
-                setNotice(messages.bookingCancelled);
-              }}
-            />
-          ))}
+          .map(([key, values]) => {
+            const title =
+              key === "upcoming"
+                ? "My upcoming stays"
+                : key === "past"
+                  ? "Past stays"
+                  : "Dates unavailable";
+            return (
+              <BookingGroup
+                key={key}
+                title={title}
+                emptyMessage={`No ${title.replace(/^My /, "").toLowerCase()} yet.`}
+                bookings={values}
+                allLink={upcomingOnly ? "/bookings?show=upcoming" : undefined}
+                initialExpanded={new URLSearchParams(search).get("show") === key}
+              >
+                {(booking) => (
+                  <BookingCard
+                    key={booking.id}
+                    booking={booking}
+                    manage={!upcomingOnly}
+                    onCancelled={(id) => {
+                      setBookings(
+                        (current) =>
+                          current?.filter((booking) => booking.id !== id) ?? current,
+                      );
+                      setNotice(messages.bookingCancelled);
+                    }}
+                  />
+                )}
+              </BookingGroup>
+            );
+          })}
     </>
-  );
-}
-
-/**
- * Displays a customer booking preview or expandable group with shared card actions.
- * @param {object} props Booking group data and display callbacks.
- * @param {string} props.title Booking group title.
- * @param {object[]} props.bookings Booking records used by this view.
- * @param {boolean} props.manage Enables eligible customer booking actions.
- * @param {string} props.allLink Destination for the full booking list.
- * @param {boolean} props.initialExpanded Starts with the entire booking group visible.
- * @param {Function} props.onCancelled Receives the cancelled booking ID.
- * @returns {import('react').ReactNode}
- */
-function BookingGroup({
-  title,
-  bookings,
-  manage,
-  allLink,
-  initialExpanded,
-  onCancelled,
-}) {
-  const [expanded, setExpanded] = useState(initialExpanded && !allLink);
-  const id = useId();
-  const headingId = `${title.toLowerCase().replaceAll(" ", "-")}-heading-${id}`;
-  return (
-    <section className="account-section" aria-labelledby={headingId}>
-      <SectionHeading
-        id={headingId}
-        title={title}
-        count={bookings.length}
-        to={bookings.length > 3 ? allLink : undefined}
-        expanded={expanded}
-        onToggle={
-          !allLink && bookings.length > 3
-            ? () => setExpanded((value) => !value)
-            : undefined
-        }
-      />
-      {bookings.length === 0 ? (
-        <p className="empty-state text-muted">
-          No {title.replace(/^My /, "").toLowerCase()} yet.
-        </p>
-      ) : (
-        <div className="card-grid">
-          {(expanded ? bookings : bookings.slice(0, 3)).map((booking) => (
-            <BookingCard
-              key={booking.id}
-              booking={booking}
-              manage={manage}
-              onCancelled={onCancelled}
-            />
-          ))}
-        </div>
-      )}
-    </section>
   );
 }
 
@@ -174,7 +127,6 @@ function BookingGroup({
  * @returns {import('react').ReactNode}
  */
 function BookingCard({ booking, manage, onCancelled }) {
-  const routeLocation = useLocation();
   const { user, request } = useAuth();
   const [confirming, setConfirming] = useState(false);
   const [pending, setPending] = useState(false);
@@ -225,11 +177,7 @@ function BookingCard({ booking, manage, onCancelled }) {
           <div className="absolute bottom-3 right-3 z-10">
             <EditMenu label="Manage booking">
               {venueLink && (
-                <Link
-                  to={venueLink}
-                  state={navigationOrigin(routeLocation)}
-                  className="edit-menu-item"
-                >
+                <Link to={venueLink} className="edit-menu-item">
                   <Icon name="building" />
                   View venue
                 </Link>
@@ -237,7 +185,6 @@ function BookingCard({ booking, manage, onCancelled }) {
               {editable && venueLink && !pending && (
                 <Link
                   to={`/bookings/${encodeURIComponent(booking.id)}/edit`}
-                  state={navigationOrigin(routeLocation)}
                   className="edit-menu-item"
                 >
                   <Icon name="edit" />
@@ -267,11 +214,7 @@ function BookingCard({ booking, manage, onCancelled }) {
           booking={booking}
           title={
             venueLink ? (
-              <Link
-                to={venueLink}
-                state={navigationOrigin(routeLocation)}
-                className="text-primary hover:underline"
-              >
+              <Link to={venueLink} className="text-primary hover:underline">
                 {name}
               </Link>
             ) : (

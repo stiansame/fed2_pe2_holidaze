@@ -9,7 +9,6 @@ import { getProfileVenues } from "../api/profiles.js";
 import VenueCard from "../components/venues/VenueCard.jsx";
 import Icon from "../components/Icon.jsx";
 import VenueOwnerActions from "../components/venues/VenueOwnerActions.jsx";
-import { navigationOrigin } from "../utils/navigation.js";
 
 /**
  * Lists owned venues with shared owner actions and expandable results.
@@ -54,7 +53,6 @@ export default function MyVenues() {
         >
           <Link
             to="/manager/venues/new"
-            state={navigationOrigin(location)}
             aria-label="Create venue"
             title="Create venue"
             className="navigation-link size-11 shrink-0 justify-center p-0"

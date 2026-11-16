@@ -1,5 +1,5 @@
 import { bookingPrice, formatBookingRange } from "../../utils/bookings.js";
-import { formatPrice, formatVenuePrice } from "../../utils/venue.js";
+import { formatLocation, formatPrice, formatVenuePrice } from "../../utils/venue.js";
 import Icon from "../Icon.jsx";
 
 /**
@@ -11,11 +11,7 @@ import Icon from "../Icon.jsx";
  */
 export default function BookingCardDetails({ booking, title }) {
   const venue = booking.venue;
-  const place =
-    [venue?.location?.city, venue?.location?.country]
-      .map((value) => value?.trim())
-      .filter(Boolean)
-      .join(", ") || "Location not specified";
+  const place = formatLocation(venue?.location);
   const price = bookingPrice(booking);
   return (
     <div className="min-w-0 space-y-2 text-small">

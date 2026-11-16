@@ -22,29 +22,15 @@ export function hasVenuePhoto(venue) {
 }
 
 /**
- * Returns a shuffled copy containing only venues with usable cover-photo URLs.
- * @param {object[]} venues Venue pool.
- * @param {function(): number} [random=Math.random] Random-number source between zero and one.
- * @returns {object[]}
- */
-export function shuffleVenuesWithPhotos(venues, random = Math.random) {
-  const pool = venues.filter(hasVenuePhoto);
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-  return pool;
-}
-
-/**
  * Randomises venues rated above 4.5 with map coordinates and two distinct photo URLs.
  * @param {object[]} venues Venue pool.
  * @param {function(): number} [random=Math.random] Random-number source between zero and one.
  * @returns {object[]}
  */
 export function selectHighlyRatedVenues(venues, random = Math.random) {
-  const eligible = venues.filter(
+  const pool = venues.filter(
     (venue) =>
+      hasVenuePhoto(venue) &&
       venue.rating > 4.5 &&
       venueMapLinks(venue.location) &&
       new Set(
@@ -53,7 +39,11 @@ export function selectHighlyRatedVenues(venues, random = Math.random) {
           .filter(isPhotoUrl),
       ).size >= 2,
   );
-  return shuffleVenuesWithPhotos(eligible, random);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool;
 }
 
 /**
@@ -94,4 +84,16 @@ export function venueMapLinks(location) {
   return {
     full: `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`,
   };
+}
+
+/**
+ * Formats the venue city and country with a shared missing-location fallback.
+ * @param {object} [location] Venue location.
+ * @returns {string}
+ */
+export function formatLocation(location) {
+  return [location?.city, location?.country]
+    .map((value) => value?.trim())
+    .filter(Boolean)
+    .join(", ") || "Location not specified";
 }

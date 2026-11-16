@@ -3,14 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon.jsx";
 import GuestSelect from "../GuestSelect.jsx";
-import { navigationOrigin } from "../../utils/navigation.js";
 import {
   addDays,
   bookedPeriods,
   dateKey,
   overlaps,
   stayFromSearch,
-  staySummary,
+  stayPrice,
   validateStay,
   validDate,
 } from "../../utils/availability.js";
@@ -71,10 +70,6 @@ export default function AvailabilityCalendar({
   useEffect(() => {
     onStayChange?.({ from, to, guests });
   }, [from, to, guests, onStayChange]);
-  const summary =
-    !compact && price === undefined
-      ? null
-      : staySummary({ bookings, maxGuests, price }, { from, to, guests });
   const { periods, reliable } = bookedPeriods(
     bookings,
     readOnly ? "0001-01-01" : today,
@@ -87,6 +82,13 @@ export default function AvailabilityCalendar({
     periods: reliable ? periods : null,
     today,
   });
+  const selectedPrice = stayPrice(price, from, to);
+  const summary = !compact && price === undefined
+    ? null
+    : {
+        ...selectedPrice,
+        error: error || (selectedPrice ? "" : messages.invalidStayPrice),
+      };
   const start = `${month}-01`;
   const monthDate = new Date(`${start}T00:00:00Z`);
   const days = new Date(
@@ -279,7 +281,6 @@ export default function AvailabilityCalendar({
                   params.set(key, value);
                 navigate(
                   `/venues/${encodeURIComponent(id)}/reserve?${params}`,
-                  { state: navigationOrigin(location) },
                 );
               }}
             >

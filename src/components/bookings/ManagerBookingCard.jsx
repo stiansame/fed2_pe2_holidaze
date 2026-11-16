@@ -7,8 +7,7 @@ import {
   bookingStatus,
   formatBookingRange,
 } from "../../utils/bookings.js";
-import { formatPrice } from "../../utils/venue.js";
-import { navigationOrigin } from "../../utils/navigation.js";
+import { formatLocation, formatPrice } from "../../utils/venue.js";
 
 const pillClass =
   "inline-flex h-6.5 max-w-full items-center gap-1 rounded-full bg-surface px-2.5 text-caption text-text";
@@ -23,17 +22,12 @@ export default function ManagerBookingCard({ booking }) {
   const location = useLocation();
   const venue = booking.venue;
   const name = venue.name?.trim() || "Venue unavailable";
-  const place =
-    [venue.location?.city, venue.location?.country]
-      .map((value) => value?.trim())
-      .filter(Boolean)
-      .join(", ") || "Location not specified";
+  const place = formatLocation(venue.location);
   const price = bookingPrice(booking);
   return (
     <article className="card card-interactive relative">
       <Link
         to={`/manager/bookings/${encodeURIComponent(booking.id)}${location.search}`}
-        state={navigationOrigin(location)}
         className="block h-full focus-visible:-outline-offset-4"
       >
         <VenueImage

@@ -16,7 +16,6 @@ export default function RequireAuth({ manager = false }) {
         to="/login"
         state={{
           from: location.pathname + location.search,
-          returnState: location.state,
         }}
         replace
       />

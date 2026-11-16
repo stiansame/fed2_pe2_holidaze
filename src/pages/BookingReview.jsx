@@ -1,13 +1,13 @@
-import DocumentTitle from '../components/DocumentTitle.jsx';
-import { messages } from '../constants/messages.js';
-import Loading from '../components/Loading.jsx';
-import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext.js';
-import { getVenue } from '../api/venues.js';
-import { createBooking } from '../api/bookings.js';
-import { stayFromSearch, staySummary } from '../utils/availability.js';
-import StaySummary from '../components/bookings/StaySummary.jsx';
+import DocumentTitle from "../components/DocumentTitle.jsx";
+import { messages } from "../constants/messages.js";
+import Loading from "../components/Loading.jsx";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext.js";
+import { getVenue } from "../api/venues.js";
+import { createBooking } from "../api/bookings.js";
+import { stayFromSearch, staySummary } from "../utils/availability.js";
+import StaySummary from "../components/bookings/StaySummary.jsx";
 
 /**
  * Resets reservation review when the venue or stay query changes.
@@ -27,27 +27,27 @@ export default function BookingReview() {
  * @returns {import('react').ReactNode}
  */
 function Review({ id, search }) {
-  const location = useLocation();
   const { request } = useAuth();
   const navigate = useNavigate();
   const [venue, setVenue] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
   const [pending, setPending] = useState(false);
   const [uncertain, setUncertain] = useState(false);
   const submitting = useRef(false);
   const stay = stayFromSearch(search);
   const summary = venue ? staySummary(venue, stay) : null;
-  const edit = `/venues/${encodeURIComponent(id)}${search}`;
 
   useEffect(() => {
     window.scrollTo(0, 0);
     const controller = new AbortController();
-    getVenue(id, { signal: controller.signal }).then(({ data }) => {
-      if (!controller.signal.aborted) setVenue(data);
-    }).catch(error => {
-      if (!controller.signal.aborted) setError(error.message);
-    });
+    getVenue(id, { signal: controller.signal })
+      .then(({ data }) => {
+        if (!controller.signal.aborted) setVenue(data);
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(error.message);
+      });
     return () => controller.abort();
   }, [id, attempt]);
 
@@ -61,7 +61,7 @@ function Review({ id, search }) {
     if (submitting.current || uncertain || !venue || summary.error) return;
     submitting.current = true;
     setPending(true);
-    setError('');
+    setError("");
     try {
       const result = await createBooking(request, id, stay, venue.price);
       setVenue(result.venue);
@@ -69,29 +69,72 @@ function Review({ id, search }) {
         setError(messages.bookingPriceChanged);
         return;
       }
-      navigate(`/bookings/${encodeURIComponent(result.booking.id)}/confirmation`, { replace: true });
+      navigate(
+        `/bookings/${encodeURIComponent(result.booking.id)}/confirmation`,
+        { replace: true },
+      );
     } catch (error) {
       setUncertain(!!error.bookingUncertain);
-      setError(error.bookingUncertain ? messages.bookingUncertain : error.message);
+      setError(
+        error.bookingUncertain ? messages.bookingUncertain : error.message,
+      );
     } finally {
       submitting.current = false;
       setPending(false);
     }
   }
 
-  return <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8" aria-busy={pending}>
-    <DocumentTitle>Holidaze | Review booking</DocumentTitle>
-    <h1 className="text-h3 font-bold">Review your booking</h1>
-    {!venue && !error && <Loading>Loading your stay…</Loading>}
-    {venue && <>
-      <StaySummary venue={venue} stay={stay} summary={summary} />
-      {summary.error && <p role="alert" className="text-danger">{summary.error}</p>}
-      <form onSubmit={confirm}>
-        <button disabled={pending || uncertain || !!summary.error} className="h-11 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">{pending ? 'Reserving…' : 'Confirm reservation'}</button>
-      </form>
-    </>}
-    {error && <p role="alert" className="whitespace-pre-line text-danger">{error}</p>}
-    {!venue && error && <button onClick={() => { setError(''); setAttempt(value => value + 1); }} className="h-11 rounded-lg border border-border px-4 text-primary">Try again</button>}
-    {!pending && <Link to={edit} state={location.state?.backState} className="navigation-link">Back to dates</Link>}
-  </section>;
+  return (
+    <section
+      className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8"
+      aria-busy={pending}
+    >
+      <DocumentTitle>Holidaze | Review booking</DocumentTitle>
+      <h1 className="text-h3 font-bold">Review your booking</h1>
+      {!venue && !error && <Loading>Loading your stay…</Loading>}
+      {venue && (
+        <>
+          <StaySummary venue={venue} stay={stay} summary={summary} />
+          {summary.error && (
+            <p role="alert" className="text-danger">
+              {summary.error}
+            </p>
+          )}
+          <form onSubmit={confirm}>
+            <button
+              disabled={pending || uncertain || !!summary.error}
+              className="h-11 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {pending ? "Reserving…" : "Confirm reservation"}
+            </button>
+          </form>
+        </>
+      )}
+      {error && (
+        <p role="alert" className="whitespace-pre-line text-danger">
+          {error}
+        </p>
+      )}
+      {!venue && error && (
+        <button
+          onClick={() => {
+            setError("");
+            setAttempt((value) => value + 1);
+          }}
+          className="h-11 rounded-lg border border-border px-4 text-primary"
+        >
+          Try again
+        </button>
+      )}
+      {!pending && (
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="navigation-link"
+        >
+          Back to dates
+        </button>
+      )}
+    </section>
+  );
 }

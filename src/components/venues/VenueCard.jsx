@@ -3,11 +3,10 @@ import Rating from "./Rating.jsx";
 import Icon from "../Icon.jsx";
 import VenueImage from "./VenueImage.jsx";
 import { Link, useLocation } from "react-router-dom";
-import { navigationOrigin } from "../../utils/navigation.js";
-import { formatVenuePrice } from "../../utils/venue.js";
+import { formatLocation, formatPrice } from "../../utils/venue.js";
 
 /**
- * Displays shared venue information and preserves the originating route when opened.
+ * Displays shared venue information and opens its detail page.
  * @param {object} props Component props.
  * @param {object} props.venue Venue data.
  * @param {Function} props.onImageError Reports a failed cover image.
@@ -18,16 +17,11 @@ export default function VenueCard({ venue, onImageError, actions }) {
   const routeLocation = useLocation();
   const { search } = routeLocation;
   const name = venue.name?.trim() || "Unnamed stay";
-  const location =
-    [venue.location?.city, venue.location?.country]
-      .map((value) => value?.trim())
-      .filter(Boolean)
-      .join(", ") || "Location not specified";
+  const location = formatLocation(venue.location);
   return (
     <article className="card card-interactive relative">
       <Link
         to={`/venues/${encodeURIComponent(venue.id)}${search}`}
-        state={navigationOrigin(routeLocation)}
         aria-label={`View ${name}`}
         className="block h-full focus-visible:-outline-offset-4"
       >
@@ -69,7 +63,9 @@ export default function VenueCard({ venue, onImageError, actions }) {
             </p>
           </div>
           <p className="text-small font-semibold wrap-anywhere">
-            {formatVenuePrice(venue.price).split(" / night")[0]}
+            {Number.isFinite(venue.price)
+              ? formatPrice(venue.price)
+              : "Price not specified"}
             {Number.isFinite(venue.price) && (
               <span className="ml-1 text-caption font-normal text-muted">
                 / night

@@ -79,13 +79,18 @@ function HostProfile({ name }) {
         <div className="min-w-0 space-y-6">
           <div className="grid items-start gap-4 lg:items-stretch lg:grid-cols-2">
             <div className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
-              <VenueImage
-                key={profile.banner?.url}
-                media={profile.banner}
-                name={`${profile.name}'s banner`}
-                className="h-40 sm:h-48"
-                loading="eager"
-              />
+              <div className="relative">
+                <VenueImage
+                  key={profile.banner?.url}
+                  media={profile.banner}
+                  name={`${profile.name}'s banner`}
+                  className="h-40 sm:h-48"
+                  loading="eager"
+                />
+                <div className="absolute top-3 left-3 z-20 lg:hidden">
+                  <BackLink iconOnly />
+                </div>
+              </div>
               <div className="space-y-5 px-5 pb-6">
                 <div className="relative flex flex-wrap items-start gap-4">
                   <HostAvatar
@@ -161,7 +166,9 @@ function HostProfile({ name }) {
           )}
         </div>
       )}
-      <BackLink />
+      <div className={data ? "hidden lg:block" : "block"}>
+        <BackLink />
+      </div>
     </section>
   );
 }

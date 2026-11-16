@@ -2,12 +2,11 @@ import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getVenue } from "../api/venues.js";
 import { useAuth } from "../auth/AuthContext.js";
 import Icon from "../components/Icon.jsx";
 import BackLink from "../components/BackLink.jsx";
-import { navigationOrigin } from "../utils/navigation.js";
 import HostAvatar from "../components/HostAvatar.jsx";
 import Amenities from "../components/venues/Amenities.jsx";
 import Rating from "../components/venues/Rating.jsx";
@@ -15,7 +14,7 @@ import VenueGallery from "../components/venues/VenueGallery.jsx";
 import VenueDescription from "../components/venues/VenueDescription.jsx";
 import VenueBooking from "../components/venues/VenueBooking.jsx";
 import VenueOwnerActions from "../components/venues/VenueOwnerActions.jsx";
-import { venueMapLinks } from "../utils/venue.js";
+import { formatLocation, venueMapLinks } from "../utils/venue.js";
 
 const VenueLocationMap = lazy(
   () => import("../components/venues/VenueLocationMap.jsx"),
@@ -37,8 +36,6 @@ export default function VenueDetails() {
  * @returns {import('react').ReactNode}
  */
 function VenueContent({ id }) {
-  const routeLocation = useLocation();
-  const { search } = routeLocation;
   const { user } = useAuth();
   const [venue, setVenue] = useState(null);
   const [error, setError] = useState(null);
@@ -62,10 +59,7 @@ function VenueContent({ id }) {
   const notFound = error && [400, 404].includes(error.status);
   const map = venueMapLinks(venue?.location);
   const location = venue?.location;
-  const place = [location?.city, location?.country]
-    .map((value) => value?.trim())
-    .filter(Boolean)
-    .join(", ");
+  const place = formatLocation(location);
   const address = [
     location?.address,
     location?.zip,
@@ -87,7 +81,7 @@ function VenueContent({ id }) {
     <section className="venue-details space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
       <DocumentTitle>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : "Venue details"}`}</DocumentTitle>
       <div className={venue && !error ? "hidden lg:block" : "block"}>
-        <BackLink to={`/venues${search}`} />
+        <BackLink />
       </div>
       {error ? (
         <>
@@ -117,7 +111,7 @@ function VenueContent({ id }) {
           <VenueGallery
             media={venue.media}
             name={name}
-            backLink={<BackLink to={`/venues${search}`} iconOnly />}
+            backLink={<BackLink iconOnly />}
           >
             {isOwner && <VenueOwnerActions venue={venue} />}
           </VenueGallery>
@@ -138,7 +132,7 @@ function VenueContent({ id }) {
                       className="size-4 shrink-0 text-success lg:size-5"
                     />
                     <span className="truncate lg:whitespace-normal lg:wrap-anywhere">
-                      {place || "Location not specified"}
+                      {place}
                     </span>
                   </p>
                   <p className="accent-box ml-auto inline-flex shrink-0 items-center gap-1 text-caption lg:gap-2 lg:text-small">
@@ -173,7 +167,6 @@ function VenueContent({ id }) {
                     <Link
                       title={venue.owner.name}
                       to={`/profiles/${encodeURIComponent(venue.owner.name)}`}
-                      state={navigationOrigin(routeLocation)}
                       className="min-w-0 truncate rounded text-primary hover:underline"
                     >
                       {venue.owner.name}
@@ -185,7 +178,6 @@ function VenueContent({ id }) {
                     <Link
                       aria-label={`View ${venue.owner.name}'s profile`}
                       to={`/profiles/${encodeURIComponent(venue.owner.name)}`}
-                      state={navigationOrigin(routeLocation)}
                       className="shrink-0 rounded-full"
                     >
                       <HostAvatar

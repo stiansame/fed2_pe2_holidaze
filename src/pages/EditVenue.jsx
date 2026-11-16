@@ -1,12 +1,11 @@
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getOwnVenue, updateVenue } from "../api/venues.js";
 import Loading from "../components/Loading.jsx";
 import VenueForm from "../components/venues/VenueForm.jsx";
 import BackLink from "../components/BackLink.jsx";
-import { backDestination } from "../utils/navigation.js";
 
 /**
  * Resets the venue editor when the route ID changes.
@@ -24,12 +23,6 @@ export default function EditVenue() {
  * @returns {import('react').ReactNode}
  */
 function VenueEditor({ id }) {
-  const location = useLocation();
-  const back = backDestination(
-    location.state,
-    "/manager/venues",
-    "Back to my venues",
-  );
   const { user, request } = useAuth();
   const navigate = useNavigate();
   const [venue, setVenue] = useState(null);
@@ -70,20 +63,17 @@ function VenueEditor({ id }) {
           >
             Try again
           </button>
-          <BackLink to="/manager/venues" label="Back to my venues" />
+          <BackLink />
         </div>
       ) : venue ? (
         <VenueForm
           venue={venue}
-          onCancel={() =>
-            navigate(back.to, { state: location.state?.backState })
-          }
+          onCancel={() => navigate(-1)}
           onSave={async (form) => {
             const updated = await updateVenue(request, id, user.name, form);
             if (active.current)
               navigate(`/venues/${encodeURIComponent(updated.id)}`, {
                 replace: true,
-                state: location.state?.backState,
               });
           }}
         />

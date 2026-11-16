@@ -8,7 +8,6 @@ import Icon from "../Icon.jsx";
  * @param {number} props.count Total number of section items.
  * @param {string} props.id Heading ID used to label its section.
  * @param {string} props.to Navigation destination.
- * @param {object} props.state Router state passed to the destination.
  * @param {boolean} props.expanded Whether all items are currently visible.
  * @param {Function} props.onToggle Toggles the expanded list.
  * @param {string} [props.level] Heading element to render.
@@ -20,7 +19,6 @@ export default function SectionHeading({
   count,
   id,
   to,
-  state,
   expanded,
   onToggle,
   level = "h2",
@@ -54,7 +52,6 @@ export default function SectionHeading({
       {to ? (
         <Link
           to={to}
-          state={state}
           aria-label={`View all ${title.toLowerCase()}`}
           className="navigation-link ml-auto shrink-0 text-small"
         >

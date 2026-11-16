@@ -1,6 +1,6 @@
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getVenueBooking } from "../api/bookings.js";
 import { getVenue } from "../api/venues.js";
@@ -16,7 +16,6 @@ import Icon from "../components/Icon.jsx";
 import VenueImage from "../components/venues/VenueImage.jsx";
 import StaySummary from "../components/bookings/StaySummary.jsx";
 import BackLink from "../components/BackLink.jsx";
-import { navigationOrigin } from "../utils/navigation.js";
 
 /**
  * Resets the manager booking summary when the route ID changes.
@@ -35,7 +34,6 @@ export default function ManagerBookingDetails() {
  */
 function BookingDetails({ id }) {
   const { request, user } = useAuth();
-  const location = useLocation();
   const [booking, setBooking] = useState(null);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -77,13 +75,7 @@ function BookingDetails({ id }) {
   return (
     <section className="min-w-0 space-y-5">
       <DocumentTitle>Holidaze | Booking details</DocumentTitle>
-      {!booking && (
-        <BackLink
-          to="/manager/bookings"
-          label="Back to venue bookings"
-          shortLabel
-        />
-      )}
+      {!booking && <BackLink />}
       <h1 className="text-h3 font-bold sm:text-h2">Booking details</h1>
       {error ? (
         <div role="alert" className="space-y-3">
@@ -137,16 +129,11 @@ function BookingDetails({ id }) {
               <div className="flex flex-wrap gap-2">
                 <Link
                   to={`/venues/${encodeURIComponent(venue.id)}`}
-                  state={navigationOrigin(location)}
                   className="navigation-link"
                 >
                   View venue
                 </Link>
-                <BackLink
-                  to="/manager/bookings"
-                  label="Back to venue bookings"
-                  shortLabel
-                />
+                <BackLink />
               </div>
             </div>
           </section>
@@ -176,7 +163,6 @@ function BookingDetails({ id }) {
             {guest?.name && (
               <Link
                 to={`/profiles/${encodeURIComponent(guest.name)}`}
-                state={navigationOrigin(location)}
                 className="navigation-link"
               >
                 View guest profile

@@ -26,10 +26,7 @@ export default function AuthForm({ register = false }) {
       ? from
       : "/profile";
 
-  if (user)
-    return (
-      <Navigate to={destination} state={location.state?.returnState} replace />
-    );
+  if (user) return <Navigate to={destination} replace />;
 
   /**
    * Submits registration or login and displays API field errors beside the form.
@@ -61,7 +58,6 @@ export default function AuthForm({ register = false }) {
           replace: true,
           state: {
             from,
-            returnState: location.state?.returnState,
             registered: true,
           },
         });
@@ -69,7 +65,6 @@ export default function AuthForm({ register = false }) {
         await login(credentials);
         navigate(destination, {
           replace: true,
-          state: location.state?.returnState,
         });
       }
     } catch (error) {
@@ -211,7 +206,7 @@ export default function AuthForm({ register = false }) {
       </form>
       <Link
         to={register ? "/login" : "/register"}
-        state={{ from, returnState: location.state?.returnState }}
+        state={{ from }}
         className="navigation-link mt-5 w-full"
       >
         {register ? "Already have an account? Log in" : "Create an account"}

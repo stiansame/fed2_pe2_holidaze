@@ -1,6 +1,5 @@
 import Loading from "../Loading.jsx";
 import { useEffect, useId, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext.js";
 import { getProfileVenues } from "../../api/profiles.js";
 import { managerSummary } from "../../utils/manager.js";
@@ -8,7 +7,6 @@ import ManagerBookingCard from "../bookings/ManagerBookingCard.jsx";
 import VenueCard from "../venues/VenueCard.jsx";
 import AccountStats from "./AccountStats.jsx";
 import SectionHeading from "./SectionHeading.jsx";
-import { navigationOrigin } from "../../utils/navigation.js";
 
 /**
  * Loads owned venues and combines manager statistics with personal booking statistics.
@@ -22,7 +20,6 @@ export default function ManagerOverview({ children, stats }) {
   const overviewHeadingId = `account-overview-heading-${id}`;
   const venuesHeadingId = `my-venues-heading-${id}`;
   const bookingsHeadingId = `venue-bookings-heading-${id}`;
-  const location = useLocation();
   const { user, request } = useAuth();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
@@ -104,7 +101,6 @@ export default function ManagerOverview({ children, stats }) {
               title="My venues"
               count={data.venues.length}
               to="/manager/venues"
-              state={navigationOrigin(location)}
             />
             {data.venues.length ? (
               <div className="card-grid">
@@ -128,7 +124,6 @@ export default function ManagerOverview({ children, stats }) {
               title="Venue bookings"
               count={bookings.length}
               to="/manager/bookings"
-              state={navigationOrigin(location)}
             />
             {bookings.length ? (
               <div className="card-grid">

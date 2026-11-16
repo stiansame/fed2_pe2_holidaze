@@ -2,7 +2,6 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext.js";
 import Icon from "../Icon.jsx";
 import HostAvatar from "../HostAvatar.jsx";
-import { navigationOrigin } from "../../utils/navigation.js";
 
 /**
  * Provides role-based account navigation as a desktop sidebar or mobile bottom bar.
@@ -45,7 +44,6 @@ export default function AccountLayout() {
             <Link
               key={to}
               to={to}
-              state={navigationOrigin(location)}
               aria-current={active === to ? "page" : undefined}
               title={label}
               aria-label={label}
