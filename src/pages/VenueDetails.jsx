@@ -14,7 +14,11 @@ import VenueGallery from "../components/venues/VenueGallery.jsx";
 import VenueDescription from "../components/venues/VenueDescription.jsx";
 import VenueBooking from "../components/venues/VenueBooking.jsx";
 import VenueOwnerActions from "../components/venues/VenueOwnerActions.jsx";
-import { formatLocation, venueMapLinks } from "../utils/venue.js";
+import {
+  formatAddress,
+  formatLocation,
+  venueMapLinks,
+} from "../utils/venue.js";
 
 const VenueLocationMap = lazy(
   () => import("../components/venues/VenueLocationMap.jsx"),
@@ -60,15 +64,7 @@ function VenueContent({ id }) {
   const map = venueMapLinks(venue?.location);
   const location = venue?.location;
   const place = formatLocation(location);
-  const address = [
-    location?.address,
-    location?.zip,
-    location?.city,
-    location?.country,
-  ]
-    .map((value) => value?.trim())
-    .filter(Boolean)
-    .join(", ");
+  const address = formatAddress(location);
   const venueTitle = (
     <h1
       title={name}
@@ -135,7 +131,7 @@ function VenueContent({ id }) {
                       {place}
                     </span>
                   </p>
-                  <p className="accent-box ml-auto inline-flex shrink-0 items-center gap-1 text-caption lg:gap-2 lg:text-small">
+                  <p className="pill accent-box ml-auto shrink-0 gap-1 text-caption lg:gap-2 lg:text-small">
                     <Icon name="user" className="size-4 shrink-0 lg:size-5" />
                     {venue.maxGuests > 0
                       ? `${venue.maxGuests} ${venue.maxGuests === 1 ? "guest" : "guests"}`

@@ -8,7 +8,7 @@
 export default function Rating({ rating, className = "" }) {
   return (
     <span
-      className={`shrink-0 rounded-full bg-surface px-2.5 py-1.5 text-caption font-semibold text-primary ${className}`}
+      className={`pill shrink-0 gap-1 bg-surface text-caption font-semibold text-primary ${className}`}
     >
       {rating > 0 ? (
         <>

@@ -7,5 +7,5 @@ export const amenityOptions = [
   { key: "wifi", label: "WiFi", icon: wifi },
   { key: "parking", label: "Parking", icon: parking },
   { key: "breakfast", label: "Breakfast", icon: breakfast },
-  { key: "pets", label: "Pets allowed", icon: pets },
+  { key: "pets", label: "Pets", icon: pets },
 ];

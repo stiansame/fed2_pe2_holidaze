@@ -1,3 +1,4 @@
+import CollapsibleSection from "../account/CollapsibleSection.jsx";
 import { useId, useState } from "react";
 import SectionHeading from "../account/SectionHeading.jsx";
 
@@ -23,27 +24,35 @@ export default function BookingGroup({
   const [expanded, setExpanded] = useState(initialExpanded && !allLink);
   const id = useId();
   const headingId = `${title.toLowerCase().replaceAll(" ", "-")}-heading-${id}`;
+  const content = !bookings.length ? (
+    <p className="empty-state text-muted">{emptyMessage}</p>
+  ) : (
+    <div className="card-grid">
+      {(expanded ? bookings : bookings.slice(0, 3)).map(children)}
+    </div>
+  );
+  if (allLink)
+    return (
+      <CollapsibleSection
+        title={title}
+        count={bookings.length}
+        to={bookings.length > 3 ? allLink : undefined}
+      >
+        {content}
+      </CollapsibleSection>
+    );
   return (
     <section className="account-section" aria-labelledby={headingId}>
       <SectionHeading
         id={headingId}
         title={title}
         count={bookings.length}
-        to={bookings.length > 3 ? allLink : undefined}
         expanded={expanded}
         onToggle={
-          !allLink && bookings.length > 3
-            ? () => setExpanded((value) => !value)
-            : undefined
+          bookings.length > 3 ? () => setExpanded((value) => !value) : undefined
         }
       />
-      {!bookings.length ? (
-        <p className="empty-state text-muted">{emptyMessage}</p>
-      ) : (
-        <div className="card-grid">
-          {(expanded ? bookings : bookings.slice(0, 3)).map(children)}
-        </div>
-      )}
+      {content}
     </section>
   );
 }

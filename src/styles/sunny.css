@@ -1,6 +1,5 @@
 /* Coastal overrides the shared tokens, leaving layout and status colours intact. */
 :root[data-theme="sunny"] {
-  --font-sans: "DM Sans", sans-serif;
   --color-primary: #006d77;
   --color-primary-hover: #00535b;
   --color-accent: #f4d35e;
@@ -21,9 +20,8 @@
   );
 }
 
-/* Keep existing text sizes while giving headings and branding a softer shape. */
-[data-theme="sunny"]
-  :is(h1, h2, h3, h4, h5, h6, .brand-name, .account-section-heading) {
+/* Body and UI text keep shared Inter metrics; only headings and branding use Poppins. */
+[data-theme="sunny"] :is(h1, h2, h3, h4, h5, h6, .brand-name) {
   font-family: "Poppins", sans-serif;
 }
 
@@ -102,8 +100,7 @@
 }
 
 /* Soft aqua amenities and yellow guest pills keep photo overlays readable. */
-[data-theme="sunny"]
-  :is(.amenity-pill[aria-pressed="false"], [aria-label="Amenities"] > li) {
+[data-theme="sunny"] .amenity-pill:not([aria-pressed="true"]) {
   background-color: #dff3ef;
 }
 [data-theme="sunny"] .guest-pill {

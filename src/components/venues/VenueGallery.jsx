@@ -3,7 +3,7 @@ import VenueImage from "./VenueImage.jsx";
 import Icon from "../Icon.jsx";
 
 const counterClass =
-  "pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-surface px-3 py-1 text-small text-text";
+  "pill pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 bg-surface text-small text-text";
 const controlClass =
   "h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-50";
 const galleryControl =
@@ -62,6 +62,21 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
     });
   }
 
+  /**
+   * Keeps the active photo index within bounds for either scrolling strip.
+   * @param {import('react').UIEvent<HTMLDivElement>} event Strip scroll event.
+   * @returns {void}
+   */
+  function updateActive(event) {
+    const { scrollLeft, clientWidth } = event.currentTarget;
+    setActive(
+      Math.max(
+        0,
+        Math.min(photos.length - 1, Math.round(scrollLeft / clientWidth)),
+      ),
+    );
+  }
+
   return (
     <section aria-label="Venue photos" className="space-y-4">
       <div className="relative">
@@ -70,20 +85,7 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
             <div className="relative lg:hidden">
               <div
                 ref={strip}
-                onScroll={(event) =>
-                  setActive(
-                    Math.max(
-                      0,
-                      Math.min(
-                        photos.length - 1,
-                        Math.round(
-                          event.currentTarget.scrollLeft /
-                            event.currentTarget.clientWidth,
-                        ),
-                      ),
-                    ),
-                  )
-                }
+                onScroll={updateActive}
                 className="photo-strip rounded-lg"
                 role="group"
                 aria-label="Swipe venue photos"
@@ -203,20 +205,7 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
                   role="group"
                   aria-label="Swipe gallery photos"
                   className="photo-strip absolute inset-0"
-                  onScrollEnd={(event) =>
-                    setActive(
-                      Math.max(
-                        0,
-                        Math.min(
-                          photos.length - 1,
-                          Math.round(
-                            event.currentTarget.scrollLeft /
-                              event.currentTarget.clientWidth,
-                          ),
-                        ),
-                      ),
-                    )
-                  }
+                  onScrollEnd={updateActive}
                 >
                   {photos.map((item, index) => (
                     <div

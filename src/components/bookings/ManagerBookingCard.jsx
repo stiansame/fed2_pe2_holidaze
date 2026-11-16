@@ -10,8 +10,7 @@ import {
 } from "../../utils/bookings.js";
 import { formatLocation, formatPrice } from "../../utils/venue.js";
 
-const pillClass =
-  "inline-flex h-6.5 max-w-full items-center gap-1 rounded-full bg-surface px-2.5 text-caption text-text";
+const pillClass = "pill max-w-full gap-1 bg-surface text-caption text-text";
 
 /**
  * Links a compact guest/venue booking card to the manager booking summary.
@@ -58,13 +57,13 @@ export default function ManagerBookingCard({ booking }) {
           </div>
           <div className="min-w-0 space-y-1.5">
             <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-1.5">
-              <p className={pillClass}>
+              <p className={`${pillClass} relative`}>
                 <HostAvatar
                   key={booking.customer?.avatar?.url}
                   media={booking.customer?.avatar}
-                  className="-ml-2.5 size-8 border-2 border-surface"
+                  className="absolute top-1/2 left-0 size-8 -translate-y-1/2 border-2 border-surface"
                 />
-                <span className="min-w-0 truncate">
+                <span className="ml-7 min-w-0 truncate">
                   {booking.customer?.name?.trim() || "Guest name unavailable"}
                 </span>
               </p>

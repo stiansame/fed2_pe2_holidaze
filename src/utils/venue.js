@@ -92,8 +92,22 @@ export function venueMapLinks(location) {
  * @returns {string}
  */
 export function formatLocation(location) {
-  return [location?.city, location?.country]
+  return (
+    [location?.city, location?.country]
+      .map((value) => value?.trim())
+      .filter(Boolean)
+      .join(", ") || "Location not specified"
+  );
+}
+
+/**
+ * Formats a full venue address, omitting blank fields.
+ * @param {object} [location] Venue address, postal code, city and country.
+ * @returns {string}
+ */
+export function formatAddress(location) {
+  return [location?.address, location?.zip, location?.city, location?.country]
     .map((value) => value?.trim())
     .filter(Boolean)
-    .join(", ") || "Location not specified";
+    .join(", ");
 }
