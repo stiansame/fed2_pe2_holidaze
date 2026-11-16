@@ -1,21 +1,26 @@
 import { bookingPrice, formatBookingRange } from "../../utils/bookings.js";
-import { formatLocation, formatPrice, formatVenuePrice } from "../../utils/venue.js";
+import {
+  formatLocation,
+  formatPrice,
+  formatVenuePrice,
+} from "../../utils/venue.js";
 import Icon from "../Icon.jsx";
 
 /**
  * Displays the shared customer-booking dates, location, guest count and prices.
  * @param {object} props Component props.
+ * @param {string} props.headingId ID linking the parent card to its visible heading.
  * @param {object} props.booking Booking with related venue/customer data.
  * @param {import('react').ReactNode} props.title Heading content.
  * @returns {import('react').ReactNode}
  */
-export default function BookingCardDetails({ booking, title }) {
+export default function BookingCardDetails({ booking, title, headingId }) {
   const venue = booking.venue;
   const place = formatLocation(venue?.location);
   const price = bookingPrice(booking);
   return (
     <div className="min-w-0 space-y-2 text-small">
-      <h3 className="truncate font-semibold" title={venue?.name}>
+      <h3 id={headingId} className="truncate font-semibold" title={venue?.name}>
         {title || venue?.name?.trim() || "Venue unavailable"}
       </h3>
       <p title={place} className="flex min-w-0 items-center gap-2 text-muted">

@@ -1,7 +1,7 @@
 import { messages } from "../../constants/messages.js";
 import Loading from "../Loading.jsx";
 import BookingGroup from "./BookingGroup.jsx";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext.js";
 import { cancelBooking, getProfileBookings } from "../../api/bookings.js";
@@ -95,7 +95,9 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
                 emptyMessage={`No ${title.replace(/^My /, "").toLowerCase()} yet.`}
                 bookings={values}
                 allLink={upcomingOnly ? "/bookings?show=upcoming" : undefined}
-                initialExpanded={new URLSearchParams(search).get("show") === key}
+                initialExpanded={
+                  new URLSearchParams(search).get("show") === key
+                }
               >
                 {(booking) => (
                   <BookingCard
@@ -105,7 +107,8 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
                     onCancelled={(id) => {
                       setBookings(
                         (current) =>
-                          current?.filter((booking) => booking.id !== id) ?? current,
+                          current?.filter((booking) => booking.id !== id) ??
+                          current,
                       );
                       setNotice(messages.bookingCancelled);
                     }}
@@ -127,6 +130,7 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
  * @returns {import('react').ReactNode}
  */
 function BookingCard({ booking, manage, onCancelled }) {
+  const headingId = `stay-heading-${useId()}`;
   const { user, request } = useAuth();
   const [confirming, setConfirming] = useState(false);
   const [pending, setPending] = useState(false);
@@ -160,7 +164,7 @@ function BookingCard({ booking, manage, onCancelled }) {
   }
 
   return (
-    <article className="card flex flex-col" aria-label={name}>
+    <article className="card flex flex-col" aria-labelledby={headingId}>
       <div className="relative shrink-0">
         <VenueImage
           key={booking.venue?.media?.[0]?.url}
@@ -211,6 +215,7 @@ function BookingCard({ booking, manage, onCancelled }) {
       </div>
       <div className="min-w-0 flex-1 space-y-3 p-4">
         <BookingCardDetails
+          headingId={headingId}
           booking={booking}
           title={
             venueLink ? (

@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { Link, useLocation } from "react-router-dom";
 import VenueImage from "../venues/VenueImage.jsx";
 import HostAvatar from "../HostAvatar.jsx";
@@ -19,13 +20,17 @@ const pillClass =
  * @returns {import('react').ReactNode}
  */
 export default function ManagerBookingCard({ booking }) {
+  const headingId = `booking-heading-${useId()}`;
   const location = useLocation();
   const venue = booking.venue;
   const name = venue.name?.trim() || "Venue unavailable";
   const place = formatLocation(venue.location);
   const price = bookingPrice(booking);
   return (
-    <article className="card card-interactive relative">
+    <article
+      className="card card-interactive relative"
+      aria-labelledby={headingId}
+    >
       <Link
         to={`/manager/bookings/${encodeURIComponent(booking.id)}${location.search}`}
         className="block h-full focus-visible:-outline-offset-4"
@@ -39,7 +44,11 @@ export default function ManagerBookingCard({ booking }) {
         />
         <div className="relative flex min-h-72 min-w-0 flex-col justify-between gap-8 bg-linear-to-t from-black/50 via-transparent to-transparent p-3">
           <div className="flex min-w-0 flex-col items-start gap-1.5">
-            <h3 title={name} className={`${pillClass} font-semibold`}>
+            <h3
+              id={headingId}
+              title={name}
+              className={`${pillClass} font-semibold`}
+            >
               <span className="truncate">{name}</span>
             </h3>
             <p title={place} className={pillClass}>

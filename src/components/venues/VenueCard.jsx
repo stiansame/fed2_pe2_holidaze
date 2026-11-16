@@ -1,3 +1,4 @@
+import { useId } from "react";
 import Amenities from "./Amenities.jsx";
 import Rating from "./Rating.jsx";
 import Icon from "../Icon.jsx";
@@ -14,12 +15,16 @@ import { formatLocation, formatPrice } from "../../utils/venue.js";
  * @returns {import('react').ReactNode}
  */
 export default function VenueCard({ venue, onImageError, actions }) {
+  const headingId = `venue-heading-${useId()}`;
   const routeLocation = useLocation();
   const { search } = routeLocation;
   const name = venue.name?.trim() || "Unnamed stay";
   const location = formatLocation(venue.location);
   return (
-    <article className="card card-interactive relative">
+    <article
+      className="card card-interactive relative"
+      aria-labelledby={headingId}
+    >
       <Link
         to={`/venues/${encodeURIComponent(venue.id)}${search}`}
         aria-label={`View ${name}`}
@@ -51,7 +56,11 @@ export default function VenueCard({ venue, onImageError, actions }) {
         </div>
         <div className="grid items-start gap-2 p-4">
           <div className="min-w-0 space-y-2">
-            <h2 className="truncate text-h3 font-semibold" title={name}>
+            <h2
+              id={headingId}
+              className="truncate text-h3 font-semibold"
+              title={name}
+            >
               {name}
             </h2>
             <p
