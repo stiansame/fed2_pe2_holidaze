@@ -1,5 +1,10 @@
 import { messages } from "../constants/messages.js";
-import { apiRequest, ApiError, getAllPages } from "./client.js";
+import {
+  apiRequest,
+  ApiError,
+  getAllPages,
+  isCreateOutcomeUncertain,
+} from "./client.js";
 import { venueFormData } from "../utils/venueValidation.js";
 import {
   bookedPeriods,
@@ -32,11 +37,7 @@ export async function createVenue(request, form) {
     if (!data?.id) throw new ApiError(messages.missingVenueReference);
     return data;
   } catch (error) {
-    // A lost response can follow a saved venue. Never retry POST automatically.
-    error.venueUncertain =
-      !error.status ||
-      error.status >= 500 ||
-      (error.status >= 200 && error.status < 300);
+    error.venueUncertain = isCreateOutcomeUncertain(error.status);
     throw error;
   }
 }

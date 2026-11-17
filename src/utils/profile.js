@@ -1,4 +1,5 @@
 import { messages } from "../constants/messages.js";
+import { validMediaUrl } from "./media.js";
 
 /**
  * Builds validated profile changes while preserving blank or unchanged media fields.
@@ -28,4 +29,3 @@ export function profileUpdate(values, profile) {
   }
   return body;
 }
-import { validMediaUrl } from "./media.js";

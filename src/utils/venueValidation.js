@@ -1,4 +1,5 @@
 import { messages } from "../constants/messages.js";
+import { validMediaUrl } from "./media.js";
 
 /**
  * Reads a complete latitude/longitude pair within geographic bounds.
@@ -94,4 +95,3 @@ export function venueFormData(form) {
     ...(Object.keys(location).length && { location }),
   };
 }
-import { validMediaUrl } from "./media.js";

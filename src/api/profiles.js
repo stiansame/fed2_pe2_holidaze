@@ -1,7 +1,8 @@
 import { getProfileBookings } from "./bookings.js";
+import { getAllPages } from "./client.js";
 
 /**
- * Loads a profile and its complete venue/booking lists for public profile statistics.
+ * Loads a profile, then fetches its venues and bookings in parallel for public statistics.
  * @param {Function} request Request function supplied by the API client or account provider.
  * @param {string} name Profile name.
  * @param {object} [options={}] Optional request settings.
@@ -11,8 +12,10 @@ import { getProfileBookings } from "./bookings.js";
 export async function getHostProfile(request, name, { signal } = {}) {
   const path = `holidaze/profiles/${encodeURIComponent(name)}`;
   const { data: profile } = await request(path, { signal });
-  const venues = await getProfileVenues(request, name, { signal });
-  const bookings = await getProfileBookings(request, name, { signal });
+  const [venues, bookings] = await Promise.all([
+    getProfileVenues(request, name, { signal }),
+    getProfileBookings(request, name, { signal }),
+  ]);
   return { profile, venues, bookings };
 }
 
@@ -43,4 +46,3 @@ export function getProfileVenues(
     },
   );
 }
-import { getAllPages } from "./client.js";

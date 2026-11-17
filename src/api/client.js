@@ -3,6 +3,15 @@ import { messages } from "../constants/messages.js";
 const API_BASE = "https://v2.api.noroff.dev/";
 
 /**
+ * Checks whether a failed create request may already have saved the record.
+ * @param {number} [status] HTTP status attached to the error, or zero without a response.
+ * @returns {boolean} Whether retrying could create a duplicate.
+ */
+export function isCreateOutcomeUncertain(status) {
+  return !status || status >= 500 || (status >= 200 && status < 300);
+}
+
+/**
  * Loads complete pages of 100 records and keeps the latest record for each ID.
  * @param {Function} request Request function supplied by the API client or account provider.
  * @param {string} path Noroff collection path.
