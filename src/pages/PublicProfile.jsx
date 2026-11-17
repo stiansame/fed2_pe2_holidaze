@@ -2,7 +2,8 @@ import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getHostProfile } from "../api/profiles.js";
@@ -31,23 +32,16 @@ export default function PublicProfile() {
  */
 function HostProfile({ name }) {
   const { request } = useAuth();
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [attempt, setAttempt] = useState(0);
   const [expanded, setExpanded] = useState(false);
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    const controller = new AbortController();
-    getHostProfile(request, name, { signal: controller.signal })
-      .then((result) => {
-        if (!controller.signal.aborted)
-          setData({ ...result, venues: result.venues.filter(hasVenuePhoto) });
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error);
-      });
-    return () => controller.abort();
-  }, [request, name, attempt]);
+  const load = useCallback(
+    async (signal) => {
+      window.scrollTo(0, 0);
+      const result = await getHostProfile(request, name, { signal });
+      return { ...result, venues: result.venues.filter(hasVenuePhoto) };
+    },
+    [request, name],
+  );
+  const { data, setData, error, retry } = useAsync(load);
   const notFound = error && [400, 404].includes(error.status);
   const profile = data?.profile;
   return (
@@ -62,14 +56,7 @@ function HostProfile({ name }) {
           <p role="alert">
             {notFound ? messages.profileNotFoundDescription : error.message}
           </p>
-          {!notFound && (
-            <RetryButton
-              onRetry={() => {
-                setError(null);
-                setAttempt((value) => value + 1);
-              }}
-            />
-          )}
+          {!notFound && <RetryButton onRetry={retry} />}
         </div>
       )}
       {data && (

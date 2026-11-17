@@ -1,6 +1,7 @@
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getOwnVenue, updateVenue } from "../api/venues.js";
@@ -26,26 +27,18 @@ export default function EditVenue() {
 function VenueEditor({ id }) {
   const { user, request } = useAuth();
   const navigate = useNavigate();
-  const [venue, setVenue] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
+  const load = useCallback(
+    (signal) => getOwnVenue(request, id, user.name, { signal }),
+    [request, id, user.name],
+  );
+  const { data: venue, error, retry } = useAsync(load);
   const active = useRef(false);
-
   useEffect(() => {
-    const controller = new AbortController();
     active.current = true;
-    getOwnVenue(request, id, user.name, { signal: controller.signal })
-      .then((data) => {
-        if (!controller.signal.aborted) setVenue(data);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
-      });
     return () => {
       active.current = false;
-      controller.abort();
     };
-  }, [id, request, user.name, attempt]);
+  }, []);
 
   return (
     <section className="min-w-0 space-y-5">
@@ -53,13 +46,8 @@ function VenueEditor({ id }) {
       <h1 className="text-h3 font-bold sm:text-h2">Edit venue</h1>
       {error ? (
         <div role="alert" className="space-y-3">
-          <p className="text-danger">{error}</p>
-          <RetryButton
-            onRetry={() => {
-              setError("");
-              setAttempt((value) => value + 1);
-            }}
-          />
+          <p className="text-danger">{error.message}</p>
+          <RetryButton onRetry={retry} />
           <BackLink />
         </div>
       ) : venue ? (

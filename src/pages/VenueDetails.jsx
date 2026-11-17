@@ -2,7 +2,8 @@ import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { Link, useParams } from "react-router-dom";
 import { getVenue } from "../api/venues.js";
 import { useAuth } from "../auth/AuthContext.js";
@@ -39,22 +40,15 @@ export default function VenueDetails() {
  */
 function VenueContent({ id }) {
   const { user } = useAuth();
-  const [venue, setVenue] = useState(null);
-  const [error, setError] = useState(null);
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    const controller = new AbortController();
-    getVenue(id, { signal: controller.signal })
-      .then((result) => {
-        if (!controller.signal.aborted) setVenue(result.data);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error);
-      });
-    return () => controller.abort();
-  }, [id, attempt]);
+  const load = useCallback(
+    async (signal) => {
+      window.scrollTo(0, 0);
+      const { data } = await getVenue(id, { signal });
+      return data;
+    },
+    [id],
+  );
+  const { data: venue, error, retry } = useAsync(load);
 
   const name = venue?.name?.trim() || "Unnamed stay";
   const isOwner = user?.venueManager && user.name === venue?.owner?.name;
@@ -86,13 +80,7 @@ function VenueContent({ id }) {
             {notFound ? messages.venueNotFoundDescription : error.message}
           </p>
           {!notFound && (
-            <RetryButton
-              className="primary-button"
-              onRetry={() => {
-                setError(null);
-                setAttempt((value) => value + 1);
-              }}
-            />
+            <RetryButton className="primary-button" onRetry={retry} />
           )}
         </>
       ) : !venue ? (
