@@ -57,7 +57,7 @@ Public venue requests require no credentials. For authenticated requests, set `V
 
 ## 🧪 Automated tests
 
-Tests and their configuration live in `tests/`. [Vitest](https://vitest.dev/guide/) checks booking logic; [Playwright](https://playwright.dev/docs/intro) checks the 404 page, signed-out account access and venue photo previews in headless Chromium at desktop and mobile widths.
+The test setup keeps one unit-test file and one e2e-test file, the oldest remaining files in Git history. `tests/unit/availability.test.js` uses [Vitest](https://vitest.dev/guide/) for booking dates, prices, overlap and guest-count validation. `tests/e2e/navigation.spec.js` uses [Playwright](https://playwright.dev/docs/intro) for the 404 page and signed-out account access at desktop and mobile widths. Configuration stays in `tests/`.
 
 After `npm ci`, install the test browser once:
 
@@ -72,7 +72,7 @@ npm test
 npm run test:e2e
 ```
 
-Playwright starts and stops its own Vite server on port 4174; keep that port free. This test need no real credentials and create no API records. Generated results are ignored by Git. It covers a small regression baseline; use the manual checks below for complete booking/manager flows, themes and accessibility.
+Playwright starts and stops its own Vite server on port 4174; keep that port free. These checks need no real credentials and create no API records. Generated results are ignored by Git. It covers a small regression baseline; use the manual checks below for complete booking/manager flows, themes and accessibility.
 
 ## ✅ Verify locally
 
@@ -151,7 +151,7 @@ Set `VITE_NOROFF_API_KEY` in Netlify with the Builds scope and redeploy after ch
 ✦ **Photo galleries:** swipe through venue images and open a larger gallery with arrows, keyboard navigation and swipe support.  
 ✦ **Profile customisation:** edit the profile bio and banner as well as the required avatar.  
 ✦ **Become a host later:** existing customer accounts can enable venue-manager access without registering again.  
-✦ **Function documentation:** all project functions are described in the local Function reference, including how they relate to one another. Named functions also have English JSDoc in the source code; small inline callbacks are covered by their owning function.  
+✦ **Function documentation:** all project functions are described in the local Function reference, including how they relate to one another. Named functions also have English JSDoc in the source code; small inline callbacks are covered by their owning function.
 
 ## 🎨 Design and resources
 
