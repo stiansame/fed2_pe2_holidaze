@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
 import { useEffect, useState } from "react";
@@ -71,10 +72,7 @@ export default function Home() {
               className="h-11 min-w-0 w-full bg-surface text-text focus-visible:outline-none"
             />
           </label>
-          <button
-            type="submit"
-            className="h-11 rounded-lg bg-primary px-3 font-semibold text-surface hover:bg-primary-hover sm:px-6"
-          >
+          <button type="submit" className="primary-button px-3 sm:px-6">
             Search
           </button>
         </form>
@@ -96,17 +94,13 @@ export default function Home() {
             <p>
               {messages.staysLoadFailed} {error}
             </p>
-            <button
-              type="button"
-              onClick={() => {
+            <RetryButton
+              onRetry={() => {
                 setError("");
                 setLoading(true);
                 setAttempt((value) => value + 1);
               }}
-              className="h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint"
-            >
-              Try again
-            </button>
+            />
           </div>
         ) : highlyRated.length ? (
           <div className="card-grid gap-6 lg:grid-cols-3">

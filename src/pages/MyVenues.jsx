@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
@@ -73,16 +74,12 @@ export default function MyVenues() {
             <p>
               {messages.ownVenuesLoadFailed} {error}
             </p>
-            <button
-              type="button"
-              className="navigation-link"
-              onClick={() => {
+            <RetryButton
+              onRetry={() => {
                 setError("");
                 setAttempt((value) => value + 1);
               }}
-            >
-              Try again
-            </button>
+            />
           </div>
         ) : !venues ? (
           <Loading>Loading your venues…</Loading>

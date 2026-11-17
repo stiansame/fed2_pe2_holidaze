@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
@@ -62,16 +63,12 @@ function HostProfile({ name }) {
             {notFound ? messages.profileNotFoundDescription : error.message}
           </p>
           {!notFound && (
-            <button
-              type="button"
-              onClick={() => {
+            <RetryButton
+              onRetry={() => {
                 setError(null);
                 setAttempt((value) => value + 1);
               }}
-              className="h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary"
-            >
-              Try again
-            </button>
+            />
           )}
         </div>
       )}

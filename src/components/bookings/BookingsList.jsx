@@ -1,3 +1,4 @@
+import RetryButton from "../RetryButton.jsx";
 import { messages } from "../../constants/messages.js";
 import Loading from "../Loading.jsx";
 import BookingGroup from "./BookingGroup.jsx";
@@ -62,17 +63,14 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
       )}
       {!bookings && !error && <Loading>Loading your bookings…</Loading>}
       {error && (
-        <button
-          type="button"
-          onClick={() => {
+        <RetryButton
+          className="navigation-link text-small"
+          onRetry={() => {
             setError("");
             setBookings(null);
             setAttempt((value) => value + 1);
           }}
-          className="h-11 rounded-lg border border-border bg-surface px-4 text-small font-semibold text-primary hover:bg-tint"
-        >
-          Try again
-        </button>
+        />
       )}
       {groups &&
         Object.entries(groups)

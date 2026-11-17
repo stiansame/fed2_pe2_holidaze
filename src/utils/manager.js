@@ -1,5 +1,5 @@
 import { messages } from "../constants/messages.js";
-import { bookingStatus, groupBookings } from "./bookings.js";
+import { groupBookings } from "./bookings.js";
 import { dateKey } from "./availability.js";
 
 /**
@@ -22,17 +22,7 @@ export function managerBookingGroups(venues, today = dateKey()) {
         .map((booking) => [booking.id, booking]),
     ).values(),
   ];
-  const groups = groupBookings(bookings, today);
-  return {
-    upcoming: groups.upcoming.filter(
-      (booking) => bookingStatus(booking, today) === "upcoming",
-    ),
-    current: groups.upcoming.filter(
-      (booking) => bookingStatus(booking, today) === "current",
-    ),
-    past: groups.past,
-    unknown: groups.unknown,
-  };
+  return groupBookings(bookings, today, true);
 }
 
 /**

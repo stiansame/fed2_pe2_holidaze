@@ -301,7 +301,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
         <div className="flex flex-wrap gap-3">
           <button
             type="submit"
-            className="h-11 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60"
+            className="primary-button px-5 disabled:opacity-60"
           >
             {pending
               ? editing

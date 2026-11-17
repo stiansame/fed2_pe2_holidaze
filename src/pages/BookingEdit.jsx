@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
@@ -5,9 +6,9 @@ import BackLink from "../components/BackLink.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
-import { getOwnBooking, updateBooking } from "../api/bookings.js";
+import { getEditableBooking, updateBooking } from "../api/bookings.js";
 import { getVenue } from "../api/venues.js";
-import { bookingDates, bookingStatus } from "../utils/bookings.js";
+import { bookingDates } from "../utils/bookings.js";
 import { staySummary } from "../utils/availability.js";
 import AvailabilityCalendar from "../components/venues/AvailabilityCalendar.jsx";
 import StaySummary from "../components/bookings/StaySummary.jsx";
@@ -40,11 +41,9 @@ function EditLoader({ id }) {
      * @returns {Promise<void>}
      */
     async function load() {
-      const booking = await getOwnBooking(request, id, user.name, {
+      const booking = await getEditableBooking(request, id, user.name, {
         signal: controller.signal,
       });
-      if (bookingStatus(booking) !== "upcoming")
-        throw new Error(messages.bookingNotChangeable);
       if (!booking.venue?.id) throw new Error(messages.venueUnavailable);
       const { data: venue } = await getVenue(booking.venue.id, {
         signal: controller.signal,
@@ -70,16 +69,12 @@ function EditLoader({ id }) {
           <p role="alert" className="text-danger">
             {error}
           </p>
-          <button
-            type="button"
-            onClick={() => {
+          <RetryButton
+            onRetry={() => {
               setError("");
               setAttempt((value) => value + 1);
             }}
-            className="h-11 rounded-lg border border-border px-4 text-primary"
-          >
-            Try again
-          </button>
+          />
         </>
       )}
       {!data && <BackLink />}
@@ -163,7 +158,7 @@ function BookingEditor({ booking, initialVenue }) {
       <form onSubmit={save}>
         <button
           disabled={pending || !!summary.error}
-          className="h-11 w-full rounded-lg bg-primary px-4 text-small font-semibold text-surface hover:bg-primary-hover disabled:opacity-60"
+          className="primary-button w-full text-small disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save changes"}
         </button>

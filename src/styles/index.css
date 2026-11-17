@@ -152,6 +152,11 @@
     @apply bg-accent/20 font-semibold text-text;
   }
 
+  /* Shared sizing and colours for primary actions. */
+  .primary-button {
+    @apply h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover;
+  }
+
   /* Give return links and secondary navigation a consistent button shape. */
   .navigation-link {
     @apply inline-flex h-11 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint;

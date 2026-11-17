@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
@@ -85,16 +86,13 @@ function VenueContent({ id }) {
             {notFound ? messages.venueNotFoundDescription : error.message}
           </p>
           {!notFound && (
-            <button
-              type="button"
-              onClick={() => {
+            <RetryButton
+              className="primary-button"
+              onRetry={() => {
                 setError(null);
                 setAttempt((value) => value + 1);
               }}
-              className="h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover"
-            >
-              Try again
-            </button>
+            />
           )}
         </>
       ) : !venue ? (

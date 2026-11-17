@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
@@ -175,7 +176,7 @@ function ProfileCard() {
                       type="button"
                       disabled={pending}
                       onClick={enableManager}
-                      className="h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60"
+                      className="primary-button disabled:cursor-wait disabled:opacity-60"
                     >
                       {pending ? "Please wait…" : "Become a venue manager"}
                     </button>
@@ -191,16 +192,12 @@ function ProfileCard() {
           </p>
         )}
         {!profile && error && (
-          <button
-            type="button"
-            onClick={() => {
+          <RetryButton
+            onRetry={() => {
               setError("");
               setAttempt((value) => value + 1);
             }}
-            className="h-11 rounded-lg border border-border px-4 text-primary"
-          >
-            Try again
-          </button>
+          />
         )}
       </div>
     </section>
@@ -308,7 +305,7 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
           </fieldset>
         ))}
         <div className="flex flex-wrap gap-3">
-          <button className="h-11 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover">
+          <button className="primary-button px-5">
             {pending ? "Saving…" : "Save"}
           </button>
           <button

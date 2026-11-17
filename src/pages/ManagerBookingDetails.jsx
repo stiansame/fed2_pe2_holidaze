@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import { formatAddress } from "../utils/venue.js";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { useEffect, useState } from "react";
@@ -73,16 +74,12 @@ function BookingDetails({ id }) {
       {error ? (
         <div role="alert" className="space-y-3">
           <p className="text-danger">{error}</p>
-          <button
-            type="button"
-            className="navigation-link"
-            onClick={() => {
+          <RetryButton
+            onRetry={() => {
               setError("");
               setAttempt((value) => value + 1);
             }}
-          >
-            Try again
-          </button>
+          />
         </div>
       ) : !booking ? (
         <Loading>Loading booking details…</Loading>

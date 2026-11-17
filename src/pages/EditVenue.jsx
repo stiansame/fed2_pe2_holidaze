@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -53,16 +54,12 @@ function VenueEditor({ id }) {
       {error ? (
         <div role="alert" className="space-y-3">
           <p className="text-danger">{error}</p>
-          <button
-            type="button"
-            className="navigation-link"
-            onClick={() => {
+          <RetryButton
+            onRetry={() => {
               setError("");
               setAttempt((value) => value + 1);
             }}
-          >
-            Try again
-          </button>
+          />
           <BackLink />
         </div>
       ) : venue ? (

@@ -84,6 +84,7 @@
 [data-theme="sunny"]
   :is(
     button.bg-primary:not(.amenity-pill),
+    .primary-button,
     a.bg-primary,
     .booking-action-button
   ) {
@@ -93,6 +94,7 @@
 [data-theme="sunny"]
   :is(
     button.bg-primary:not(.amenity-pill),
+    .primary-button,
     a.bg-primary,
     .booking-action-button
   ):hover {
