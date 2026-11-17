@@ -24,10 +24,9 @@ export function hasVenuePhoto(venue) {
 /**
  * Randomises venues rated above 4.5 with map coordinates and two distinct photo URLs.
  * @param {object[]} venues Venue pool.
- * @param {function(): number} [random=Math.random] Random-number source between zero and one.
  * @returns {object[]}
  */
-export function selectHighlyRatedVenues(venues, random = Math.random) {
+export function selectHighlyRatedVenues(venues) {
   const pool = venues.filter(
     (venue) =>
       hasVenuePhoto(venue) &&
@@ -40,7 +39,7 @@ export function selectHighlyRatedVenues(venues, random = Math.random) {
       ).size >= 2,
   );
   for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
   return pool;

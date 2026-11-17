@@ -6,6 +6,7 @@ import { amenityOptions } from "./amenityOptions.js";
 import AmenityPill from "./AmenityPill.jsx";
 import Icon from "../Icon.jsx";
 import VenueImage from "./VenueImage.jsx";
+import { validMediaUrl } from "../../utils/media.js";
 
 const VenueLocationMap = lazy(() => import("./VenueLocationMap.jsx"));
 
@@ -360,9 +361,7 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
     const input = urlInput.current;
     const url = input.value.trim();
     input.setCustomValidity(
-      url && !/^https?:\/\//i.test(url)
-        ? messages.invalidImageUrl(index + 1)
-        : "",
+      url && !validMediaUrl(url) ? messages.invalidImageUrl(index + 1) : "",
     );
     if (!input.reportValidity()) return;
     setPreview((previous) => ({
