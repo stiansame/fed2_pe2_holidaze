@@ -17,7 +17,6 @@ export const messages = {
   managerBookingAccessDenied: "This booking is not available for your venues.",
   bookingNotEditable:
     "Only stays that have not started can be changed or cancelled.",
-  bookingNotChangeable: "Only stays that have not started can be changed.",
   venueUnavailable: "This venue is no longer available.",
   missingBookingReference: "The server did not return a booking reference.",
   missingVenueReference: "The server did not return a venue reference.",

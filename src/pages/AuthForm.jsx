@@ -199,7 +199,7 @@ export default function AuthForm({ register = false }) {
         )}
         <button
           disabled={pending}
-          className="h-11 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60"
+          className="primary-button w-full disabled:cursor-wait disabled:opacity-60"
         >
           {pending ? "Please wait…" : register ? "Create account" : "Log in"}
         </button>

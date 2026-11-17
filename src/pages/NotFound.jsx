@@ -18,7 +18,7 @@ export default function NotFound() {
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
           to="/venues"
-          className="inline-flex h-11 items-center rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover"
+          className="primary-button inline-flex items-center"
         >
           Explore venues
         </Link>

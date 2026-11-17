@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
 import { useEffect, useState } from "react";
@@ -22,7 +23,7 @@ import {
 import { hasVenuePhoto } from "../utils/venue.js";
 
 const buttonClass =
-  "h-11 rounded-lg bg-primary px-5 font-semibold text-surface hover:bg-primary-hover disabled:cursor-wait disabled:opacity-60";
+  "primary-button px-5 disabled:cursor-wait disabled:opacity-60";
 const fieldClass =
   "flex h-11 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-body focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2";
 const selectClass =
@@ -355,16 +356,13 @@ function VenueResults({ order, filters, waiting, tooShort }) {
         <p role="alert" className="text-danger">
           {error}
         </p>
-        <button
-          type="button"
-          onClick={() => {
+        <RetryButton
+          className={buttonClass}
+          onRetry={() => {
             setError("");
             setAttempt((value) => value + 1);
           }}
-          className={buttonClass}
-        >
-          Try again
-        </button>
+        />
       </div>
     );
   if (!venues) return <Loading className="mt-6">Loading stays…</Loading>;

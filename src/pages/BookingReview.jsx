@@ -1,3 +1,4 @@
+import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
@@ -103,7 +104,7 @@ function Review({ id, search }) {
           <form onSubmit={confirm}>
             <button
               disabled={pending || uncertain || !!summary.error}
-              className="h-11 w-full rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+              className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-60"
             >
               {pending ? "Reserving…" : "Confirm reservation"}
             </button>
@@ -116,15 +117,12 @@ function Review({ id, search }) {
         </p>
       )}
       {!venue && error && (
-        <button
-          onClick={() => {
+        <RetryButton
+          onRetry={() => {
             setError("");
             setAttempt((value) => value + 1);
           }}
-          className="h-11 rounded-lg border border-border px-4 text-primary"
-        >
-          Try again
-        </button>
+        />
       )}
       {!pending && (
         <button

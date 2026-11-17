@@ -1,3 +1,4 @@
+import RetryButton from "../RetryButton.jsx";
 import Loading from "../Loading.jsx";
 import { useEffect, useId, useState } from "react";
 import { useAuth } from "../../auth/AuthContext.js";
@@ -58,16 +59,12 @@ export default function ManagerOverview({ children, stats }) {
           {error ? (
             <div role="alert" className="space-y-3">
               <p>Unable to load your venue overview. {error}</p>
-              <button
-                type="button"
-                className="navigation-link"
-                onClick={() => {
+              <RetryButton
+                onRetry={() => {
                   setError("");
                   setAttempt((value) => value + 1);
                 }}
-              >
-                Try again
-              </button>
+              />
             </div>
           ) : !data ? (
             <Loading>Loading your venue overview…</Loading>

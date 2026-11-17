@@ -24,6 +24,24 @@ export function getProfileBookings(request, name, { signal } = {}) {
 }
 
 /**
+ * Loads the booking, its venue and its customer for either ownership check.
+ * @param {Function} request Authenticated API request.
+ * @param {string} id Booking ID.
+ * @param {AbortSignal} [signal] Cancels an obsolete request.
+ * @returns {Promise<object>}
+ */
+async function getBooking(request, id, signal) {
+  const { data } = await request(
+    `holidaze/bookings/${encodeURIComponent(id)}`,
+    {
+      query: { _venue: true, _customer: true },
+      signal,
+    },
+  );
+  return data;
+}
+
+/**
  * Loads a booking and checks that its customer matches the signed-in account.
  * @param {Function} request Request function supplied by the API client or account provider.
  * @param {string} id Record ID.
@@ -34,14 +52,8 @@ export function getProfileBookings(request, name, { signal } = {}) {
  * @throws {ApiError} If the booking belongs to another customer.
  */
 export async function getOwnBooking(request, id, name, { signal } = {}) {
-  const { data } = await request(
-    `holidaze/bookings/${encodeURIComponent(id)}`,
-    {
-      query: { _venue: true, _customer: true },
-      signal,
-    },
-  );
-  if (data.customer?.name?.toLowerCase() !== name.toLowerCase())
+  const data = await getBooking(request, id, signal);
+  if (!name || data?.customer?.name?.toLowerCase() !== name.toLowerCase())
     throw new ApiError(messages.bookingAccessDenied, 403);
   return data;
 }
@@ -57,13 +69,7 @@ export async function getOwnBooking(request, id, name, { signal } = {}) {
  * @throws {ApiError} If the account does not own the booked venue.
  */
 export async function getVenueBooking(request, id, name, { signal } = {}) {
-  const { data } = await request(
-    `holidaze/bookings/${encodeURIComponent(id)}`,
-    {
-      query: { _venue: true, _customer: true },
-      signal,
-    },
-  );
+  const data = await getBooking(request, id, signal);
   if (!name || data?.venue?.owner?.name?.toLowerCase() !== name.toLowerCase()) {
     throw new ApiError(messages.managerBookingAccessDenied, 403);
   }
@@ -75,10 +81,12 @@ export async function getVenueBooking(request, id, name, { signal } = {}) {
  * @param {Function} request Request function supplied by the API client or account provider.
  * @param {string} id Record ID.
  * @param {string} name Signed-in account name.
+ * @param {object} [options] Request options forwarded to the ownership check.
+ * @param {AbortSignal} [options.signal] Cancels loading when the editor closes.
  * @returns {Promise<object>}
  */
-async function getEditableBooking(request, id, name) {
-  const booking = await getOwnBooking(request, id, name);
+export async function getEditableBooking(request, id, name, options) {
+  const booking = await getOwnBooking(request, id, name, options);
   if (bookingStatus(booking) !== "upcoming")
     throw new ApiError(messages.bookingNotEditable, 400);
   return booking;

@@ -36,20 +36,32 @@ export function bookingPrice(booking) {
 }
 
 /**
- * Groups stays by status, combining current and upcoming stays in arrival order.
+ * Groups stays in date order, optionally listing current stays separately for hosts.
  * @param {object[]} bookings Bookings to group.
  * @param {string} [today=dateKey()] Local date in YYYY-MM-DD format.
- * @returns {{upcoming: object[], past: object[], unknown: object[]}}
+ * @param {boolean} [separateCurrent=false] Gives hosts a separate current group.
+ * @returns {{upcoming: object[], current?: object[], past: object[], unknown: object[]}}
  */
-export function groupBookings(bookings, today = dateKey()) {
-  const groups = { upcoming: [], past: [], unknown: [] };
+export function groupBookings(
+  bookings,
+  today = dateKey(),
+  separateCurrent = false,
+) {
+  const groups = { upcoming: [], current: [], past: [], unknown: [] };
   for (const booking of bookings) {
     const status = bookingStatus(booking, today);
-    groups[status === "current" ? "upcoming" : status].push(booking);
+    groups[status].push(booking);
   }
-  groups.upcoming.sort((a, b) => a.dateFrom.localeCompare(b.dateFrom));
+  for (const arrivals of [groups.current, groups.upcoming]) {
+    arrivals.sort((a, b) => a.dateFrom.localeCompare(b.dateFrom));
+  }
   groups.past.sort((a, b) => b.dateTo.localeCompare(a.dateTo));
-  return groups;
+  if (separateCurrent) return groups;
+  return {
+    upcoming: [...groups.current, ...groups.upcoming],
+    past: groups.past,
+    unknown: groups.unknown,
+  };
 }
 
 /**
