@@ -1,6 +1,7 @@
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getProfileVenues } from "../api/profiles.js";
@@ -18,25 +19,17 @@ export default function VenueBookings() {
   const { user, request } = useAuth();
   const [params, setParams] = useSearchParams();
   const venueId = params.get("venue") || "";
-  const [data, setData] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    getProfileVenues(request, user.name, {
-      bookings: true,
-      signal: controller.signal,
-    })
-      .then((venues) => {
-        const groups = managerBookingGroups(venues);
-        if (!controller.signal.aborted) setData({ venues, groups });
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
+  const load = useCallback(
+    async (signal) => {
+      const venues = await getProfileVenues(request, user.name, {
+        bookings: true,
+        signal,
       });
-    return () => controller.abort();
-  }, [request, user.name, attempt]);
+      return { venues, groups: managerBookingGroups(venues) };
+    },
+    [request, user.name],
+  );
+  const { data, error, retry } = useAsync(load);
 
   const unavailable =
     data && venueId && !data.venues.some((venue) => venue.id === venueId);
@@ -62,9 +55,7 @@ export default function VenueBookings() {
             const nextParams = new URLSearchParams(params);
             nextParams.delete("venue");
             setParams(nextParams, { replace: true });
-            setError("");
-            setData(null);
-            setAttempt((value) => value + 1);
+            retry();
           }}
         >
           <Icon name="reset" />
@@ -73,7 +64,7 @@ export default function VenueBookings() {
       <p className="text-muted">Reservations for your venues.</p>
       {error && (
         <p role="alert" className="text-danger">
-          {messages.venueBookingsLoadFailed} {error}
+          {messages.venueBookingsLoadFailed} {error.message}
         </p>
       )}
       {!data && !error && <Loading>Loading venue bookings…</Loading>}

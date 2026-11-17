@@ -3,7 +3,8 @@ import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
 import SectionHeading from "../components/account/SectionHeading.jsx";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getProfileVenues } from "../api/profiles.js";
@@ -20,22 +21,12 @@ export default function MyVenues() {
   const location = useLocation();
   const { state } = location;
   const [notice, setNotice] = useState(state?.notice || "");
-  const [venues, setVenues] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
   const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    getProfileVenues(request, user.name, { signal: controller.signal })
-      .then((data) => {
-        if (!controller.signal.aborted) setVenues(data);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
-      });
-    return () => controller.abort();
-  }, [request, user.name, attempt]);
+  const load = useCallback(
+    (signal) => getProfileVenues(request, user.name, { signal }),
+    [request, user.name],
+  );
+  const { data: venues, setData: setVenues, error, retry } = useAsync(load);
 
   return (
     <section className="min-w-0 space-y-6">
@@ -72,14 +63,9 @@ export default function MyVenues() {
         {error ? (
           <div role="alert" className="space-y-3">
             <p>
-              {messages.ownVenuesLoadFailed} {error}
+              {messages.ownVenuesLoadFailed} {error.message}
             </p>
-            <RetryButton
-              onRetry={() => {
-                setError("");
-                setAttempt((value) => value + 1);
-              }}
-            />
+            <RetryButton onRetry={retry} />
           </div>
         ) : !venues ? (
           <Loading>Loading your venues…</Loading>

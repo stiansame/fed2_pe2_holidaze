@@ -1,6 +1,7 @@
 import RetryButton from "../RetryButton.jsx";
 import Loading from "../Loading.jsx";
-import { useEffect, useId, useState } from "react";
+import { useCallback, useId } from "react";
+import useAsync from "../../hooks/useAsync.js";
 import { useAuth } from "../../auth/AuthContext.js";
 import { getProfileVenues } from "../../api/profiles.js";
 import { managerSummary } from "../../utils/manager.js";
@@ -20,25 +21,17 @@ export default function ManagerOverview({ children, stats }) {
   const id = useId();
   const overviewHeadingId = `account-overview-heading-${id}`;
   const { user, request } = useAuth();
-  const [data, setData] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    getProfileVenues(request, user.name, {
-      bookings: true,
-      signal: controller.signal,
-    })
-      .then((venues) => {
-        if (!controller.signal.aborted)
-          setData({ venues, ...managerSummary(venues) });
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
+  const load = useCallback(
+    async (signal) => {
+      const venues = await getProfileVenues(request, user.name, {
+        bookings: true,
+        signal,
       });
-    return () => controller.abort();
-  }, [request, user.name, attempt]);
+      return { venues, ...managerSummary(venues) };
+    },
+    [request, user.name],
+  );
+  const { data, error, retry } = useAsync(load);
 
   const bookings = data
     ? [...data.current, ...data.upcoming].sort((a, b) =>
@@ -58,13 +51,8 @@ export default function ManagerOverview({ children, stats }) {
         <div className="min-w-0 self-stretch">
           {error ? (
             <div role="alert" className="space-y-3">
-              <p>Unable to load your venue overview. {error}</p>
-              <RetryButton
-                onRetry={() => {
-                  setError("");
-                  setAttempt((value) => value + 1);
-                }}
-              />
+              <p>Unable to load your venue overview. {error.message}</p>
+              <RetryButton onRetry={retry} />
             </div>
           ) : !data ? (
             <Loading>Loading your venue overview…</Loading>
