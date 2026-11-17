@@ -1,14 +1,12 @@
 import { messages } from "../../constants/messages.js";
-import Loading from "../Loading.jsx";
-import { lazy, Suspense, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { amenityOptions } from "./amenityOptions.js";
 import AmenityPill from "./AmenityPill.jsx";
 import Icon from "../Icon.jsx";
 import VenueImage from "./VenueImage.jsx";
+import VenueMapBoundary from "./VenueMapBoundary.jsx";
 import { validMediaUrl } from "../../utils/media.js";
-
-const VenueLocationMap = lazy(() => import("./VenueLocationMap.jsx"));
 
 const fieldClass =
   "mt-1 w-full min-w-0 rounded-lg border border-border bg-surface px-3 text-body font-normal";
@@ -293,13 +291,11 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
                 />
               </label>
             </div>
-            <Suspense fallback={<Loading>Loading map…</Loading>}>
-              <VenueLocationMap
-                {...coordinates}
-                onChange={setCoordinates}
-                disabled={pending || uncertain}
-              />
-            </Suspense>
+            <VenueMapBoundary
+              {...coordinates}
+              onChange={setCoordinates}
+              disabled={pending || uncertain}
+            />
           </div>
         </section>
         <div className="flex flex-wrap gap-3">

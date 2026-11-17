@@ -1,7 +1,7 @@
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getVenue } from "../api/venues.js";
 import { useAuth } from "../auth/AuthContext.js";
@@ -11,6 +11,7 @@ import HostAvatar from "../components/HostAvatar.jsx";
 import Amenities from "../components/venues/Amenities.jsx";
 import Rating from "../components/venues/Rating.jsx";
 import VenueGallery from "../components/venues/VenueGallery.jsx";
+import VenueMapBoundary from "../components/venues/VenueMapBoundary.jsx";
 import VenueDescription from "../components/venues/VenueDescription.jsx";
 import VenueBooking from "../components/venues/VenueBooking.jsx";
 import VenueOwnerActions from "../components/venues/VenueOwnerActions.jsx";
@@ -19,10 +20,6 @@ import {
   formatLocation,
   venueMapLinks,
 } from "../utils/venue.js";
-
-const VenueLocationMap = lazy(
-  () => import("../components/venues/VenueLocationMap.jsx"),
-);
 
 /**
  * Resets venue detail content when the route ID changes.
@@ -197,13 +194,7 @@ function VenueContent({ id }) {
                 </p>
                 {map && (
                   <div className="max-w-155 space-y-2">
-                    <Suspense fallback={<Loading>Loading map…</Loading>}>
-                      <VenueLocationMap
-                        lat={location.lat}
-                        lng={location.lng}
-                        compact
-                      />
-                    </Suspense>
+                    <VenueMapBoundary lat={location.lat} lng={location.lng} compact />
                     <a
                       href={map.full}
                       target="_blank"

@@ -1,5 +1,5 @@
 import { messages } from "../constants/messages.js";
-import { ApiError, getAllPages } from "./client.js";
+import { ApiError, getAllPages, isCreateOutcomeUncertain } from "./client.js";
 import { clearVenueCache, getVenue } from "./venues.js";
 import { staySummary } from "../utils/availability.js";
 import { bookingStatus } from "../utils/bookings.js";
@@ -158,11 +158,7 @@ export async function createBooking(request, venueId, stay, expectedPrice) {
     if (!booking?.id) throw new ApiError(messages.missingBookingReference);
     return { venue, booking };
   } catch (error) {
-    // A lost response may follow a saved booking. Do not invite an unsafe second POST.
-    error.bookingUncertain =
-      !error.status ||
-      error.status >= 500 ||
-      (error.status >= 200 && error.status < 300);
+    error.bookingUncertain = isCreateOutcomeUncertain(error.status);
     throw error;
   }
 }
