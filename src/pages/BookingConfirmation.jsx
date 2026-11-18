@@ -1,6 +1,8 @@
+import { queryKeys } from "../api/queryKeys.js";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
@@ -27,12 +29,12 @@ function Confirmation({ id }) {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["ownBooking", user.name, id],
-    queryFn: ({ signal }) => {
-      window.scrollTo(0, 0);
-      return getOwnBooking(request, id, user.name, { signal });
-    },
+    queryKey: queryKeys.ownBooking(user.name, id),
+    queryFn: ({ signal }) => getOwnBooking(request, id, user.name, { signal }),
   });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   return (
     <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8">

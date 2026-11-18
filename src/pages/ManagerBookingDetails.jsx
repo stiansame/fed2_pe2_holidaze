@@ -1,6 +1,8 @@
+import { queryKeys } from "../api/queryKeys.js";
 import RetryButton from "../components/RetryButton.jsx";
 import { formatAddress } from "../utils/venue.js";
 import DocumentTitle from "../components/DocumentTitle.jsx";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
@@ -41,14 +43,16 @@ function BookingDetails({ id }) {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["venueBooking", user.name, id],
+    queryKey: queryKeys.venueBooking(user.name, id),
     queryFn: async ({ signal }) => {
-      window.scrollTo(0, 0);
       const booking = await getVenueBooking(request, id, user.name, { signal });
       const { data: venue } = await getVenue(booking.venue.id, { signal });
       return { ...booking, venue };
     },
   });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const venue = booking?.venue;
   const guest = booking?.customer;

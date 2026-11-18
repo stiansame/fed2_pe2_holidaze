@@ -1,3 +1,5 @@
+import { queryKeys } from "../api/queryKeys.js";
+import { getProfileBookings } from "../api/bookings.js";
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
@@ -14,6 +16,7 @@ import BookingsList from "../components/bookings/BookingsList.jsx";
 import ManagerOverview from "../components/account/ManagerOverview.jsx";
 import AccountStats from "../components/account/AccountStats.jsx";
 import { guestSummary } from "../utils/bookings.js";
+import FieldError from "../components/FieldError.jsx";
 
 /**
  * Combines the signed-in profile, role-appropriate statistics and upcoming personal stays.
@@ -22,8 +25,11 @@ import { guestSummary } from "../utils/bookings.js";
 export default function Profile() {
   const id = useId();
   const overviewHeadingId = `account-overview-heading-${id}`;
-  const { user } = useAuth();
-  const [bookings, setBookings] = useState(null);
+  const { user, request } = useAuth();
+  const { data: bookings } = useQuery({
+    queryKey: queryKeys.profileBookings(user.name),
+    queryFn: ({ signal }) => getProfileBookings(request, user.name, { signal }),
+  });
   const stats = guestSummary(bookings, undefined, true);
   const profile = <ProfileCard />;
   return (
@@ -44,7 +50,7 @@ export default function Profile() {
           <AccountStats items={stats} />
         </section>
       )}
-      <BookingsList upcomingOnly onLoaded={setBookings} />
+      <BookingsList upcomingOnly />
     </section>
   );
 }
@@ -69,7 +75,7 @@ function ProfileCard() {
     error: loadError,
     refetch,
   } = useQuery({
-    queryKey: ["ownProfile", user.name],
+    queryKey: queryKeys.ownProfile(user.name),
     queryFn: async ({ signal }) => {
       const { data } = await request(path, { signal });
       return data;
@@ -207,7 +213,7 @@ function ProfileCard() {
  */
 function ProfileForm({ profile, path, onSave, onCancel }) {
   const { request } = useAuth();
-  const { submit, pending, error } = useSubmit(async (form) => {
+  const { submit, pending, error, fieldErrors } = useSubmit(async (form) => {
     const values = Object.fromEntries(new FormData(form));
     const { data } = await request(path, {
       method: "PUT",
@@ -220,7 +226,12 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
   const inputClass = `${fieldClass} h-11`;
 
   return (
-    <form onSubmit={submit} className="space-y-5" aria-label="Edit profile">
+    <form
+      onSubmit={submit}
+      noValidate
+      className="space-y-5"
+      aria-label="Edit profile"
+    >
       <fieldset disabled={pending} className="min-w-0 space-y-5">
         <legend className="mb-3 text-h3 font-semibold">Edit profile</legend>
         <div>
@@ -233,10 +244,14 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
             maxLength={160}
             rows={3}
             defaultValue={profile.bio ?? ""}
-            aria-describedby="bio-help"
+            aria-invalid={!!fieldErrors.bio}
+            aria-describedby={
+              fieldErrors.bio ? "bio-help bio-error" : "bio-help"
+            }
             autoFocus
             className={`${fieldClass} min-h-11 py-3`}
           />
+          <FieldError id="bio-error">{fieldErrors.bio}</FieldError>
           <p id="bio-help" className="text-small text-muted">
             Up to 160 characters.
           </p>
@@ -249,26 +264,43 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
             <legend className="px-1 font-semibold">
               {field === "avatar" ? "Avatar" : "Banner"}
             </legend>
-            <label className="block text-small">
-              Image URL
-              <input
-                name={`${field}Url`}
-                type="url"
-                maxLength={300}
-                defaultValue={profile[field]?.url ?? ""}
-                aria-describedby={`${field}-help`}
-                className={inputClass}
-              />
-            </label>
-            <label className="block text-small">
-              Image description
-              <input
-                name={`${field}Alt`}
-                maxLength={120}
-                defaultValue={profile[field]?.alt ?? ""}
-                className={inputClass}
-              />
-            </label>
+            <div className="min-w-0">
+              <label className="block text-small">
+                Image URL
+                <input
+                  name={`${field}Url`}
+                  type="url"
+                  maxLength={300}
+                  defaultValue={profile[field]?.url ?? ""}
+                  aria-invalid={!!fieldErrors[`${field}.url`]}
+                  aria-describedby={`${field}-help${fieldErrors[`${field}.url`] ? ` ${field}-url-error` : ""}`}
+                  className={inputClass}
+                />
+              </label>
+              <FieldError id={`${field}-url-error`}>
+                {fieldErrors[`${field}.url`]}
+              </FieldError>
+            </div>
+            <div className="min-w-0">
+              <label className="block text-small">
+                Image description
+                <input
+                  name={`${field}Alt`}
+                  maxLength={120}
+                  aria-invalid={!!fieldErrors[`${field}.alt`]}
+                  aria-describedby={
+                    fieldErrors[`${field}.alt`]
+                      ? `${field}-alt-error`
+                      : undefined
+                  }
+                  defaultValue={profile[field]?.alt ?? ""}
+                  className={inputClass}
+                />
+              </label>
+              <FieldError id={`${field}-alt-error`}>
+                {fieldErrors[`${field}.alt`]}
+              </FieldError>
+            </div>
             <p id={`${field}-help`} className="text-small text-muted">
               Use a public HTTP or HTTPS image URL. Leave blank to keep the
               current image and description.

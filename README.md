@@ -16,11 +16,13 @@ Browse and search accommodation, check availability and manage bookings. Venue m
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0F172A?style=for-the-badge&logo=tailwindcss&logoColor=38BDF8)](https://tailwindcss.com/)
 [![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com/)
 [![DOMPurify](https://img.shields.io/badge/DOMPurify-0047AB?style=for-the-badge)](https://github.com/cure53/DOMPurify)
+[![Zod](https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white)](https://zod.dev/packages/mini)
 [![Netlify](https://img.shields.io/badge/Netlify-0F172A?style=for-the-badge&logo=netlify&logoColor=00C7B7)](https://www.netlify.com/)
 
 Leaflet provides interactive maps, and DOMPurify sanitises HTML descriptions. Hosted on Netlify.
 
 TanStack Query handles API reads and caches complete venue lists for two minutes.
+Zod Mini validates venue and profile forms, with messages beside each invalid field.
 
 ## 🚀 Run locally
 

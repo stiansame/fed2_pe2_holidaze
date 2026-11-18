@@ -62,6 +62,8 @@ export const messages = {
   incompleteSearchDates: "Choose both check-in and check-out dates.",
   invalidSearchDates: "Choose a future stay with check-out after check-in.",
   pageNotFound: "Page not found",
+  pageLoadFailed: "This page couldn’t be displayed",
+  pageLoadFailedDescription: "Please try again, or explore venues to continue.",
   pageNotFoundDescription:
     "This address doesn't lead to a page. Check the link, or explore our places to stay.",
   venueNotFound: "Venue not found",

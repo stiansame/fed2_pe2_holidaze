@@ -3,6 +3,7 @@ import { matchPath, Outlet, useLocation } from "react-router-dom";
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
 import BackToTop from "../BackToTop.jsx";
+import PageErrorBoundary from "../PageErrorBoundary.jsx";
 
 const titles = {
   "/": "Home",
@@ -35,7 +36,9 @@ export default function Layout() {
         tabIndex={-1}
         className={`mx-auto w-full max-w-360 flex-1 ${isVenueDetails || isAccount || pathname === "/" ? "p-4 md:p-8" : "p-6 md:p-16"}`}
       >
-        <Outlet />
+        <PageErrorBoundary key={pathname}>
+          <Outlet />
+        </PageErrorBoundary>
       </main>
       <Footer />
       <BackToTop />

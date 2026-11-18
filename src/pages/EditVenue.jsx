@@ -1,3 +1,4 @@
+import { queryKeys } from "../api/queryKeys.js";
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { useEffect, useRef } from "react";
@@ -32,7 +33,7 @@ function VenueEditor({ id }) {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["ownVenue", user.name, id],
+    queryKey: queryKeys.ownVenue(user.name, id),
     queryFn: ({ signal }) => getOwnVenue(request, id, user.name, { signal }),
   });
   const active = useRef(false);

@@ -7,12 +7,7 @@ import {
   isCreateOutcomeUncertain,
 } from "./client.js";
 import { venueFormData } from "../utils/venueValidation.js";
-import {
-  bookedPeriods,
-  overlaps,
-  validDate,
-  dateKey,
-} from "../utils/availability.js";
+import { bookedPeriods, overlaps } from "../utils/availability.js";
 
 /**
  * Validates and creates one venue, marking uncertain responses to prevent duplicate saves.
@@ -95,10 +90,13 @@ export async function updateVenue(request, id, name, form) {
   };
   await getOwnVenue(request, id, name);
   try {
-    const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, {
-      method: "PUT",
-      body,
-    });
+    const { data } = await request(
+      `holidaze/venues/${encodeURIComponent(id)}`,
+      {
+        method: "PUT",
+        body,
+      },
+    );
     if (data?.id !== id) throw new Error(messages.venueUpdateUnconfirmed);
     return data;
   } finally {
@@ -140,11 +138,7 @@ export const venueSorts = {
  * @param {AbortSignal} [options.signal] Cancels the load.
  * @returns {Promise<object[]>}
  */
-export function getAllVenues({
-  bookings = false,
-  owner = false,
-  signal,
-} = {}) {
+export function getAllVenues({ bookings = false, owner = false, signal } = {}) {
   return getAllPages(apiRequest, "holidaze/venues", {
     query: {
       sort: "created",
@@ -177,7 +171,7 @@ export function sortVenues(venues, order = "newest") {
 }
 
 /**
- * Combines text, capacity, amenity and reliable date-availability filters.
+ * Combines text, capacity, amenities and availability after the view validates dates.
  * @param {object[]} venues Complete venue pool.
  * @param {object} [filters={}] Search selections.
  * @param {string} [filters.q=""] Text matched against venue, location and owner.
@@ -193,11 +187,6 @@ export function filterVenues(
 ) {
   const query = q.trim().toLowerCase();
   const dates = Boolean(from || to);
-  if (
-    dates &&
-    (!validDate(from) || !validDate(to) || from < dateKey() || to <= from)
-  )
-    return [];
   return venues.filter((venue) => {
     if (
       query &&

@@ -13,6 +13,7 @@ Sources and assets used in the Holidaze project, with their overall purpose.
 | Rasmus Andersson | [Inter](https://rsms.me/inter/) · [Google Fonts](https://fonts.google.com/specimen/Inter) | Interface typeface. |
 | React | [Documentation](https://react.dev/learn) | Components, state and user interactions. |
 | TanStack Query | [React documentation](https://tanstack.com/query/latest/docs/framework/react/overview) | Caching public venue lists and sharing manager data between account views, with invalidation after venue and booking changes. |
+| Zod | [Zod Mini](https://zod.dev/packages/mini) · [Schema API](https://zod.dev/api) | Venue and profile validation with multiple field errors. Mini reduces the browser bundle size. |
 | Vite | [Documentation](https://vite.dev/guide/) | Development environment and production builds. |
 | Vitest | [Documentation](https://vitest.dev/guide/) | Automated tests for booking dates, availability, validation and price calculations. |
 | Microsoft / Playwright | [Documentation](https://playwright.dev/docs/intro) | Automated browser checks for navigation and access control at desktop and mobile widths. |

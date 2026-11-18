@@ -2,9 +2,10 @@ import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { getVenue } from "../api/venues.js";
+import { venueOptions } from "../api/venueQueries.js";
 import { useAuth } from "../auth/AuthContext.js";
 import Icon from "../components/Icon.jsx";
 import BackLink from "../components/BackLink.jsx";
@@ -43,14 +44,11 @@ function VenueContent({ id }) {
     data: venue,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ["venue", id],
-    queryFn: async ({ signal }) => {
-      window.scrollTo(0, 0);
-      const { data } = await getVenue(id, { signal });
-      return data;
-    },
-  });
+  } = useQuery(venueOptions(id));
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const name = venue?.name?.trim() || "Unnamed stay";
   const isOwner = user?.venueManager && user.name === venue?.owner?.name;

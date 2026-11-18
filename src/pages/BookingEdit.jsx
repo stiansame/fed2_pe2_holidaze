@@ -1,3 +1,4 @@
+import { queryKeys } from "../api/queryKeys.js";
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
@@ -33,7 +34,7 @@ export default function BookingEdit() {
 function EditLoader({ id }) {
   const { user, request } = useAuth();
   const { data, error, refetch } = useQuery({
-    queryKey: ["editableBooking", user.name, id],
+    queryKey: queryKeys.editableBooking(user.name, id),
     queryFn: async ({ signal }) => {
       const booking = await getEditableBooking(request, id, user.name, {
         signal,
