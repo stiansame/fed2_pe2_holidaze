@@ -1,7 +1,8 @@
 import RetryButton from "../components/RetryButton.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { useSearchParams } from "react-router-dom";
 import {
   filterVenues,
@@ -326,22 +327,15 @@ export default function Venues() {
  * @returns {import('react').ReactNode}
  */
 function VenueResults({ order, filters, waiting, tooShort }) {
-  const [venues, setVenues] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
-
   const bookings = Boolean(filters.from && filters.to);
-  useEffect(() => {
-    const controller = new AbortController();
-    getAllVenues({ owner: true, bookings, signal: controller.signal })
-      .then((data) => {
-        if (!controller.signal.aborted) setVenues(data.filter(hasVenuePhoto));
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
-      });
-    return () => controller.abort();
-  }, [bookings, attempt]);
+  const load = useCallback(
+    async (signal) => {
+      const venues = await getAllVenues({ owner: true, bookings, signal });
+      return venues.filter(hasVenuePhoto);
+    },
+    [bookings],
+  );
+  const { data: venues, setData: setVenues, error, retry } = useAsync(load);
 
   if (tooShort) return null;
   if (waiting)
@@ -354,15 +348,9 @@ function VenueResults({ order, filters, waiting, tooShort }) {
     return (
       <div className="mt-6 space-y-4">
         <p role="alert" className="text-danger">
-          {error}
+          {error.message}
         </p>
-        <RetryButton
-          className={buttonClass}
-          onRetry={() => {
-            setError("");
-            setAttempt((value) => value + 1);
-          }}
-        />
+        <RetryButton className={buttonClass} onRetry={retry} />
       </div>
     );
   if (!venues) return <Loading className="mt-6">Loading stays…</Loading>;

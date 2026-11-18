@@ -1,4 +1,4 @@
-// Shared errors, validation messages and notices. API messages pass through unchanged.
+// Shared errors, validation messages and notices.
 
 export const messages = {
   networkError: "Unable to connect. Please try again.",
@@ -43,6 +43,8 @@ export const messages = {
     "Enter a price of zero or more, with at most two decimal places.",
   invalidVenueGuests: "Enter a whole guest count of at least one.",
   invalidRating: "Enter a rating from 0 to 5.",
+  imageUnavailable:
+    "This image couldn’t be opened. Use a direct link to an image anyone can view, or remove the photo.",
   invalidCoordinates:
     "Enter both coordinates: latitude from −90 to 90 and longitude from −180 to 180.",
   bioTooLong: "Bio must be 160 characters or fewer.",

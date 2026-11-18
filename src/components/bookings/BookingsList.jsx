@@ -2,7 +2,8 @@ import RetryButton from "../RetryButton.jsx";
 import { messages } from "../../constants/messages.js";
 import Loading from "../Loading.jsx";
 import BookingGroup from "./BookingGroup.jsx";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import useAsync from "../../hooks/useAsync.js";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext.js";
 import { cancelBooking, getProfileBookings } from "../../api/bookings.js";
@@ -23,25 +24,16 @@ import Rating from "../venues/Rating.jsx";
 export default function BookingsList({ upcomingOnly = false, onLoaded }) {
   const { user, request } = useAuth();
   const { search, state } = useLocation();
-  const [bookings, setBookings] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
+  const load = useCallback(
+    (signal) => getProfileBookings(request, user.name, { signal }),
+    [request, user.name],
+  );
+  const { data: bookings, setData: setBookings, error, retry } = useAsync(load);
   const [notice, setNotice] = useState(upcomingOnly ? "" : state?.notice || "");
 
   useEffect(() => {
-    const controller = new AbortController();
-    getProfileBookings(request, user.name, { signal: controller.signal })
-      .then((data) => {
-        if (!controller.signal.aborted) {
-          setBookings(data);
-          onLoaded?.(data);
-        }
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
-      });
-    return () => controller.abort();
-  }, [request, user.name, attempt, onLoaded]);
+    if (bookings) onLoaded?.(bookings);
+  }, [bookings, onLoaded]);
 
   const groups = bookings ? groupBookings(bookings) : null;
   return (
@@ -58,18 +50,14 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
       )}
       {error && (
         <p role="alert" className="text-danger">
-          {error}
+          {error.message}
         </p>
       )}
       {!bookings && !error && <Loading>Loading your bookings…</Loading>}
       {error && (
         <RetryButton
           className="navigation-link text-small"
-          onRetry={() => {
-            setError("");
-            setBookings(null);
-            setAttempt((value) => value + 1);
-          }}
+          onRetry={retry}
         />
       )}
       {groups &&

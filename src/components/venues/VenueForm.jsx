@@ -79,7 +79,16 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
     try {
       await onSave(form);
     } catch (error) {
-      setError(error.message);
+      const urls = form.getAll("mediaUrl").map((url) => url.trim());
+      setError(
+        error.message.split("\n").map((line) => {
+          if (!/^Image is not accessible\b/i.test(line)) return line;
+          const url = line.match(/https?:\/\/\S+/i)?.[0];
+          const index = urls.indexOf(url);
+          const label = index < 0 ? "Photos" : `Image ${index + 1}`;
+          return `${label}: ${messages.imageUnavailable}`;
+        }).join("\n"),
+      );
       setUncertain(Boolean(error.venueUncertain));
     } finally {
       submitting.current = false;
@@ -347,6 +356,7 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
   const urlInput = useRef(null);
   const altInput = useRef(null);
   const [preview, setPreview] = useState(() => ({ ...media, revision: 0 }));
+  const [previewFailed, setPreviewFailed] = useState(false);
   const title = `Image ${index + 1}`;
 
   /**
@@ -360,6 +370,7 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
       url && !validMediaUrl(url) ? messages.invalidImageUrl(index + 1) : "",
     );
     if (!input.reportValidity()) return;
+    setPreviewFailed(false);
     setPreview((previous) => ({
       url,
       alt: altInput.current.value,
@@ -375,6 +386,10 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
           key={preview.revision}
           media={preview}
           name={title}
+          onImageError={() => {
+            if (urlInput.current?.value.trim() === preview.url)
+              setPreviewFailed(true);
+          }}
           fallback={
             <span role="img" aria-label="Image preview unavailable">
               <Icon name="image" className="size-6 text-primary/50" />
@@ -399,7 +414,11 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
               defaultValue={media?.url ?? ""}
               type="url"
               maxLength={300}
-              onInput={(event) => event.currentTarget.setCustomValidity("")}
+              onInput={(event) => {
+                event.currentTarget.setCustomValidity("");
+                setPreviewFailed(false);
+              }}
+              aria-describedby={previewFailed ? `photo-error-${index}` : undefined}
               className={inputClass}
             />
           </label>
@@ -451,6 +470,11 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
           ))}
         </div>
       </div>
+      {previewFailed && (
+        <p id={`photo-error-${index}`} role="status" className="mt-2 text-small text-danger">
+          {messages.imageUnavailable}
+        </p>
+      )}
     </fieldset>
   );
 }
