@@ -1,35 +1,36 @@
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getOwnBooking } from "../api/bookings.js";
 
 /**
- * Loads the saved customer booking and presents confirmation with onward navigation.
+ * Resets the confirmation when a different booking is opened.
  * @returns {import('react').ReactNode}
  */
 export default function BookingConfirmation() {
   const { id } = useParams();
-  const { request, user } = useAuth();
-  const [booking, setBooking] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
+  return <Confirmation key={id} id={id} />;
+}
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    const controller = new AbortController();
-    getOwnBooking(request, id, user.name, { signal: controller.signal })
-      .then((data) => {
-        if (controller.signal.aborted) return;
-        setBooking(data);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
-      });
-    return () => controller.abort();
-  }, [id, request, user.name, attempt]);
+/**
+ * Shows the saved booking after checking customer ownership.
+ * @param {{id: string}} props Booking route ID.
+ * @returns {import('react').ReactNode}
+ */
+function Confirmation({ id }) {
+  const { request, user } = useAuth();
+  const load = useCallback(
+    (signal) => {
+      window.scrollTo(0, 0);
+      return getOwnBooking(request, id, user.name, { signal });
+    },
+    [id, request, user.name],
+  );
+  const { data: booking, error, retry } = useAsync(load);
 
   return (
     <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8">
@@ -64,13 +65,10 @@ export default function BookingConfirmation() {
       {error && (
         <>
           <p role="alert" className="text-danger">
-            {messages.confirmationLoadFailed(error)}
+            {messages.confirmationLoadFailed(error.message)}
           </p>
           <button
-            onClick={() => {
-              setError("");
-              setAttempt((value) => value + 1);
-            }}
+            onClick={retry}
             className="h-11 rounded-lg border border-border px-4 text-primary"
           >
             Reload confirmation

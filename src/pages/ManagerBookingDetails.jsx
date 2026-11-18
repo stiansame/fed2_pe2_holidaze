@@ -1,7 +1,8 @@
 import RetryButton from "../components/RetryButton.jsx";
 import { formatAddress } from "../utils/venue.js";
 import DocumentTitle from "../components/DocumentTitle.jsx";
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getVenueBooking } from "../api/bookings.js";
@@ -36,31 +37,16 @@ export default function ManagerBookingDetails() {
  */
 function BookingDetails({ id }) {
   const { request, user } = useAuth();
-  const [booking, setBooking] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    const controller = new AbortController();
-    /**
-     * Loads an ownership-checked booking and fresh venue availability before updating the view.
-     * @returns {Promise<void>}
-     */
-    async function load() {
-      const data = await getVenueBooking(request, id, user.name, {
-        signal: controller.signal,
-      });
-      const { data: venue } = await getVenue(data.venue.id, {
-        signal: controller.signal,
-      });
-      if (!controller.signal.aborted) setBooking({ ...data, venue });
-    }
-    load().catch((error) => {
-      if (!controller.signal.aborted) setError(error.message);
-    });
-    return () => controller.abort();
-  }, [id, request, user.name, attempt]);
+  const load = useCallback(
+    async (signal) => {
+      window.scrollTo(0, 0);
+      const booking = await getVenueBooking(request, id, user.name, { signal });
+      const { data: venue } = await getVenue(booking.venue.id, { signal });
+      return { ...booking, venue };
+    },
+    [id, request, user.name],
+  );
+  const { data: booking, error, retry } = useAsync(load);
 
   const venue = booking?.venue;
   const guest = booking?.customer;
@@ -73,13 +59,8 @@ function BookingDetails({ id }) {
       <h1 className="text-h3 font-bold sm:text-h2">Booking details</h1>
       {error ? (
         <div role="alert" className="space-y-3">
-          <p className="text-danger">{error}</p>
-          <RetryButton
-            onRetry={() => {
-              setError("");
-              setAttempt((value) => value + 1);
-            }}
-          />
+          <p className="text-danger">{error.message}</p>
+          <RetryButton onRetry={retry} />
         </div>
       ) : !booking ? (
         <Loading>Loading booking details…</Loading>

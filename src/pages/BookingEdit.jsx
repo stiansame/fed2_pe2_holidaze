@@ -3,7 +3,8 @@ import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
 import BackLink from "../components/BackLink.jsx";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import useAsync from "../hooks/useAsync.js";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getEditableBooking, updateBooking } from "../api/bookings.js";
@@ -30,31 +31,16 @@ export default function BookingEdit() {
  */
 function EditLoader({ id }) {
   const { user, request } = useAuth();
-  const [data, setData] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    /**
-     * Checks booking ownership and future-stay eligibility before loading fresh venue data.
-     * @returns {Promise<void>}
-     */
-    async function load() {
-      const booking = await getEditableBooking(request, id, user.name, {
-        signal: controller.signal,
-      });
+  const load = useCallback(
+    async (signal) => {
+      const booking = await getEditableBooking(request, id, user.name, { signal });
       if (!booking.venue?.id) throw new Error(messages.venueUnavailable);
-      const { data: venue } = await getVenue(booking.venue.id, {
-        signal: controller.signal,
-      });
-      if (!controller.signal.aborted) setData({ booking, venue });
-    }
-    load().catch((error) => {
-      if (!controller.signal.aborted) setError(error.message);
-    });
-    return () => controller.abort();
-  }, [id, request, user.name, attempt]);
+      const { data: venue } = await getVenue(booking.venue.id, { signal });
+      return { booking, venue };
+    },
+    [id, request, user.name],
+  );
+  const { data, error, retry } = useAsync(load);
 
   return (
     <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-4 sm:p-6">
@@ -67,14 +53,9 @@ function EditLoader({ id }) {
       {error && (
         <>
           <p role="alert" className="text-danger">
-            {error}
+            {error.message}
           </p>
-          <RetryButton
-            onRetry={() => {
-              setError("");
-              setAttempt((value) => value + 1);
-            }}
-          />
+          <RetryButton onRetry={retry} />
         </>
       )}
       {!data && <BackLink />}
