@@ -3,8 +3,8 @@ import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
 import SectionHeading from "../components/account/SectionHeading.jsx";
-import { useCallback, useState } from "react";
-import useAsync from "../hooks/useAsync.js";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getProfileVenues } from "../api/profiles.js";
@@ -22,11 +22,12 @@ export default function MyVenues() {
   const { state } = location;
   const [notice, setNotice] = useState(state?.notice || "");
   const [expanded, setExpanded] = useState(false);
-  const load = useCallback(
-    (signal) => getProfileVenues(request, user.name, { signal }),
-    [request, user.name],
-  );
-  const { data: venues, setData: setVenues, error, retry } = useAsync(load);
+  const [deletedIds, setDeletedIds] = useState([]);
+  const { data, error, refetch } = useQuery({
+    queryKey: ["myVenues", user.name],
+    queryFn: ({ signal }) => getProfileVenues(request, user.name, { signal }),
+  });
+  const venues = data?.filter((venue) => !deletedIds.includes(venue.id));
 
   return (
     <section className="min-w-0 space-y-6">
@@ -65,7 +66,7 @@ export default function MyVenues() {
             <p>
               {messages.ownVenuesLoadFailed} {error.message}
             </p>
-            <RetryButton onRetry={retry} />
+            <RetryButton onRetry={() => refetch()} />
           </div>
         ) : !venues ? (
           <Loading>Loading your venues…</Loading>
@@ -85,9 +86,7 @@ export default function MyVenues() {
                       card
                       venue={venue}
                       onDeleted={(id) => {
-                        setVenues((values) =>
-                          values.filter((item) => item.id !== id),
-                        );
+                        setDeletedIds((values) => [...values, id]);
                         setNotice(messages.venueDeleted);
                       }}
                     />

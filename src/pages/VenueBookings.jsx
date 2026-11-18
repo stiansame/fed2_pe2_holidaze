@@ -1,10 +1,7 @@
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
-import { useCallback } from "react";
-import useAsync from "../hooks/useAsync.js";
+import useManagerVenues from "../hooks/useManagerVenues.js";
 import { Link, useSearchParams } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext.js";
-import { getProfileVenues } from "../api/profiles.js";
 import { managerBookingGroups } from "../utils/manager.js";
 import ManagerBookingCard from "../components/bookings/ManagerBookingCard.jsx";
 import Loading from "../components/Loading.jsx";
@@ -16,20 +13,12 @@ import Icon from "../components/Icon.jsx";
  * @returns {import('react').ReactNode}
  */
 export default function VenueBookings() {
-  const { user, request } = useAuth();
   const [params, setParams] = useSearchParams();
   const venueId = params.get("venue") || "";
-  const load = useCallback(
-    async (signal) => {
-      const venues = await getProfileVenues(request, user.name, {
-        bookings: true,
-        signal,
-      });
-      return { venues, groups: managerBookingGroups(venues) };
-    },
-    [request, user.name],
-  );
-  const { data, error, retry } = useAsync(load);
+  const { data, error, refetch } = useManagerVenues((venues) => ({
+    venues,
+    groups: managerBookingGroups(venues),
+  }));
 
   const unavailable =
     data && venueId && !data.venues.some((venue) => venue.id === venueId);
@@ -55,7 +44,7 @@ export default function VenueBookings() {
             const nextParams = new URLSearchParams(params);
             nextParams.delete("venue");
             setParams(nextParams, { replace: true });
-            retry();
+            void refetch();
           }}
         >
           <Icon name="reset" />

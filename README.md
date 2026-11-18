@@ -11,6 +11,7 @@ Browse and search accommodation, check availability and manage bookings. Venue m
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white)](https://reactrouter.com/)
+[![TanStack Query](https://img.shields.io/badge/TanStack_Query-18181B?style=for-the-badge)](https://tanstack.com/query/latest)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0F172A?style=for-the-badge&logo=tailwindcss&logoColor=38BDF8)](https://tailwindcss.com/)
 [![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com/)
@@ -18,6 +19,8 @@ Browse and search accommodation, check availability and manage bookings. Venue m
 [![Netlify](https://img.shields.io/badge/Netlify-0F172A?style=for-the-badge&logo=netlify&logoColor=00C7B7)](https://www.netlify.com/)
 
 Leaflet provides interactive maps, and DOMPurify sanitises HTML descriptions. Hosted on Netlify.
+
+TanStack Query handles API reads and caches complete venue lists for two minutes.
 
 ## 🚀 Run locally
 

@@ -2,8 +2,8 @@ import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useCallback, useState } from "react";
-import useAsync from "../hooks/useAsync.js";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getHostProfile } from "../api/profiles.js";
@@ -31,17 +31,26 @@ export default function PublicProfile() {
  * @returns {import('react').ReactNode}
  */
 function HostProfile({ name }) {
-  const { request } = useAuth();
+  const { request, user } = useAuth();
   const [expanded, setExpanded] = useState(false);
-  const load = useCallback(
-    async (signal) => {
+  const [failedPhotos, setFailedPhotos] = useState([]);
+  const {
+    data: result,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["hostProfile", user.name, name],
+    queryFn: async ({ signal }) => {
       window.scrollTo(0, 0);
-      const result = await getHostProfile(request, name, { signal });
-      return { ...result, venues: result.venues.filter(hasVenuePhoto) };
+      return getHostProfile(request, name, { signal });
     },
-    [request, name],
-  );
-  const { data, setData, error, retry } = useAsync(load);
+  });
+  const data = result && {
+    ...result,
+    venues: result.venues.filter(
+      (venue) => hasVenuePhoto(venue) && !failedPhotos.includes(venue.id),
+    ),
+  };
   const notFound = error && [400, 404].includes(error.status);
   const profile = data?.profile;
   return (
@@ -56,7 +65,7 @@ function HostProfile({ name }) {
           <p role="alert">
             {notFound ? messages.profileNotFoundDescription : error.message}
           </p>
-          {!notFound && <RetryButton onRetry={retry} />}
+          {!notFound && <RetryButton onRetry={() => refetch()} />}
         </div>
       )}
       {data && (
@@ -132,12 +141,7 @@ function HostProfile({ name }) {
                         key={venue.id}
                         venue={venue}
                         onImageError={(id) =>
-                          setData((previous) => ({
-                            ...previous,
-                            venues: previous.venues.filter(
-                              (item) => item.id !== id,
-                            ),
-                          }))
+                          setFailedPhotos((previous) => [...previous, id])
                         }
                       />
                     ),

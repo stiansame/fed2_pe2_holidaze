@@ -1,5 +1,6 @@
 import { messages } from "../../constants/messages.js";
-import { useId, useRef, useState } from "react";
+import { useId, useRef } from "react";
+import useSubmit from "../../hooks/useSubmit.js";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext.js";
 import { deleteVenue } from "../../api/venues.js";
@@ -16,21 +17,21 @@ export default function DeleteVenue({ venue, onDeleted }) {
   const { user, request } = useAuth();
   const navigate = useNavigate();
   const dialog = useRef(null);
-  const submitting = useRef(false);
   const titleId = useId();
   const descriptionId = useId();
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
+  const {
+    run: remove,
+    pending,
+    error,
+    setError,
+    busy,
+  } = useSubmit(deleteConfirmed);
 
   /**
    * Deletes the confirmed venue once and reports success or an uncertain outcome.
    * @returns {Promise<void>}
    */
-  async function remove() {
-    if (submitting.current) return;
-    submitting.current = true;
-    setPending(true);
-    setError("");
+  async function deleteConfirmed() {
     try {
       await deleteVenue(request, venue.id, user.name);
       if (!dialog.current) return;
@@ -42,10 +43,9 @@ export default function DeleteVenue({ venue, onDeleted }) {
           state: { notice: messages.venueDeleted },
         });
     } catch (error) {
-      setError(messages.deletionUnclear(error.message));
-    } finally {
-      submitting.current = false;
-      setPending(false);
+      throw new Error(messages.deletionUnclear(error.message), {
+        cause: error,
+      });
     }
   }
 
@@ -69,7 +69,7 @@ export default function DeleteVenue({ venue, onDeleted }) {
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
         onCancel={(event) => {
-          if (submitting.current) event.preventDefault();
+          if (busy.current) event.preventDefault();
         }}
         className="m-auto w-[calc(100%-2rem)] max-w-lg space-y-4 rounded-xl border border-border bg-surface p-5 text-text backdrop:bg-black/60 sm:p-6"
       >
@@ -92,7 +92,7 @@ export default function DeleteVenue({ venue, onDeleted }) {
           <button
             type="button"
             disabled={pending}
-            onClick={remove}
+            onClick={() => remove()}
             className="h-11 rounded-lg bg-danger px-4 font-semibold text-surface disabled:opacity-60"
           >
             {pending ? "Deleting…" : "Confirm deletion"}

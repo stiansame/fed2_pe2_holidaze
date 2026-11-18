@@ -1,6 +1,7 @@
 import { messages } from "../constants/messages.js";
 import { useCallback, useEffect, useState } from "react";
 import { apiRequest } from "../api/client.js";
+import { queryClient } from "../api/queryClient.js";
 import { AuthContext } from "./AuthContext.js";
 import { readSession, SESSION_KEY, sessionExpiresAt } from "./session.js";
 
@@ -22,6 +23,7 @@ export default function AuthProvider({ children }) {
    */
   const logout = useCallback((message = "") => {
     localStorage.removeItem(SESSION_KEY);
+    queryClient.clear();
     setUser(null);
     setProfile(null);
     setNotice(message);

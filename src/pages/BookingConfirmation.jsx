@@ -1,8 +1,7 @@
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useCallback } from "react";
-import useAsync from "../hooks/useAsync.js";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getOwnBooking } from "../api/bookings.js";
@@ -23,14 +22,17 @@ export default function BookingConfirmation() {
  */
 function Confirmation({ id }) {
   const { request, user } = useAuth();
-  const load = useCallback(
-    (signal) => {
+  const {
+    data: booking,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["ownBooking", user.name, id],
+    queryFn: ({ signal }) => {
       window.scrollTo(0, 0);
       return getOwnBooking(request, id, user.name, { signal });
     },
-    [id, request, user.name],
-  );
-  const { data: booking, error, retry } = useAsync(load);
+  });
 
   return (
     <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8">
@@ -68,7 +70,7 @@ function Confirmation({ id }) {
             {messages.confirmationLoadFailed(error.message)}
           </p>
           <button
-            onClick={retry}
+            onClick={() => refetch()}
             className="h-11 rounded-lg border border-border px-4 text-primary"
           >
             Reload confirmation

@@ -1,8 +1,7 @@
 import RetryButton from "../components/RetryButton.jsx";
 import { formatAddress } from "../utils/venue.js";
 import DocumentTitle from "../components/DocumentTitle.jsx";
-import { useCallback } from "react";
-import useAsync from "../hooks/useAsync.js";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getVenueBooking } from "../api/bookings.js";
@@ -37,16 +36,19 @@ export default function ManagerBookingDetails() {
  */
 function BookingDetails({ id }) {
   const { request, user } = useAuth();
-  const load = useCallback(
-    async (signal) => {
+  const {
+    data: booking,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["venueBooking", user.name, id],
+    queryFn: async ({ signal }) => {
       window.scrollTo(0, 0);
       const booking = await getVenueBooking(request, id, user.name, { signal });
       const { data: venue } = await getVenue(booking.venue.id, { signal });
       return { ...booking, venue };
     },
-    [id, request, user.name],
-  );
-  const { data: booking, error, retry } = useAsync(load);
+  });
 
   const venue = booking?.venue;
   const guest = booking?.customer;
@@ -60,7 +62,7 @@ function BookingDetails({ id }) {
       {error ? (
         <div role="alert" className="space-y-3">
           <p className="text-danger">{error.message}</p>
-          <RetryButton onRetry={retry} />
+          <RetryButton onRetry={() => refetch()} />
         </div>
       ) : !booking ? (
         <Loading>Loading booking details…</Loading>

@@ -2,7 +2,9 @@ import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import useSubmit from "../hooks/useSubmit.js";
 import { useAuth } from "../auth/AuthContext.js";
 import HostAvatar from "../components/HostAvatar.jsx";
 import Icon from "../components/Icon.jsx";
@@ -55,39 +57,29 @@ function ProfileCard() {
   const { user, profile, setProfile, request, becomeManager } = useAuth();
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [attempt, setAttempt] = useState(0);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
+  const {
+    run: enableManager,
+    pending,
+    error: actionError,
+    setError,
+  } = useSubmit(becomeManager);
   const path = `holidaze/profiles/${encodeURIComponent(user.name)}`;
+  const {
+    data,
+    error: loadError,
+    refetch,
+  } = useQuery({
+    queryKey: ["ownProfile", user.name],
+    queryFn: async ({ signal }) => {
+      const { data } = await request(path, { signal });
+      return data;
+    },
+  });
+  const error = actionError || loadError?.message || "";
 
   useEffect(() => {
-    const controller = new AbortController();
-    request(path, { signal: controller.signal })
-      .then(({ data }) => {
-        if (!controller.signal.aborted) setProfile(data);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
-      });
-    return () => controller.abort();
-  }, [path, request, attempt, setProfile]);
-
-  /**
-   * Enables hosting through the account provider and displays any returned error.
-   * @returns {Promise<void>}
-   */
-  async function enableManager() {
-    if (pending) return;
-    setPending(true);
-    setError("");
-    try {
-      await becomeManager();
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setPending(false);
-    }
-  }
+    if (data) setProfile(data);
+  }, [data, setProfile]);
 
   return (
     <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface">
@@ -175,7 +167,7 @@ function ProfileCard() {
                     <button
                       type="button"
                       disabled={pending}
-                      onClick={enableManager}
+                      onClick={() => enableManager()}
                       className="primary-button disabled:cursor-wait disabled:opacity-60"
                     >
                       {pending ? "Please wait…" : "Become a venue manager"}
@@ -195,7 +187,7 @@ function ProfileCard() {
           <RetryButton
             onRetry={() => {
               setError("");
-              setAttempt((value) => value + 1);
+              void refetch();
             }}
           />
         )}
@@ -215,38 +207,17 @@ function ProfileCard() {
  */
 function ProfileForm({ profile, path, onSave, onCancel }) {
   const { request } = useAuth();
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-  const submitting = useRef(false);
+  const { submit, pending, error } = useSubmit(async (form) => {
+    const values = Object.fromEntries(new FormData(form));
+    const { data } = await request(path, {
+      method: "PUT",
+      body: profileUpdate(values, profile),
+    });
+    onSave(data);
+  });
   const fieldClass =
     "mt-1 w-full rounded-lg border border-border bg-surface px-3";
   const inputClass = `${fieldClass} h-11`;
-
-  /**
-   * Validates profile input, saves changes and returns the updated profile to the parent.
-   * @param {import('react').SubmitEvent<HTMLFormElement>} event Form submission event.
-   * @returns {Promise<void>}
-   */
-  async function submit(event) {
-    event.preventDefault();
-    if (submitting.current) return;
-    const values = Object.fromEntries(new FormData(event.currentTarget));
-    submitting.current = true;
-    setPending(true);
-    setError("");
-    try {
-      const { data } = await request(path, {
-        method: "PUT",
-        body: profileUpdate(values, profile),
-      });
-      onSave(data);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      submitting.current = false;
-      setPending(false);
-    }
-  }
 
   return (
     <form onSubmit={submit} className="space-y-5" aria-label="Edit profile">

@@ -2,7 +2,9 @@ import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import useSubmit from "../hooks/useSubmit.js";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getVenue } from "../api/venues.js";
@@ -30,58 +32,46 @@ export default function BookingReview() {
 function Review({ id, search }) {
   const { request } = useAuth();
   const navigate = useNavigate();
-  const [venue, setVenue] = useState(null);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
-  const [pending, setPending] = useState(false);
+  const [reviewedVenue, setVenue] = useState(null);
   const [uncertain, setUncertain] = useState(false);
-  const submitting = useRef(false);
+  const {
+    data,
+    error: loadError,
+    refetch,
+  } = useQuery({
+    queryKey: ["reviewVenue", id],
+    queryFn: async ({ signal }) => {
+      window.scrollTo(0, 0);
+      const { data } = await getVenue(id, { signal });
+      return data;
+    },
+  });
+  const { submit, pending, error: saveError, setError } = useSubmit(confirm);
+  const venue = reviewedVenue ?? data;
+  const error = saveError || loadError?.message || "";
   const stay = stayFromSearch(search);
   const summary = venue ? staySummary(venue, stay) : null;
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    const controller = new AbortController();
-    getVenue(id, { signal: controller.signal })
-      .then(({ data }) => {
-        if (!controller.signal.aborted) setVenue(data);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
-      });
-    return () => controller.abort();
-  }, [id, attempt]);
-
   /**
    * Confirms the reviewed stay and handles changed prices or uncertain saves.
-   * @param {import('react').SubmitEvent<HTMLFormElement>} event Form submission event.
    * @returns {Promise<void>}
    */
-  async function confirm(event) {
-    event.preventDefault();
-    if (submitting.current || uncertain || !venue || summary.error) return;
-    submitting.current = true;
-    setPending(true);
-    setError("");
+  async function confirm() {
+    if (uncertain || !venue || summary.error) return;
     try {
       const result = await createBooking(request, id, stay, venue.price);
       setVenue(result.venue);
-      if (!result.booking) {
-        setError(messages.bookingPriceChanged);
-        return;
-      }
+      if (!result.booking) throw new Error(messages.bookingPriceChanged);
       navigate(
         `/bookings/${encodeURIComponent(result.booking.id)}/confirmation`,
         { replace: true },
       );
     } catch (error) {
       setUncertain(!!error.bookingUncertain);
-      setError(
+      throw new Error(
         error.bookingUncertain ? messages.bookingUncertain : error.message,
+        { cause: error },
       );
-    } finally {
-      submitting.current = false;
-      setPending(false);
     }
   }
 
@@ -101,7 +91,7 @@ function Review({ id, search }) {
               {summary.error}
             </p>
           )}
-          <form onSubmit={confirm}>
+          <form onSubmit={submit}>
             <button
               disabled={pending || uncertain || !!summary.error}
               className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-60"
@@ -120,7 +110,7 @@ function Review({ id, search }) {
         <RetryButton
           onRetry={() => {
             setError("");
-            setAttempt((value) => value + 1);
+            void refetch();
           }}
         />
       )}

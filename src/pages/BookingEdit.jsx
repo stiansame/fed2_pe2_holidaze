@@ -3,8 +3,9 @@ import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
 import BackLink from "../components/BackLink.jsx";
-import { useCallback, useRef, useState } from "react";
-import useAsync from "../hooks/useAsync.js";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import useSubmit from "../hooks/useSubmit.js";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getEditableBooking, updateBooking } from "../api/bookings.js";
@@ -31,16 +32,17 @@ export default function BookingEdit() {
  */
 function EditLoader({ id }) {
   const { user, request } = useAuth();
-  const load = useCallback(
-    async (signal) => {
-      const booking = await getEditableBooking(request, id, user.name, { signal });
+  const { data, error, refetch } = useQuery({
+    queryKey: ["editableBooking", user.name, id],
+    queryFn: async ({ signal }) => {
+      const booking = await getEditableBooking(request, id, user.name, {
+        signal,
+      });
       if (!booking.venue?.id) throw new Error(messages.venueUnavailable);
       const { data: venue } = await getVenue(booking.venue.id, { signal });
       return { booking, venue };
     },
-    [id, request, user.name],
-  );
-  const { data, error, retry } = useAsync(load);
+  });
 
   return (
     <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-4 sm:p-6">
@@ -55,7 +57,7 @@ function EditLoader({ id }) {
           <p role="alert" className="text-danger">
             {error.message}
           </p>
-          <RetryButton onRetry={retry} />
+          <RetryButton onRetry={() => refetch()} />
         </>
       )}
       {!data && <BackLink />}
@@ -76,46 +78,23 @@ function BookingEditor({ booking, initialVenue }) {
   const [venue, setVenue] = useState(initialVenue);
   const [stay, setStay] = useState(() => bookingDates(booking));
   const [reviewing, setReviewing] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-  const submitting = useRef(false);
   const summary = staySummary(venue, stay, booking.id);
-
-  /**
-   * Saves reviewed booking changes or asks for review again when the price changed.
-   * @param {import('react').SubmitEvent<HTMLFormElement>} event Form submission event.
-   * @returns {Promise<void>}
-   */
-  async function save(event) {
-    event.preventDefault();
-    if (submitting.current || summary.error) return;
-    submitting.current = true;
-    setPending(true);
-    setError("");
-    try {
-      const result = await updateBooking(
-        request,
-        booking.id,
-        user.name,
-        stay,
-        venue.price,
-      );
-      setVenue(result.venue);
-      if (!result.booking) {
-        setError(messages.bookingEditPriceChanged);
-        return;
-      }
-      navigate("/bookings", {
-        replace: true,
-        state: { notice: messages.bookingUpdated },
-      });
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      submitting.current = false;
-      setPending(false);
-    }
-  }
+  const { submit, pending, error, setError } = useSubmit(async () => {
+    if (summary.error) return;
+    const result = await updateBooking(
+      request,
+      booking.id,
+      user.name,
+      stay,
+      venue.price,
+    );
+    setVenue(result.venue);
+    if (!result.booking) throw new Error(messages.bookingEditPriceChanged);
+    navigate("/bookings", {
+      replace: true,
+      state: { notice: messages.bookingUpdated },
+    });
+  });
 
   const cancelAction = (
     <button
@@ -136,7 +115,7 @@ function BookingEditor({ booking, initialVenue }) {
           {summary.error}
         </p>
       )}
-      <form onSubmit={save}>
+      <form onSubmit={submit}>
         <button
           disabled={pending || !!summary.error}
           className="primary-button w-full text-small disabled:opacity-60"
