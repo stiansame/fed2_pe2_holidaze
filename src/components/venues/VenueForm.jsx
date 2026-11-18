@@ -8,6 +8,7 @@ import Icon from "../Icon.jsx";
 import VenueImage from "./VenueImage.jsx";
 import VenueMapBoundary from "./VenueMapBoundary.jsx";
 import { validMediaUrl } from "../../utils/media.js";
+import { MAX_MAP_LATITUDE } from "../../utils/location.js";
 import FieldError from "../FieldError.jsx";
 
 const fieldClass =
@@ -309,56 +310,40 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
                   />
                 </label>
               ))}
-              <div className="min-w-0">
-                <label className="block min-w-0 text-small font-semibold">
-                  Latitude
-                  <input
-                    name="lat"
-                    type="number"
-                    min="-90"
-                    max="90"
-                    step="any"
-                    aria-invalid={!!fieldErrors.lat}
-                    aria-describedby={
-                      fieldErrors.lat ? "venue-lat-error" : undefined
-                    }
-                    value={coordinates.lat}
-                    onChange={(event) =>
-                      setCoordinates((value) => ({
-                        ...value,
-                        lat: event.target.value,
-                      }))
-                    }
-                    className={inputClass}
-                  />
-                </label>
-                <FieldError id="venue-lat-error">{fieldErrors.lat}</FieldError>
-              </div>
-              <div className="min-w-0">
-                <label className="block min-w-0 text-small font-semibold">
-                  Longitude
-                  <input
-                    name="lng"
-                    type="number"
-                    min="-180"
-                    max="180"
-                    step="any"
-                    aria-invalid={!!fieldErrors.lng}
-                    aria-describedby={
-                      fieldErrors.lng ? "venue-lng-error" : undefined
-                    }
-                    value={coordinates.lng}
-                    onChange={(event) =>
-                      setCoordinates((value) => ({
-                        ...value,
-                        lng: event.target.value,
-                      }))
-                    }
-                    className={inputClass}
-                  />
-                </label>
-                <FieldError id="venue-lng-error">{fieldErrors.lng}</FieldError>
-              </div>
+              {[
+                ["lat", "Latitude", MAX_MAP_LATITUDE],
+                ["lng", "Longitude", 180],
+              ].map(([name, label, maximum]) => (
+                <div key={name} className="min-w-0">
+                  <label className="block min-w-0 text-small font-semibold">
+                    {label}
+                    <input
+                      name={name}
+                      type="number"
+                      min={-maximum}
+                      max={maximum}
+                      step="any"
+                      aria-invalid={!!fieldErrors[name]}
+                      aria-describedby={
+                        fieldErrors[name]
+                          ? "venue-" + name + "-error"
+                          : undefined
+                      }
+                      value={coordinates[name]}
+                      onChange={(event) =>
+                        setCoordinates((value) => ({
+                          ...value,
+                          [name]: event.target.value,
+                        }))
+                      }
+                      className={inputClass}
+                    />
+                  </label>
+                  <FieldError id={"venue-" + name + "-error"}>
+                    {fieldErrors[name]}
+                  </FieldError>
+                </div>
+              ))}
             </div>
             <VenueMapBoundary
               {...coordinates}
@@ -368,10 +353,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
           </div>
         </section>
         <div className="flex flex-wrap gap-3">
-          <button
-            type="submit"
-            className="primary-button px-5 disabled:opacity-60"
-          >
+          <button type="submit" className="primary-button px-5">
             {pending
               ? editing
                 ? "Saving…"

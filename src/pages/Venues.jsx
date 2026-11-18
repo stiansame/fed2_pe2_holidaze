@@ -20,7 +20,7 @@ import {
 import { hasVenuePhoto } from "../utils/venue.js";
 
 const buttonClass =
-  "primary-button px-5 disabled:cursor-wait disabled:opacity-60";
+  "primary-button px-5 disabled:cursor-wait";
 const fieldClass =
   "flex h-11 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-body focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2";
 const selectClass =
@@ -324,9 +324,7 @@ export default function Venues() {
  */
 function VenueResults({ order, filters, waiting, tooShort }) {
   const bookings = Boolean(filters.from && filters.to);
-  const { data, error, refetch } = useQuery(
-    venueListOptions({ owner: true, bookings }),
-  );
+  const { data, error, refetch } = useQuery(venueListOptions({ bookings }));
   const [failedPhotos, setFailedPhotos] = useState([]);
   const venues = data?.filter(
     (venue) => hasVenuePhoto(venue) && !failedPhotos.includes(venue.id),

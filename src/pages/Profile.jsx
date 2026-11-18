@@ -174,7 +174,7 @@ function ProfileCard() {
                       type="button"
                       disabled={pending}
                       onClick={() => enableManager()}
-                      className="primary-button disabled:cursor-wait disabled:opacity-60"
+                      className="primary-button disabled:cursor-wait"
                     >
                       {pending ? "Please wait…" : "Become a venue manager"}
                     </button>
@@ -314,7 +314,7 @@ function ProfileForm({ profile, path, onSave, onCancel }) {
           <button
             type="button"
             onClick={onCancel}
-            className="h-11 rounded-lg border border-border px-5 font-semibold text-primary hover:bg-tint"
+            className="navigation-link px-5"
           >
             Cancel
           </button>

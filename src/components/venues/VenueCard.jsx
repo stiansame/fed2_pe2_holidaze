@@ -4,7 +4,7 @@ import Rating from "./Rating.jsx";
 import Icon from "../Icon.jsx";
 import VenueImage from "./VenueImage.jsx";
 import { Link, useLocation } from "react-router-dom";
-import { formatLocation, formatPrice } from "../../utils/venue.js";
+import { formatLocation, formatVenuePrice } from "../../utils/venue.js";
 
 /**
  * Displays shared venue information and opens its detail page.
@@ -72,14 +72,7 @@ export default function VenueCard({ venue, onImageError, actions }) {
             </p>
           </div>
           <p className="text-small font-semibold wrap-anywhere">
-            {Number.isFinite(venue.price)
-              ? formatPrice(venue.price)
-              : "Price not specified"}
-            {Number.isFinite(venue.price) && (
-              <span className="ml-1 text-caption font-normal text-muted">
-                / night
-              </span>
-            )}
+            {formatVenuePrice(venue.price)}
           </p>
         </div>
       </Link>

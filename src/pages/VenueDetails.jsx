@@ -1,3 +1,4 @@
+import { sameName } from "../utils/account.js";
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
@@ -24,34 +25,22 @@ import {
 } from "../utils/venue.js";
 
 /**
- * Resets venue detail content when the route ID changes.
+ * Loads and presents venue photos, host details, amenities, booking and optional map.
  * @returns {import('react').ReactNode}
  */
 export default function VenueDetails() {
   const { id } = useParams();
-  return <VenueContent key={id} id={id} />;
-}
-
-/**
- * Loads and presents venue photos, host details, amenities, booking and optional map.
- * @param {object} props Component props.
- * @param {string} props.id Route record ID.
- * @returns {import('react').ReactNode}
- */
-function VenueContent({ id }) {
   const { user } = useAuth();
-  const {
-    data: venue,
-    error,
-    refetch,
-  } = useQuery(venueOptions(id));
+  const { data: venue, error, refetch } = useQuery(venueOptions(id));
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
 
   const name = venue?.name?.trim() || "Unnamed stay";
-  const isOwner = user?.venueManager && user.name === venue?.owner?.name;
+  const owner = venue?.owner;
+  const ownerName = owner?.name?.trim() || "";
+  const isOwner = user?.venueManager && sameName(user.name, ownerName);
   const notFound = error && [400, 404].includes(error.status);
   const map = venueMapLinks(venue?.location);
   const location = venue?.location;
@@ -142,32 +131,32 @@ function VenueContent({ id }) {
               <section className="space-y-2 rounded-lg border-l-4 border-accent bg-accent/10 p-3 lg:p-4">
                 <h2 className="flex min-w-0 items-center gap-2 text-small font-bold lg:text-body">
                   <span className="shrink-0">Hosted by</span>
-                  {venue.owner?.name?.trim() && (
+                  {ownerName && (
                     <Link
-                      title={venue.owner.name}
-                      to={`/profiles/${encodeURIComponent(venue.owner.name)}`}
+                      title={ownerName}
+                      to={`/profiles/${encodeURIComponent(ownerName)}`}
                       className="min-w-0 truncate rounded text-primary hover:underline"
                     >
-                      {venue.owner.name}
+                      {ownerName}
                     </Link>
                   )}
                 </h2>
                 <div className="flex items-start gap-3">
-                  {venue.owner?.name?.trim() && (
+                  {ownerName && (
                     <Link
-                      aria-label={`View ${venue.owner.name}'s profile`}
-                      to={`/profiles/${encodeURIComponent(venue.owner.name)}`}
+                      aria-label={`View ${ownerName}'s profile`}
+                      to={`/profiles/${encodeURIComponent(ownerName)}`}
                       className="shrink-0 rounded-full"
                     >
                       <HostAvatar
-                        key={venue.owner.avatar?.url}
-                        media={venue.owner.avatar}
+                        key={owner.avatar?.url}
+                        media={owner.avatar}
                       />
                     </Link>
                   )}
                   <p className="min-w-0 whitespace-pre-line text-small text-muted wrap-anywhere">
-                    {venue.owner?.name?.trim()
-                      ? venue.owner.bio?.trim() || "No host bio provided."
+                    {ownerName
+                      ? owner.bio?.trim() || "No host bio provided."
                       : "Host information not available."}
                   </p>
                 </div>
@@ -178,7 +167,7 @@ function VenueContent({ id }) {
                   <Icon name="pin" className="size-5 shrink-0 text-success" />
                   {address || "Location not specified"}
                 </p>
-                {map && (
+                {map ? (
                   <div className="max-w-155 space-y-2">
                     <VenueMapBoundary
                       lat={location.lat}
@@ -186,7 +175,7 @@ function VenueContent({ id }) {
                       compact
                     />
                     <a
-                      href={map.full}
+                      href={map}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="navigation-link text-small"
@@ -194,6 +183,10 @@ function VenueContent({ id }) {
                       View larger map · © OpenStreetMap contributors
                     </a>
                   </div>
+                ) : (
+                  <p className="text-small text-muted">
+                    {messages.mapLocationUnavailable}
+                  </p>
                 )}
               </section>
             </div>

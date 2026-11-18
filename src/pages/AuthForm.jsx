@@ -188,7 +188,7 @@ export default function AuthForm({ register = false }) {
         )}
         <button
           disabled={pending}
-          className="primary-button w-full disabled:cursor-wait disabled:opacity-60"
+          className="primary-button w-full disabled:cursor-wait"
         >
           {pending ? "Please wait…" : register ? "Create account" : "Log in"}
         </button>

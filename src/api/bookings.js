@@ -4,6 +4,7 @@ import { getVenue } from "./venues.js";
 import { invalidateVenueQueries } from "./queryClient.js";
 import { staySummary } from "../utils/availability.js";
 import { bookingStatus } from "../utils/bookings.js";
+import { sameName } from "../utils/account.js";
 
 /**
  * Loads every booking page for a profile, including its venue data.
@@ -54,7 +55,7 @@ async function getBooking(request, id, signal) {
  */
 export async function getOwnBooking(request, id, name, { signal } = {}) {
   const data = await getBooking(request, id, signal);
-  if (!name || data?.customer?.name?.toLowerCase() !== name.toLowerCase())
+  if (!sameName(data?.customer?.name, name))
     throw new ApiError(messages.bookingAccessDenied, 403);
   return data;
 }
@@ -71,7 +72,7 @@ export async function getOwnBooking(request, id, name, { signal } = {}) {
  */
 export async function getVenueBooking(request, id, name, { signal } = {}) {
   const data = await getBooking(request, id, signal);
-  if (!name || data?.venue?.owner?.name?.toLowerCase() !== name.toLowerCase()) {
+  if (!sameName(data?.venue?.owner?.name, name)) {
     throw new ApiError(messages.managerBookingAccessDenied, 403);
   }
   return data;

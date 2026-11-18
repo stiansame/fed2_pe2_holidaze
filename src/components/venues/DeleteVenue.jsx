@@ -85,7 +85,7 @@ export default function DeleteVenue({ venue, onDeleted }) {
             autoFocus
             disabled={pending}
             onClick={() => dialog.current.close()}
-            className="navigation-link disabled:opacity-60"
+            className="navigation-link"
           >
             Cancel
           </button>

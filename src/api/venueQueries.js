@@ -20,14 +20,13 @@ export function venueOptions(id) {
 /**
  * Caches each complete public venue list with its requested related data.
  * @param {object} [options={}] Related data needed by the view.
- * @param {boolean} [options.owner=false] Includes host names for search.
  * @param {boolean} [options.bookings=false] Includes booked dates for availability.
  * @returns {object} Shared query options for public venue lists.
  */
-export function venueListOptions({ owner = false, bookings = false } = {}) {
+export function venueListOptions({ bookings = false } = {}) {
   return queryOptions({
-    queryKey: queryKeys.venueList({ owner, bookings }),
-    queryFn: ({ signal }) => getAllVenues({ owner, bookings, signal }),
+    queryKey: queryKeys.venueList({ bookings }),
+    queryFn: ({ signal }) => getAllVenues({ bookings, signal }),
     staleTime: 120_000,
     gcTime: 300_000,
   });

@@ -23,11 +23,7 @@ export default function ManagerOverview({ children, stats }) {
     ...managerSummary(venues),
   }));
 
-  const bookings = data
-    ? [...data.current, ...data.upcoming].sort((a, b) =>
-        a.dateFrom.localeCompare(b.dateFrom),
-      )
-    : [];
+  const bookings = data ? [...data.current, ...data.upcoming] : [];
   return (
     <>
       <section
