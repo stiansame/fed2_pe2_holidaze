@@ -1,5 +1,6 @@
 import { messages } from "../constants/messages.js";
 import { validMediaUrl } from "./media.js";
+import { venueCoordinates } from "./location.js";
 import * as z from "zod/mini";
 
 const venueSchema = z
@@ -71,22 +72,6 @@ const venueSchema = z
       });
     }
   });
-
-/**
- * Reads a complete latitude/longitude pair within geographic bounds.
- * @param {string|number|null|undefined} lat Latitude.
- * @param {string|number|null|undefined} lng Longitude.
- * @returns {[number, number]|null}
- */
-export function venueCoordinates(lat, lng) {
-  if (!String(lat ?? "").trim() || !String(lng ?? "").trim()) return null;
-  const point = [Number(lat), Number(lng)];
-  return point.every(Number.isFinite) &&
-    Math.abs(point[0]) <= 90 &&
-    Math.abs(point[1]) <= 180
-    ? point
-    : null;
-}
 
 /**
  * Builds a validated venue payload from the shared creation/editing form.

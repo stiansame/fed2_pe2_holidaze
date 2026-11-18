@@ -4,8 +4,6 @@ import Icon from "../Icon.jsx";
 
 const counterClass =
   "pill pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 bg-surface text-small text-text";
-const controlClass =
-  "h-11 rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-50";
 const galleryControl =
   "absolute z-10 flex size-11 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-sm hover:bg-tint";
 
@@ -257,7 +255,7 @@ export default function VenueGallery({ media = [], name, children, backLink }) {
           <button
             type="button"
             onClick={() => openPhoto()}
-            className={`${controlClass} absolute bottom-3 left-3 z-10 hidden lg:block`}
+            className="navigation-link absolute bottom-3 left-3 z-10 hidden lg:inline-flex"
           >
             View all photos ({photos.length})
           </button>

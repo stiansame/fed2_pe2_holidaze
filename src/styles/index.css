@@ -154,12 +154,12 @@
 
   /* Shared sizing and colours for primary actions. */
   .primary-button {
-    @apply h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover;
+    @apply h-11 rounded-lg bg-primary px-4 font-semibold text-surface hover:bg-primary-hover disabled:opacity-60;
   }
 
   /* Give return links and secondary navigation a consistent button shape. */
   .navigation-link {
-    @apply inline-flex h-11 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint;
+    @apply inline-flex h-11 items-center rounded-lg border border-border bg-surface px-4 font-semibold text-primary hover:bg-tint disabled:opacity-60;
   }
 
   /* Style sanitised API HTML, whose elements cannot carry Tailwind classes. */

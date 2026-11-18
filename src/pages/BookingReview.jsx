@@ -90,7 +90,7 @@ function Review({ id, search }) {
           <form onSubmit={submit}>
             <button
               disabled={pending || uncertain || !!summary.error}
-              className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-60"
+              className="primary-button w-full disabled:cursor-not-allowed"
             >
               {pending ? "Reserving…" : "Confirm reservation"}
             </button>

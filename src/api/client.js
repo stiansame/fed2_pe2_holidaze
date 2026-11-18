@@ -60,7 +60,7 @@ export class ApiError extends Error {
  * @param {object} [options.query={}] URL parameters, e.g. page, limit or q.
  * @param {object} [options.body] Data to serialize as JSON.
  * @param {string} [options.token] Access token from login.
- * @param {string} [options.apiKey] Defaults to VITE_NOROFF_API_KEY.
+ * @param {string} [options.apiKey] Defaults to VITE_NOROFF_API_KEY for authenticated requests.
  * @param {AbortSignal} [options.signal] Allows the caller to cancel the request.
  * @returns {Promise<object|null>} Full { data, meta } response, or null for 204.
  * @throws {ApiError} API, network or unreadable-response errors; status 0 means a network failure.
@@ -74,7 +74,7 @@ export async function apiRequest(
     query = {},
     body,
     token,
-    apiKey = import.meta.env?.VITE_NOROFF_API_KEY,
+    apiKey = token ? import.meta.env?.VITE_NOROFF_API_KEY : undefined,
     signal,
   } = {},
 ) {

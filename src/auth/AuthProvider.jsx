@@ -4,6 +4,7 @@ import { apiRequest } from "../api/client.js";
 import { queryClient } from "../api/queryClient.js";
 import { AuthContext } from "./AuthContext.js";
 import { readSession, SESSION_KEY, sessionExpiresAt } from "./session.js";
+import { sameName } from "../utils/account.js";
 
 /**
  * Shares the current account, profile and authenticated request actions.
@@ -95,7 +96,7 @@ export default function AuthProvider({ children }) {
 
   // Keep the menu avatar current after a reload on any account page.
   useEffect(() => {
-    if (!user || profile?.name !== user.name) return;
+    if (!user || !sameName(profile?.name, user.name)) return;
     const session = readSession(localStorage);
     if (session?.accessToken === user.accessToken) {
       localStorage.setItem(

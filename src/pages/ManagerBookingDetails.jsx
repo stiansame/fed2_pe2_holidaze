@@ -22,21 +22,11 @@ import StaySummary from "../components/bookings/StaySummary.jsx";
 import BackLink from "../components/BackLink.jsx";
 
 /**
- * Resets the manager booking summary when the route ID changes.
+ * Loads an ownership-checked booking and fresh venue calendar with guest navigation.
  * @returns {import('react').ReactNode}
  */
 export default function ManagerBookingDetails() {
   const { id } = useParams();
-  return <BookingDetails key={id} id={id} />;
-}
-
-/**
- * Loads an ownership-checked booking and fresh venue calendar with guest navigation.
- * @param {object} props Component props.
- * @param {string} props.id Route record ID.
- * @returns {import('react').ReactNode}
- */
-function BookingDetails({ id }) {
   const { request, user } = useAuth();
   const {
     data: booking,

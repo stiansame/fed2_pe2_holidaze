@@ -46,7 +46,7 @@ export const messages = {
   imageUnavailable:
     "This image couldn’t be opened. Use a direct link to an image anyone can view, or remove the photo.",
   invalidCoordinates:
-    "Enter both coordinates: latitude from −90 to 90 and longitude from −180 to 180.",
+    "Enter both coordinates: latitude from −85.051129 to 85.051129 and longitude from −180 to 180. Zero/zero is reserved for an unspecified location.",
   bioTooLong: "Bio must be 160 characters or fewer.",
   bookingUpdated: "Booking updated.",
   bookingCancelled: "Booking cancelled.",
@@ -79,6 +79,7 @@ export const messages = {
   venueBookingsLoadFailed: "Unable to load your venue bookings.",
   unavailableVenueFilter:
     "This venue is unavailable or does not belong to you. Open Bookings from the account menu to view all your venues.",
+  mapLocationUnavailable: "A map position is not available for this venue.",
   mapLoadFailed: "The map could not be loaded.",
   mapManualCoordinates: " You can still enter coordinates manually.",
   venueCreationUncertain:

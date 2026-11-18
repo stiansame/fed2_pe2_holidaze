@@ -229,7 +229,7 @@ function BookingCard({ booking, manage, onCancelled }) {
                   setConfirming(false);
                   setError("");
                 }}
-                className="h-11 rounded-lg border border-border bg-surface px-3 text-small font-semibold text-primary disabled:opacity-60"
+                className="navigation-link px-3 text-small"
               >
                 Keep booking
               </button>

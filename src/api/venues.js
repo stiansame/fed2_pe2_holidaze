@@ -8,6 +8,7 @@ import {
 } from "./client.js";
 import { venueFormData } from "../utils/venueValidation.js";
 import { bookedPeriods, overlaps } from "../utils/availability.js";
+import { sameName } from "../utils/account.js";
 
 /**
  * Validates and creates one venue, marking uncertain responses to prevent duplicate saves.
@@ -37,15 +38,15 @@ export async function createVenue(request, form) {
  * @param {object} [options={}] Optional request settings.
  * @param {AbortSignal} [options.signal] Cancels an obsolete request.
  * @returns {Promise<object>}
- * @throws {Error} If the account does not own the venue.
+ * @throws {ApiError} If the account does not own the venue.
  */
 export async function getOwnVenue(request, id, name, { signal } = {}) {
   const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, {
     query: { _owner: true },
     signal,
   });
-  if (!name || data?.owner?.name !== name)
-    throw new Error(messages.venueAccessDenied);
+  if (!sameName(data?.owner?.name, name))
+    throw new ApiError(messages.venueAccessDenied, 403);
   return data;
 }
 
@@ -134,17 +135,16 @@ export const venueSorts = {
  * Loads all pages of a public venue list with the requested related data.
  * @param {object} [options={}] Related data and cancellation settings.
  * @param {boolean} [options.bookings=false] Includes booking data for date filtering.
- * @param {boolean} [options.owner=false] Includes owner data for text search.
  * @param {AbortSignal} [options.signal] Cancels the load.
  * @returns {Promise<object[]>}
  */
-export function getAllVenues({ bookings = false, owner = false, signal } = {}) {
+export function getAllVenues({ bookings = false, signal } = {}) {
   return getAllPages(apiRequest, "holidaze/venues", {
     query: {
       sort: "created",
       sortOrder: "desc",
       _bookings: bookings || undefined,
-      _owner: owner || undefined,
+      _owner: true,
     },
     signal,
   });

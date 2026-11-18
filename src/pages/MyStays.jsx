@@ -1,5 +1,7 @@
 import DocumentTitle from "../components/DocumentTitle.jsx";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../api/queryKeys.js";
+import { useAuth } from "../auth/AuthContext.js";
 import BookingsList from "../components/bookings/BookingsList.jsx";
 import Icon from "../components/Icon.jsx";
 
@@ -8,7 +10,8 @@ import Icon from "../components/Icon.jsx";
  * @returns {import('react').ReactNode}
  */
 export default function MyStays() {
-  const [attempt, setAttempt] = useState(0);
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
   return (
     <section className="space-y-6">
       <DocumentTitle>Holidaze | My stays</DocumentTitle>
@@ -18,13 +21,18 @@ export default function MyStays() {
           type="button"
           aria-label="Refresh stays"
           title="Refresh stays"
-          onClick={() => setAttempt((value) => value + 1)}
+          onClick={() =>
+            queryClient.refetchQueries({
+              queryKey: queryKeys.profileBookings(user.name),
+              exact: true,
+            })
+          }
           className="navigation-link size-11 shrink-0 justify-center p-0"
         >
           <Icon name="reset" />
         </button>
       </div>
-      <BookingsList key={attempt} />
+      <BookingsList />
     </section>
   );
 }

@@ -9,20 +9,11 @@ import { useAuth } from "../auth/AuthContext.js";
 import { getOwnBooking } from "../api/bookings.js";
 
 /**
- * Resets the confirmation when a different booking is opened.
+ * Shows the saved booking after checking customer ownership.
  * @returns {import('react').ReactNode}
  */
 export default function BookingConfirmation() {
   const { id } = useParams();
-  return <Confirmation key={id} id={id} />;
-}
-
-/**
- * Shows the saved booking after checking customer ownership.
- * @param {{id: string}} props Booking route ID.
- * @returns {import('react').ReactNode}
- */
-function Confirmation({ id }) {
   const { request, user } = useAuth();
   const {
     data: booking,
@@ -71,10 +62,7 @@ function Confirmation({ id }) {
           <p role="alert" className="text-danger">
             {messages.confirmationLoadFailed(error.message)}
           </p>
-          <button
-            onClick={() => refetch()}
-            className="h-11 rounded-lg border border-border px-4 text-primary"
-          >
+          <button onClick={() => refetch()} className="navigation-link">
             Reload confirmation
           </button>
         </>

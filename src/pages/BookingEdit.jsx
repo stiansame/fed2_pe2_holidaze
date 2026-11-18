@@ -17,21 +17,11 @@ import AvailabilityCalendar from "../components/venues/AvailabilityCalendar.jsx"
 import StaySummary from "../components/bookings/StaySummary.jsx";
 
 /**
- * Resets the booking editor when the route ID changes.
+ * Loads an editable customer booking and fresh venue data before showing its editor.
  * @returns {import('react').ReactNode}
  */
 export default function BookingEdit() {
   const { id } = useParams();
-  return <EditLoader key={id} id={id} />;
-}
-
-/**
- * Loads an editable customer booking and fresh venue data before showing its editor.
- * @param {object} props Component props.
- * @param {string} props.id Route record ID.
- * @returns {import('react').ReactNode}
- */
-function EditLoader({ id }) {
   const { user, request } = useAuth();
   const { data, error, refetch } = useQuery({
     queryKey: queryKeys.editableBooking(user.name, id),
@@ -102,7 +92,7 @@ function BookingEditor({ booking, initialVenue }) {
       type="button"
       disabled={pending}
       onClick={() => navigate("/bookings", { replace: true })}
-      className="navigation-link justify-center text-small disabled:opacity-60"
+      className="navigation-link justify-center text-small"
     >
       Cancel changes
     </button>
@@ -119,7 +109,7 @@ function BookingEditor({ booking, initialVenue }) {
       <form onSubmit={submit}>
         <button
           disabled={pending || !!summary.error}
-          className="primary-button w-full text-small disabled:opacity-60"
+          className="primary-button w-full text-small"
         >
           {pending ? "Saving…" : "Save changes"}
         </button>
@@ -132,7 +122,7 @@ function BookingEditor({ booking, initialVenue }) {
             setReviewing(false);
             setError("");
           }}
-          className="navigation-link justify-center text-small disabled:opacity-60"
+          className="navigation-link justify-center text-small"
         >
           Back to dates
         </button>

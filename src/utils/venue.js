@@ -1,3 +1,5 @@
+import { venueCoordinates } from "./location.js";
+
 const priceFormat = new Intl.NumberFormat("nb-NO", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
@@ -68,21 +70,13 @@ export function formatPrice(price) {
 /**
  * Builds a map link for supported coordinates, rejecting the API zero/zero default.
  * @param {object} [location] Venue latitude and longitude.
- * @returns {{full: string}|null}
+ * @returns {string|null}
  */
 export function venueMapLinks(location) {
-  const { lat, lng } = location ?? {};
-  if (
-    !Number.isFinite(lat) ||
-    !Number.isFinite(lng) ||
-    Math.abs(lat) > 85 ||
-    Math.abs(lng) > 180 ||
-    (lat === 0 && lng === 0)
-  )
-    return null;
-  return {
-    full: `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`,
-  };
+  const point = venueCoordinates(location?.lat, location?.lng);
+  return point
+    ? `https://www.openstreetmap.org/?mlat=${point[0]}&mlon=${point[1]}#map=15/${point[0]}/${point[1]}`
+    : null;
 }
 
 /**

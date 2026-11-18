@@ -11,21 +11,11 @@ import VenueForm from "../components/venues/VenueForm.jsx";
 import BackLink from "../components/BackLink.jsx";
 
 /**
- * Resets the venue editor when the route ID changes.
+ * Loads an owned venue and connects the shared form to validated updates.
  * @returns {import('react').ReactNode}
  */
 export default function EditVenue() {
   const { id } = useParams();
-  return <VenueEditor key={id} id={id} />;
-}
-
-/**
- * Loads an owned venue and connects the shared form to validated updates.
- * @param {object} props Component props.
- * @param {string} props.id Route record ID.
- * @returns {import('react').ReactNode}
- */
-function VenueEditor({ id }) {
   const { user, request } = useAuth();
   const navigate = useNavigate();
   const {
