@@ -1,8 +1,9 @@
+import { queryKeys } from "../../api/queryKeys.js";
 import RetryButton from "../RetryButton.jsx";
 import { messages } from "../../constants/messages.js";
 import Loading from "../Loading.jsx";
 import BookingGroup from "./BookingGroup.jsx";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import useSubmit from "../../hooks/useSubmit.js";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
@@ -19,10 +20,9 @@ import Rating from "../venues/Rating.jsx";
  * Loads customer bookings and groups them for account previews or the full booking page.
  * @param {object} props Component props.
  * @param {boolean} [props.upcomingOnly] Shows only the account preview of current/upcoming stays.
- * @param {Function} props.onLoaded Receives the loaded booking list.
  * @returns {import('react').ReactNode}
  */
-export default function BookingsList({ upcomingOnly = false, onLoaded }) {
+export default function BookingsList({ upcomingOnly = false }) {
   const { user, request } = useAuth();
   const { search, state } = useLocation();
   const [cancelledIds, setCancelledIds] = useState([]);
@@ -31,14 +31,10 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["profileBookings", user.name],
+    queryKey: queryKeys.profileBookings(user.name),
     queryFn: ({ signal }) => getProfileBookings(request, user.name, { signal }),
   });
   const [notice, setNotice] = useState(upcomingOnly ? "" : state?.notice || "");
-
-  useEffect(() => {
-    if (bookings) onLoaded?.(bookings);
-  }, [bookings, onLoaded]);
 
   const groups = bookings
     ? groupBookings(

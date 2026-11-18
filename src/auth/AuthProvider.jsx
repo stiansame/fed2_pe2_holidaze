@@ -1,5 +1,5 @@
 import { messages } from "../constants/messages.js";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../api/client.js";
 import { queryClient } from "../api/queryClient.js";
 import { AuthContext } from "./AuthContext.js";
@@ -15,6 +15,7 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState(() => readSession(localStorage));
   const [notice, setNotice] = useState("");
   const [profile, setProfile] = useState(null);
+  const accessToken = user?.accessToken;
 
   /**
    * Clears the saved session and shared profile, optionally showing a notice.
@@ -34,7 +35,7 @@ export default function AuthProvider({ children }) {
    * @param {object} credentials Email and password supplied by the login form.
    * @returns {Promise<object>}
    */
-  async function login(credentials) {
+  const login = useCallback(async (credentials) => {
     const { data } = await apiRequest("auth/login", {
       method: "POST",
       query: { _holidaze: true },
@@ -52,7 +53,7 @@ export default function AuthProvider({ children }) {
     setProfile(data);
     setUser(session);
     return session;
-  }
+  }, []);
 
   /**
    * Adds the current access token and ends the session when Noroff returns HTTP 401.
@@ -63,20 +64,20 @@ export default function AuthProvider({ children }) {
   const request = useCallback(
     async (path, options = {}) => {
       try {
-        return await apiRequest(path, { ...options, token: user?.accessToken });
+        return await apiRequest(path, { ...options, token: accessToken });
       } catch (error) {
         if (error.status === 401) logout(messages.sessionEnded);
         throw error;
       }
     },
-    [user, logout],
+    [accessToken, logout],
   );
 
   /**
    * Enables hosting and updates the session only if the same account is still signed in.
    * @returns {Promise<void>}
    */
-  async function becomeManager() {
+  const becomeManager = useCallback(async () => {
     const { data } = await request(
       `holidaze/profiles/${encodeURIComponent(user.name)}`,
       {
@@ -90,7 +91,7 @@ export default function AuthProvider({ children }) {
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     setUser(session);
     setProfile(data);
-  }
+  }, [request, user]);
 
   // Keep the menu avatar current after a reload on any account page.
   useEffect(() => {
@@ -106,27 +107,48 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!user) return;
-    const timer = setInterval(() => {
-      if (sessionExpiresAt(user) > Date.now()) return;
-      logout(messages.sessionExpired);
-    }, 1000);
-    return () => clearInterval(timer);
+    const expiresAt = sessionExpiresAt(user);
+    if (!Number.isFinite(expiresAt)) return;
+    let timer;
+
+    /**
+     * Checks the deadline on wake-up and schedules at most one expiry timer.
+     * @returns {void}
+     */
+    function checkExpiry() {
+      clearTimeout(timer);
+      const remaining = expiresAt - Date.now();
+      if (remaining <= 0) {
+        logout(messages.sessionExpired);
+        return;
+      }
+      // Browsers limit one timeout to a signed 32-bit millisecond delay.
+      timer = setTimeout(checkExpiry, Math.min(remaining, 2_147_483_647));
+    }
+
+    checkExpiry();
+    window.addEventListener("focus", checkExpiry);
+    document.addEventListener("visibilitychange", checkExpiry);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("focus", checkExpiry);
+      document.removeEventListener("visibilitychange", checkExpiry);
+    };
   }, [user, logout]);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        profile,
-        setProfile,
-        notice,
-        login,
-        logout,
-        request,
-        becomeManager,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      profile,
+      setProfile,
+      notice,
+      login,
+      logout,
+      request,
+      becomeManager,
+    }),
+    [user, profile, notice, login, logout, request, becomeManager],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

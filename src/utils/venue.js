@@ -86,7 +86,7 @@ export function venueMapLinks(location) {
 }
 
 /**
- * Formats the venue city and country with a shared missing-location fallback.
+ * Formats city and country, falling back to continent or a missing-location message.
  * @param {object} [location] Venue location.
  * @returns {string}
  */
@@ -95,7 +95,9 @@ export function formatLocation(location) {
     [location?.city, location?.country]
       .map((value) => value?.trim())
       .filter(Boolean)
-      .join(", ") || "Location not specified"
+      .join(", ") ||
+    location?.continent?.trim() ||
+    "Location not specified"
   );
 }
 

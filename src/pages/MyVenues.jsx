@@ -1,13 +1,11 @@
+import useManagerVenues from "../hooks/useManagerVenues.js";
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
 import SectionHeading from "../components/account/SectionHeading.jsx";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext.js";
-import { getProfileVenues } from "../api/profiles.js";
 import VenueCard from "../components/venues/VenueCard.jsx";
 import Icon from "../components/Icon.jsx";
 import VenueOwnerActions from "../components/venues/VenueOwnerActions.jsx";
@@ -17,16 +15,12 @@ import VenueOwnerActions from "../components/venues/VenueOwnerActions.jsx";
  * @returns {import('react').ReactNode}
  */
 export default function MyVenues() {
-  const { user, request } = useAuth();
   const location = useLocation();
   const { state } = location;
   const [notice, setNotice] = useState(state?.notice || "");
   const [expanded, setExpanded] = useState(false);
   const [deletedIds, setDeletedIds] = useState([]);
-  const { data, error, refetch } = useQuery({
-    queryKey: ["myVenues", user.name],
-    queryFn: ({ signal }) => getProfileVenues(request, user.name, { signal }),
-  });
+  const { data, error, refetch } = useManagerVenues();
   const venues = data?.filter((venue) => !deletedIds.includes(venue.id));
 
   return (

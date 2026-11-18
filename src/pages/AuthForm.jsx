@@ -4,6 +4,7 @@ import useSubmit from "../hooks/useSubmit.js";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { apiRequest } from "../api/client.js";
 import { useAuth } from "../auth/AuthContext.js";
+import FieldError from "../components/FieldError.jsx";
 
 const inputClass =
   "mt-2 h-11 w-full rounded-lg border border-border bg-surface px-3";
@@ -107,75 +108,69 @@ export default function AuthForm({ register = false }) {
         }}
       >
         {register && (
+          <div>
+            <label className="block">
+              Username
+              <input
+                name="name"
+                required
+                pattern="[a-zA-Z0-9_]+"
+                autoComplete="username"
+                aria-invalid={!!fieldErrors.name}
+                aria-describedby={fieldErrors.name ? "name-error" : undefined}
+                title={messages.invalidUsername}
+                className={inputClass}
+              />
+              <span className="mt-1 block text-small text-muted">
+                Letters, numbers and underscores only.
+              </span>
+            </label>
+            <FieldError id="name-error">{fieldErrors.name}</FieldError>
+          </div>
+        )}
+        <div>
           <label className="block">
-            Username
+            Email
             <input
-              name="name"
+              name="email"
+              type="email"
               required
-              pattern="[a-zA-Z0-9_]+"
-              autoComplete="username"
-              aria-invalid={!!fieldErrors.name}
-              aria-describedby={fieldErrors.name ? "name-error" : undefined}
-              title={messages.invalidUsername}
+              pattern="[^@\s]+@stud\.noroff\.no"
+              autoComplete="email"
+              aria-invalid={!!fieldErrors.email}
+              aria-describedby={fieldErrors.email ? "email-error" : undefined}
+              title="Use your @stud.noroff.no email address."
               className={inputClass}
             />
             <span className="mt-1 block text-small text-muted">
-              Letters, numbers and underscores only.
+              Use your @stud.noroff.no email address.
             </span>
-            {fieldErrors.name && (
-              <span id="name-error" className="block text-small text-danger">
-                {fieldErrors.name}
+          </label>
+          <FieldError id="email-error">{fieldErrors.email}</FieldError>
+        </div>
+        <div>
+          <label className="block">
+            Password
+            <input
+              name="password"
+              type="password"
+              required
+              minLength={register ? 8 : undefined}
+              autoComplete={register ? "new-password" : "current-password"}
+              aria-invalid={!!fieldErrors.password}
+              aria-describedby={
+                fieldErrors.password ? "password-error" : undefined
+              }
+              className={inputClass}
+            />
+            {register && (
+              <span className="mt-1 block text-small text-muted">
+                At least 8 characters.
               </span>
             )}
           </label>
-        )}
-        <label className="block">
-          Email
-          <input
-            name="email"
-            type="email"
-            required
-            pattern="[^@\s]+@stud\.noroff\.no"
-            autoComplete="email"
-            aria-invalid={!!fieldErrors.email}
-            aria-describedby={fieldErrors.email ? "email-error" : undefined}
-            title="Use your @stud.noroff.no email address."
-            className={inputClass}
-          />
-          <span className="mt-1 block text-small text-muted">
-            Use your @stud.noroff.no email address.
-          </span>
-          {fieldErrors.email && (
-            <span id="email-error" className="block text-small text-danger">
-              {fieldErrors.email}
-            </span>
-          )}
-        </label>
-        <label className="block">
-          Password
-          <input
-            name="password"
-            type="password"
-            required
-            minLength={register ? 8 : undefined}
-            autoComplete={register ? "new-password" : "current-password"}
-            aria-invalid={!!fieldErrors.password}
-            aria-describedby={
-              fieldErrors.password ? "password-error" : undefined
-            }
-            className={inputClass}
-          />
-          {register && (
-            <span className="mt-1 block text-small text-muted">
-              At least 8 characters.
-            </span>
-          )}
-          {fieldErrors.password && (
-            <span id="password-error" className="block text-small text-danger">
-              {fieldErrors.password}
-            </span>
-          )}
-        </label>
+          <FieldError id="password-error">{fieldErrors.password}</FieldError>
+        </div>
         {register && (
           <label className="flex min-h-12 items-center gap-3">
             <input

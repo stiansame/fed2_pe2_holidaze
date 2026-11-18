@@ -21,7 +21,7 @@ export default function Home() {
     isPending,
     refetch,
   } = useQuery({
-    ...venueListOptions(),
+    ...venueListOptions({ owner: true }),
     select: selectHighlyRatedVenues,
   });
   const [failedPhotos, setFailedPhotos] = useState([]);

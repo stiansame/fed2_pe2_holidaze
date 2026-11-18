@@ -8,6 +8,7 @@ import Icon from "../Icon.jsx";
 import VenueImage from "./VenueImage.jsx";
 import VenueMapBoundary from "./VenueMapBoundary.jsx";
 import { validMediaUrl } from "../../utils/media.js";
+import FieldError from "../FieldError.jsx";
 
 const fieldClass =
   "mt-1 w-full min-w-0 rounded-lg border border-border bg-surface px-3 text-body font-normal";
@@ -33,7 +34,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
   );
   const nextKey = useRef(mediaKeys.length);
   const [uncertain, setUncertain] = useState(false);
-  const { submit, pending, error } = useSubmit(save);
+  const { submit, pending, error, fieldErrors } = useSubmit(save);
   const [coordinates, setCoordinates] = useState(() => ({
     lat: venue.location?.lat || venue.location?.lng ? venue.location.lat : "",
     lng: venue.location?.lat || venue.location?.lng ? venue.location.lng : "",
@@ -95,6 +96,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
   return (
     <form
       onSubmit={submit}
+      noValidate
       aria-label={editing ? "Edit venue" : "Create venue"}
       className="min-w-0 space-y-5 text-small"
     >
@@ -109,67 +111,114 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
           </p>
           <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
             <div className="min-w-0 space-y-4">
-              <label className="block text-small font-semibold">
-                Venue name
-                <input
-                  name="name"
-                  defaultValue={venue.name ?? ""}
-                  required
-                  className={inputClass}
-                />
-              </label>
-              <label className="block text-small font-semibold">
-                Description
-                <textarea
-                  name="description"
-                  defaultValue={venue.description ?? ""}
-                  required
-                  rows={4}
-                  className={`${fieldClass} min-h-11 py-3`}
-                />
-              </label>
+              <div className="min-w-0">
+                <label className="block text-small font-semibold">
+                  Venue name
+                  <input
+                    name="name"
+                    defaultValue={venue.name ?? ""}
+                    required
+                    aria-invalid={!!fieldErrors.name}
+                    aria-describedby={
+                      fieldErrors.name ? "venue-name-error" : undefined
+                    }
+                    className={inputClass}
+                  />
+                </label>
+                <FieldError id="venue-name-error">
+                  {fieldErrors.name}
+                </FieldError>
+              </div>
+              <div className="min-w-0">
+                <label className="block text-small font-semibold">
+                  Description
+                  <textarea
+                    name="description"
+                    defaultValue={venue.description ?? ""}
+                    required
+                    rows={4}
+                    aria-invalid={!!fieldErrors.description}
+                    aria-describedby={
+                      fieldErrors.description
+                        ? "venue-description-error"
+                        : undefined
+                    }
+                    className={`${fieldClass} min-h-11 py-3`}
+                  />
+                </label>
+                <FieldError id="venue-description-error">
+                  {fieldErrors.description}
+                </FieldError>
+              </div>
             </div>
             <div className="min-w-0 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block min-w-0 text-small font-semibold">
-                  Price per night (NOK)
-                  <input
-                    name="price"
-                    defaultValue={venue.price ?? ""}
-                    type="number"
-                    required
-                    min="0"
-                    step="0.01"
-                    inputMode="decimal"
-                    className={inputClass}
-                  />
-                </label>
-                <label className="block min-w-0 text-small font-semibold">
-                  Maximum guests
-                  <input
-                    name="maxGuests"
-                    defaultValue={venue.maxGuests ?? ""}
-                    type="number"
-                    required
-                    min="1"
-                    step="1"
-                    inputMode="numeric"
-                    className={inputClass}
-                  />
-                </label>
-                <label className="block min-w-0 text-small font-semibold">
-                  Rating (0–5)
-                  <input
-                    name="rating"
-                    defaultValue={venue.rating ?? 0}
-                    type="number"
-                    min="0"
-                    max="5"
-                    step="any"
-                    inputMode="decimal"
-                    className={inputClass}
-                  />
-                </label>
+                <div className="min-w-0">
+                  <label className="block min-w-0 text-small font-semibold">
+                    Price per night (NOK)
+                    <input
+                      name="price"
+                      defaultValue={venue.price ?? ""}
+                      type="number"
+                      required
+                      min="0"
+                      step="0.01"
+                      inputMode="decimal"
+                      aria-invalid={!!fieldErrors.price}
+                      aria-describedby={
+                        fieldErrors.price ? "venue-price-error" : undefined
+                      }
+                      className={inputClass}
+                    />
+                  </label>
+                  <FieldError id="venue-price-error">
+                    {fieldErrors.price}
+                  </FieldError>
+                </div>
+                <div className="min-w-0">
+                  <label className="block min-w-0 text-small font-semibold">
+                    Maximum guests
+                    <input
+                      name="maxGuests"
+                      defaultValue={venue.maxGuests ?? ""}
+                      type="number"
+                      required
+                      min="1"
+                      step="1"
+                      inputMode="numeric"
+                      aria-invalid={!!fieldErrors.maxGuests}
+                      aria-describedby={
+                        fieldErrors.maxGuests ? "venue-guests-error" : undefined
+                      }
+                      className={inputClass}
+                    />
+                  </label>
+                  <FieldError id="venue-guests-error">
+                    {fieldErrors.maxGuests}
+                  </FieldError>
+                </div>
+                <div className="min-w-0">
+                  <label className="block min-w-0 text-small font-semibold">
+                    Rating (0–5)
+                    <input
+                      name="rating"
+                      defaultValue={venue.rating ?? 0}
+                      type="number"
+                      min="0"
+                      max="5"
+                      step="any"
+                      inputMode="decimal"
+                      aria-invalid={!!fieldErrors.rating}
+                      aria-describedby={
+                        fieldErrors.rating ? "venue-rating-error" : undefined
+                      }
+                      className={inputClass}
+                    />
+                  </label>
+                  <FieldError id="venue-rating-error">
+                    {fieldErrors.rating}
+                  </FieldError>
+                </div>
               </div>
               <div
                 role="group"
@@ -216,6 +265,7 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
               media={venue.media?.[key]}
               index={index}
               total={mediaKeys.length}
+              errors={fieldErrors}
               onMove={(direction) => movePhoto(index, direction)}
               onRemove={() =>
                 setMediaKeys((keys) => keys.filter((value) => value !== key))
@@ -259,42 +309,56 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
                   />
                 </label>
               ))}
-              <label className="block min-w-0 text-small font-semibold">
-                Latitude
-                <input
-                  name="lat"
-                  type="number"
-                  min="-90"
-                  max="90"
-                  step="any"
-                  value={coordinates.lat}
-                  onChange={(event) =>
-                    setCoordinates((value) => ({
-                      ...value,
-                      lat: event.target.value,
-                    }))
-                  }
-                  className={inputClass}
-                />
-              </label>
-              <label className="block min-w-0 text-small font-semibold">
-                Longitude
-                <input
-                  name="lng"
-                  type="number"
-                  min="-180"
-                  max="180"
-                  step="any"
-                  value={coordinates.lng}
-                  onChange={(event) =>
-                    setCoordinates((value) => ({
-                      ...value,
-                      lng: event.target.value,
-                    }))
-                  }
-                  className={inputClass}
-                />
-              </label>
+              <div className="min-w-0">
+                <label className="block min-w-0 text-small font-semibold">
+                  Latitude
+                  <input
+                    name="lat"
+                    type="number"
+                    min="-90"
+                    max="90"
+                    step="any"
+                    aria-invalid={!!fieldErrors.lat}
+                    aria-describedby={
+                      fieldErrors.lat ? "venue-lat-error" : undefined
+                    }
+                    value={coordinates.lat}
+                    onChange={(event) =>
+                      setCoordinates((value) => ({
+                        ...value,
+                        lat: event.target.value,
+                      }))
+                    }
+                    className={inputClass}
+                  />
+                </label>
+                <FieldError id="venue-lat-error">{fieldErrors.lat}</FieldError>
+              </div>
+              <div className="min-w-0">
+                <label className="block min-w-0 text-small font-semibold">
+                  Longitude
+                  <input
+                    name="lng"
+                    type="number"
+                    min="-180"
+                    max="180"
+                    step="any"
+                    aria-invalid={!!fieldErrors.lng}
+                    aria-describedby={
+                      fieldErrors.lng ? "venue-lng-error" : undefined
+                    }
+                    value={coordinates.lng}
+                    onChange={(event) =>
+                      setCoordinates((value) => ({
+                        ...value,
+                        lng: event.target.value,
+                      }))
+                    }
+                    className={inputClass}
+                  />
+                </label>
+                <FieldError id="venue-lng-error">{fieldErrors.lng}</FieldError>
+              </div>
             </div>
             <VenueMapBoundary
               {...coordinates}
@@ -344,16 +408,19 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
  * @param {object} [props.media] Existing photo URL and alt text.
  * @param {number} props.index Current zero-based position in the photo list.
  * @param {number} props.total Number of photo rows.
+ * @param {object} props.errors Validation messages keyed by field path.
  * @param {Function} props.onMove Moves this row up or down.
  * @param {Function} props.onRemove Removes this photo row.
  * @returns {import('react').ReactNode}
  */
-function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
+function VenuePhotoRow({ media, index, total, errors, onMove, onRemove }) {
   const urlInput = useRef(null);
   const altInput = useRef(null);
   const [preview, setPreview] = useState(() => ({ ...media, revision: 0 }));
   const [previewFailed, setPreviewFailed] = useState(false);
   const title = `Image ${index + 1}`;
+  const urlError = errors[`media.${index}.url`];
+  const altError = errors[`media.${index}.alt`];
 
   /**
    * Validates the entered URL and refreshes only this row's thumbnail, without saving.
@@ -402,34 +469,50 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
           )}
         </p>
         <div className="col-span-full row-start-2 grid min-w-0 items-end gap-3 lg:col-span-1 lg:col-start-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-          <label className="block min-w-0 text-small font-semibold">
-            Image URL
-            <input
-              ref={urlInput}
-              name="mediaUrl"
-              defaultValue={media?.url ?? ""}
-              type="url"
-              maxLength={300}
-              onInput={(event) => {
-                event.currentTarget.setCustomValidity("");
-                setPreviewFailed(false);
-              }}
-              aria-describedby={
-                previewFailed ? `photo-error-${index}` : undefined
-              }
-              className={inputClass}
-            />
-          </label>
-          <label className="block min-w-0 text-small font-semibold">
-            Alt text
-            <input
-              ref={altInput}
-              name="mediaAlt"
-              defaultValue={media?.alt ?? ""}
-              maxLength={120}
-              className={inputClass}
-            />
-          </label>
+          <div className="min-w-0">
+            <label className="block min-w-0 text-small font-semibold">
+              Image URL
+              <input
+                ref={urlInput}
+                name="mediaUrl"
+                defaultValue={media?.url ?? ""}
+                type="url"
+                maxLength={300}
+                onInput={(event) => {
+                  event.currentTarget.setCustomValidity("");
+                  setPreviewFailed(false);
+                }}
+                aria-describedby={
+                  [
+                    previewFailed && `photo-error-${index}`,
+                    urlError && `photo-url-error-${index}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined
+                }
+                aria-invalid={!!urlError}
+                className={inputClass}
+              />
+            </label>
+            <FieldError id={`photo-url-error-${index}`}>{urlError}</FieldError>
+          </div>
+          <div className="min-w-0">
+            <label className="block min-w-0 text-small font-semibold">
+              Alt text
+              <input
+                ref={altInput}
+                name="mediaAlt"
+                defaultValue={media?.alt ?? ""}
+                maxLength={120}
+                aria-invalid={!!altError}
+                aria-describedby={
+                  altError ? `photo-alt-error-${index}` : undefined
+                }
+                className={inputClass}
+              />
+            </label>
+            <FieldError id={`photo-alt-error-${index}`}>{altError}</FieldError>
+          </div>
         </div>
         <div className="col-start-3 row-start-1 grid grid-cols-4 lg:row-span-2 lg:grid-cols-2 lg:gap-2">
           <button

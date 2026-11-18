@@ -2,12 +2,12 @@ import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import useSubmit from "../hooks/useSubmit.js";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
-import { getVenue } from "../api/venues.js";
+import { venueOptions } from "../api/venueQueries.js";
 import { createBooking } from "../api/bookings.js";
 import { stayFromSearch, staySummary } from "../utils/availability.js";
 import StaySummary from "../components/bookings/StaySummary.jsx";
@@ -38,14 +38,10 @@ function Review({ id, search }) {
     data,
     error: loadError,
     refetch,
-  } = useQuery({
-    queryKey: ["reviewVenue", id],
-    queryFn: async ({ signal }) => {
-      window.scrollTo(0, 0);
-      const { data } = await getVenue(id, { signal });
-      return data;
-    },
-  });
+  } = useQuery(venueOptions(id));
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
   const { submit, pending, error: saveError, setError } = useSubmit(confirm);
   const venue = reviewedVenue ?? data;
   const error = saveError || loadError?.message || "";

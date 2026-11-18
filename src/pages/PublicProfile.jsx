@@ -1,8 +1,9 @@
+import { queryKeys } from "../api/queryKeys.js";
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
@@ -39,12 +40,14 @@ function HostProfile({ name }) {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["hostProfile", user.name, name],
+    queryKey: queryKeys.hostProfile(user.name, name),
     queryFn: async ({ signal }) => {
-      window.scrollTo(0, 0);
       return getHostProfile(request, name, { signal });
     },
   });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [name]);
   const data = result && {
     ...result,
     venues: result.venues.filter(
