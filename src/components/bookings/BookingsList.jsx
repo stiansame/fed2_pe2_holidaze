@@ -2,8 +2,9 @@ import RetryButton from "../RetryButton.jsx";
 import { messages } from "../../constants/messages.js";
 import Loading from "../Loading.jsx";
 import BookingGroup from "./BookingGroup.jsx";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
-import useAsync from "../../hooks/useAsync.js";
+import { useEffect, useId, useState } from "react";
+import useSubmit from "../../hooks/useSubmit.js";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext.js";
 import { cancelBooking, getProfileBookings } from "../../api/bookings.js";
@@ -24,18 +25,26 @@ import Rating from "../venues/Rating.jsx";
 export default function BookingsList({ upcomingOnly = false, onLoaded }) {
   const { user, request } = useAuth();
   const { search, state } = useLocation();
-  const load = useCallback(
-    (signal) => getProfileBookings(request, user.name, { signal }),
-    [request, user.name],
-  );
-  const { data: bookings, setData: setBookings, error, retry } = useAsync(load);
+  const [cancelledIds, setCancelledIds] = useState([]);
+  const {
+    data: bookings,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["profileBookings", user.name],
+    queryFn: ({ signal }) => getProfileBookings(request, user.name, { signal }),
+  });
   const [notice, setNotice] = useState(upcomingOnly ? "" : state?.notice || "");
 
   useEffect(() => {
     if (bookings) onLoaded?.(bookings);
   }, [bookings, onLoaded]);
 
-  const groups = bookings ? groupBookings(bookings) : null;
+  const groups = bookings
+    ? groupBookings(
+        bookings.filter((booking) => !cancelledIds.includes(booking.id)),
+      )
+    : null;
   return (
     <>
       {notice && (
@@ -57,7 +66,7 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
       {error && (
         <RetryButton
           className="navigation-link text-small"
-          onRetry={retry}
+          onRetry={() => refetch()}
         />
       )}
       {groups &&
@@ -91,11 +100,7 @@ export default function BookingsList({ upcomingOnly = false, onLoaded }) {
                     booking={booking}
                     manage={!upcomingOnly}
                     onCancelled={(id) => {
-                      setBookings(
-                        (current) =>
-                          current?.filter((booking) => booking.id !== id) ??
-                          current,
-                      );
+                      setCancelledIds((current) => [...current, id]);
                       setNotice(messages.bookingCancelled);
                     }}
                   />
@@ -119,9 +124,7 @@ function BookingCard({ booking, manage, onCancelled }) {
   const headingId = `stay-heading-${useId()}`;
   const { user, request } = useAuth();
   const [confirming, setConfirming] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-  const submitting = useRef(false);
+  const { run: cancel, pending, error, setError } = useSubmit(cancelConfirmed);
   const status = bookingStatus(booking);
   const editable = status === "upcoming";
   const name = booking.venue?.name?.trim() || "Venue unavailable";
@@ -133,19 +136,14 @@ function BookingCard({ booking, manage, onCancelled }) {
    * Cancels the confirmed customer booking once and updates the parent list.
    * @returns {Promise<void>}
    */
-  async function cancel() {
-    if (submitting.current) return;
-    submitting.current = true;
-    setPending(true);
-    setError("");
+  async function cancelConfirmed() {
     try {
       await cancelBooking(request, booking.id, user.name);
       onCancelled(booking.id);
     } catch (error) {
-      setError(messages.cancellationUnclear(error.message));
-    } finally {
-      submitting.current = false;
-      setPending(false);
+      throw new Error(messages.cancellationUnclear(error.message), {
+        cause: error,
+      });
     }
   }
 
@@ -223,7 +221,7 @@ function BookingCard({ booking, manage, onCancelled }) {
                 type="button"
                 autoFocus
                 disabled={pending}
-                onClick={cancel}
+                onClick={() => cancel()}
                 className="h-11 rounded-lg bg-danger px-3 text-small font-semibold text-surface disabled:opacity-60"
               >
                 {pending ? "Cancelling…" : "Confirm cancellation"}

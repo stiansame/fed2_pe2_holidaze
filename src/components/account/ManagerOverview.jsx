@@ -1,9 +1,7 @@
 import RetryButton from "../RetryButton.jsx";
 import Loading from "../Loading.jsx";
-import { useCallback, useId } from "react";
-import useAsync from "../../hooks/useAsync.js";
-import { useAuth } from "../../auth/AuthContext.js";
-import { getProfileVenues } from "../../api/profiles.js";
+import { useId } from "react";
+import useManagerVenues from "../../hooks/useManagerVenues.js";
 import { managerSummary } from "../../utils/manager.js";
 import ManagerBookingCard from "../bookings/ManagerBookingCard.jsx";
 import VenueCard from "../venues/VenueCard.jsx";
@@ -20,18 +18,10 @@ import CollapsibleSection from "./CollapsibleSection.jsx";
 export default function ManagerOverview({ children, stats }) {
   const id = useId();
   const overviewHeadingId = `account-overview-heading-${id}`;
-  const { user, request } = useAuth();
-  const load = useCallback(
-    async (signal) => {
-      const venues = await getProfileVenues(request, user.name, {
-        bookings: true,
-        signal,
-      });
-      return { venues, ...managerSummary(venues) };
-    },
-    [request, user.name],
-  );
-  const { data, error, retry } = useAsync(load);
+  const { data, error, refetch } = useManagerVenues((venues) => ({
+    venues,
+    ...managerSummary(venues),
+  }));
 
   const bookings = data
     ? [...data.current, ...data.upcoming].sort((a, b) =>
@@ -52,7 +42,7 @@ export default function ManagerOverview({ children, stats }) {
           {error ? (
             <div role="alert" className="space-y-3">
               <p>Unable to load your venue overview. {error.message}</p>
-              <RetryButton onRetry={retry} />
+              <RetryButton onRetry={() => refetch()} />
             </div>
           ) : !data ? (
             <Loading>Loading your venue overview…</Loading>

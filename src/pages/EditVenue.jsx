@@ -1,7 +1,7 @@
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
-import { useCallback, useEffect, useRef } from "react";
-import useAsync from "../hooks/useAsync.js";
+import { useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
 import { getOwnVenue, updateVenue } from "../api/venues.js";
@@ -27,11 +27,14 @@ export default function EditVenue() {
 function VenueEditor({ id }) {
   const { user, request } = useAuth();
   const navigate = useNavigate();
-  const load = useCallback(
-    (signal) => getOwnVenue(request, id, user.name, { signal }),
-    [request, id, user.name],
-  );
-  const { data: venue, error, retry } = useAsync(load);
+  const {
+    data: venue,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["ownVenue", user.name, id],
+    queryFn: ({ signal }) => getOwnVenue(request, id, user.name, { signal }),
+  });
   const active = useRef(false);
   useEffect(() => {
     active.current = true;
@@ -47,7 +50,7 @@ function VenueEditor({ id }) {
       {error ? (
         <div role="alert" className="space-y-3">
           <p className="text-danger">{error.message}</p>
-          <RetryButton onRetry={retry} />
+          <RetryButton onRetry={() => refetch()} />
           <BackLink />
         </div>
       ) : venue ? (

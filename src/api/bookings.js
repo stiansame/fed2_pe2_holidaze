@@ -1,6 +1,7 @@
 import { messages } from "../constants/messages.js";
 import { ApiError, getAllPages, isCreateOutcomeUncertain } from "./client.js";
-import { clearVenueCache, getVenue } from "./venues.js";
+import { getVenue } from "./venues.js";
+import { invalidateVenueQueries } from "./queryClient.js";
 import { staySummary } from "../utils/availability.js";
 import { bookingStatus } from "../utils/bookings.js";
 
@@ -108,19 +109,22 @@ export async function updateBooking(request, id, name, stay, expectedPrice) {
   const summary = staySummary(venue, stay, id);
   if (summary.error) throw new ApiError(summary.error, 400);
   if (venue.price !== expectedPrice) return { venue, booking: null };
-  clearVenueCache();
-  const { data: booking } = await request(
-    `holidaze/bookings/${encodeURIComponent(id)}`,
-    {
-      method: "PUT",
-      body: {
-        dateFrom: `${stay.from}T00:00:00.000Z`,
-        dateTo: `${stay.to}T00:00:00.000Z`,
-        guests: stay.guests,
+  try {
+    const { data: booking } = await request(
+      `holidaze/bookings/${encodeURIComponent(id)}`,
+      {
+        method: "PUT",
+        body: {
+          dateFrom: `${stay.from}T00:00:00.000Z`,
+          dateTo: `${stay.to}T00:00:00.000Z`,
+          guests: stay.guests,
+        },
       },
-    },
-  );
-  return { venue, booking };
+    );
+    return { venue, booking };
+  } finally {
+    await invalidateVenueQueries();
+  }
 }
 
 /**
@@ -132,10 +136,13 @@ export async function updateBooking(request, id, name, stay, expectedPrice) {
  */
 export async function cancelBooking(request, id, name) {
   await getEditableBooking(request, id, name);
-  clearVenueCache();
-  await request(`holidaze/bookings/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  try {
+    await request(`holidaze/bookings/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+  } finally {
+    await invalidateVenueQueries();
+  }
 }
 
 /**
@@ -152,7 +159,6 @@ export async function createBooking(request, venueId, stay, expectedPrice) {
   const summary = staySummary(venue, stay);
   if (summary.error) throw new ApiError(summary.error);
   if (venue.price !== expectedPrice) return { venue, booking: null };
-  clearVenueCache();
   try {
     const { data: booking } = await request("holidaze/bookings", {
       method: "POST",
@@ -168,5 +174,7 @@ export async function createBooking(request, venueId, stay, expectedPrice) {
   } catch (error) {
     error.bookingUncertain = isCreateOutcomeUncertain(error.status);
     throw error;
+  } finally {
+    await invalidateVenueQueries();
   }
 }

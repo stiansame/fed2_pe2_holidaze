@@ -1,5 +1,6 @@
 import { messages } from "../../constants/messages.js";
 import { useRef, useState } from "react";
+import useSubmit from "../../hooks/useSubmit.js";
 import { Link } from "react-router-dom";
 import { amenityOptions } from "./amenityOptions.js";
 import AmenityPill from "./AmenityPill.jsx";
@@ -31,10 +32,8 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
     ),
   );
   const nextKey = useRef(mediaKeys.length);
-  const submitting = useRef(false);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
   const [uncertain, setUncertain] = useState(false);
+  const { submit, pending, error } = useSubmit(save);
   const [coordinates, setCoordinates] = useState(() => ({
     lat: venue.location?.lat || venue.location?.lng ? venue.location.lat : "",
     lng: venue.location?.lat || venue.location?.lng ? venue.location.lng : "",
@@ -65,34 +64,31 @@ export default function VenueForm({ onSave, onCancel, venue = {} }) {
   }
 
   /**
-   * Sends FormData to the page save handler and blocks duplicate or uncertain saves.
-   * @param {import('react').SubmitEvent<HTMLFormElement>} event Form submission event.
+   * Saves venue fields and translates photo errors, blocking uncertain creation retries.
+   * @param {HTMLFormElement} element Venue form to read.
    * @returns {Promise<void>}
    */
-  async function submit(event) {
-    event.preventDefault();
-    if (submitting.current || uncertain) return;
-    const form = new FormData(event.currentTarget);
-    submitting.current = true;
-    setPending(true);
-    setError("");
+  async function save(element) {
+    if (uncertain) return;
+    const form = new FormData(element);
     try {
       await onSave(form);
     } catch (error) {
       const urls = form.getAll("mediaUrl").map((url) => url.trim());
-      setError(
-        error.message.split("\n").map((line) => {
-          if (!/^Image is not accessible\b/i.test(line)) return line;
-          const url = line.match(/https?:\/\/\S+/i)?.[0];
-          const index = urls.indexOf(url);
-          const label = index < 0 ? "Photos" : `Image ${index + 1}`;
-          return `${label}: ${messages.imageUnavailable}`;
-        }).join("\n"),
-      );
       setUncertain(Boolean(error.venueUncertain));
-    } finally {
-      submitting.current = false;
-      setPending(false);
+      throw new Error(
+        error.message
+          .split("\n")
+          .map((line) => {
+            if (!/^Image is not accessible\b/i.test(line)) return line;
+            const url = line.match(/https?:\/\/\S+/i)?.[0];
+            const index = urls.indexOf(url);
+            const label = index < 0 ? "Photos" : `Image ${index + 1}`;
+            return `${label}: ${messages.imageUnavailable}`;
+          })
+          .join("\n"),
+        { cause: error },
+      );
     }
   }
 
@@ -418,7 +414,9 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
                 event.currentTarget.setCustomValidity("");
                 setPreviewFailed(false);
               }}
-              aria-describedby={previewFailed ? `photo-error-${index}` : undefined}
+              aria-describedby={
+                previewFailed ? `photo-error-${index}` : undefined
+              }
               className={inputClass}
             />
           </label>
@@ -471,7 +469,11 @@ function VenuePhotoRow({ media, index, total, onMove, onRemove }) {
         </div>
       </div>
       {previewFailed && (
-        <p id={`photo-error-${index}`} role="status" className="mt-2 text-small text-danger">
+        <p
+          id={`photo-error-${index}`}
+          role="status"
+          className="mt-2 text-small text-danger"
+        >
           {messages.imageUnavailable}
         </p>
       )}

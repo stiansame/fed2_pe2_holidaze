@@ -1,4 +1,5 @@
 import { messages } from "../constants/messages.js";
+import { invalidateVenueQueries } from "./queryClient.js";
 import {
   apiRequest,
   ApiError,
@@ -13,16 +14,6 @@ import {
   dateKey,
 } from "../utils/availability.js";
 
-const venueCache = new Map();
-
-/**
- * Invalidates cached venue lists before venue or booking changes.
- * @returns {void}
- */
-export function clearVenueCache() {
-  venueCache.clear();
-}
-
 /**
  * Validates and creates one venue, marking uncertain responses to prevent duplicate saves.
  * @param {Function} request Request function supplied by the API client or account provider.
@@ -31,7 +22,6 @@ export function clearVenueCache() {
  */
 export async function createVenue(request, form) {
   const body = venueFormData(form);
-  clearVenueCache();
   try {
     const { data } = await request("holidaze/venues", { method: "POST", body });
     if (!data?.id) throw new ApiError(messages.missingVenueReference);
@@ -39,6 +29,8 @@ export async function createVenue(request, form) {
   } catch (error) {
     error.venueUncertain = isCreateOutcomeUncertain(error.status);
     throw error;
+  } finally {
+    await invalidateVenueQueries();
   }
 }
 
@@ -71,10 +63,13 @@ export async function getOwnVenue(request, id, name, { signal } = {}) {
  */
 export async function deleteVenue(request, id, name) {
   await getOwnVenue(request, id, name);
-  clearVenueCache();
-  await request(`holidaze/venues/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  try {
+    await request(`holidaze/venues/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+  } finally {
+    await invalidateVenueQueries();
+  }
 }
 
 /**
@@ -99,13 +94,16 @@ export async function updateVenue(request, id, name, form) {
     ...body.location,
   };
   await getOwnVenue(request, id, name);
-  clearVenueCache();
-  const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, {
-    method: "PUT",
-    body,
-  });
-  if (data?.id !== id) throw new Error(messages.venueUpdateUnconfirmed);
-  return data;
+  try {
+    const { data } = await request(`holidaze/venues/${encodeURIComponent(id)}`, {
+      method: "PUT",
+      body,
+    });
+    if (data?.id !== id) throw new Error(messages.venueUpdateUnconfirmed);
+    return data;
+  } finally {
+    await invalidateVenueQueries();
+  }
 }
 
 /**
@@ -135,23 +133,19 @@ export const venueSorts = {
 };
 
 /**
- * Loads complete venue lists and caches successful results for two minutes per data variant.
+ * Loads all pages of a public venue list with the requested related data.
  * @param {object} [options={}] Related data and cancellation settings.
  * @param {boolean} [options.bookings=false] Includes booking data for date filtering.
  * @param {boolean} [options.owner=false] Includes owner data for text search.
  * @param {AbortSignal} [options.signal] Cancels the load.
  * @returns {Promise<object[]>}
  */
-export async function getAllVenues({
+export function getAllVenues({
   bookings = false,
   owner = false,
   signal,
 } = {}) {
-  signal?.throwIfAborted();
-  const key = `${Boolean(bookings)}:${Boolean(owner)}`;
-  const cached = venueCache.get(key);
-  if (cached && Date.now() - cached.savedAt < 120_000) return cached.venues;
-  const result = await getAllPages(apiRequest, "holidaze/venues", {
+  return getAllPages(apiRequest, "holidaze/venues", {
     query: {
       sort: "created",
       sortOrder: "desc",
@@ -160,9 +154,6 @@ export async function getAllVenues({
     },
     signal,
   });
-  // Cache only complete lists; date searches need their own booking data.
-  venueCache.set(key, { venues: result, savedAt: Date.now() });
-  return result;
 }
 
 /**

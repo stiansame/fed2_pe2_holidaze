@@ -1,15 +1,11 @@
 import RetryButton from "../components/RetryButton.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useCallback, useEffect, useState } from "react";
-import useAsync from "../hooks/useAsync.js";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { venueListOptions } from "../api/venueQueries.js";
 import { useSearchParams } from "react-router-dom";
-import {
-  filterVenues,
-  getAllVenues,
-  sortVenues,
-  venueSorts,
-} from "../api/venues.js";
+import { filterVenues, sortVenues, venueSorts } from "../api/venues.js";
 import { amenityOptions } from "../components/venues/amenityOptions.js";
 import AmenityPill from "../components/venues/AmenityPill.jsx";
 import VenueCard from "../components/venues/VenueCard.jsx";
@@ -328,14 +324,13 @@ export default function Venues() {
  */
 function VenueResults({ order, filters, waiting, tooShort }) {
   const bookings = Boolean(filters.from && filters.to);
-  const load = useCallback(
-    async (signal) => {
-      const venues = await getAllVenues({ owner: true, bookings, signal });
-      return venues.filter(hasVenuePhoto);
-    },
-    [bookings],
+  const { data, error, refetch } = useQuery(
+    venueListOptions({ owner: true, bookings }),
   );
-  const { data: venues, setData: setVenues, error, retry } = useAsync(load);
+  const [failedPhotos, setFailedPhotos] = useState([]);
+  const venues = data?.filter(
+    (venue) => hasVenuePhoto(venue) && !failedPhotos.includes(venue.id),
+  );
 
   if (tooShort) return null;
   if (waiting)
@@ -350,7 +345,7 @@ function VenueResults({ order, filters, waiting, tooShort }) {
         <p role="alert" className="text-danger">
           {error.message}
         </p>
-        <RetryButton className={buttonClass} onRetry={retry} />
+        <RetryButton className={buttonClass} onRetry={() => refetch()} />
       </div>
     );
   if (!venues) return <Loading className="mt-6">Loading stays…</Loading>;
@@ -359,9 +354,7 @@ function VenueResults({ order, filters, waiting, tooShort }) {
     <VenueMatches
       key={JSON.stringify([order, filters])}
       venues={matches}
-      onImageError={(id) =>
-        setVenues((previous) => previous.filter((venue) => venue.id !== id))
-      }
+      onImageError={(id) => setFailedPhotos((previous) => [...previous, id])}
     />
   );
 }

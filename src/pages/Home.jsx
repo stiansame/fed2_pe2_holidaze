@@ -1,9 +1,10 @@
 import RetryButton from "../components/RetryButton.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { getAllVenues } from "../api/venues.js";
+import { venueListOptions } from "../api/venueQueries.js";
 import { selectHighlyRatedVenues } from "../utils/venue.js";
 import HomeHero from "../components/venues/HomeHero.jsx";
 import VenueCard from "../components/venues/VenueCard.jsx";
@@ -14,33 +15,21 @@ import Icon from "../components/Icon.jsx";
  * @returns {import('react').ReactNode}
  */
 export default function Home() {
-  const [highlyRated, setHighlyRated] = useState([]);
-  const [heroImage, setHeroImage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [attempt, setAttempt] = useState(0);
+  const {
+    data: pool,
+    error,
+    isPending,
+    refetch,
+  } = useQuery({
+    ...venueListOptions(),
+    select: selectHighlyRatedVenues,
+  });
+  const [failedPhotos, setFailedPhotos] = useState([]);
+  const highlyRated =
+    pool?.filter((venue) => !failedPhotos.includes(venue.id)) ?? [];
+  // The shuffled pool chooses the hero independently of failed card images.
+  const heroImage = pool?.[0]?.media[0]?.url ?? null;
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const controller = new AbortController();
-    getAllVenues({ signal: controller.signal })
-      .then((venues) => {
-        if (controller.signal.aborted) return;
-        const pool = selectHighlyRatedVenues(venues);
-        setHighlyRated(pool);
-        // Keep the chosen photo independent of cards removed after image failures.
-        setHeroImage(
-          pool[Math.floor(Math.random() * pool.length)]?.media[0]?.url ?? null,
-        );
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-    return () => controller.abort();
-  }, [attempt]);
 
   return (
     <div className="space-y-8">
@@ -87,20 +76,14 @@ export default function Home() {
             <Icon name="right" />
           </Link>
         </div>
-        {loading ? (
+        {isPending ? (
           <Loading>Loading stays…</Loading>
         ) : error ? (
           <div role="alert" className="space-y-3">
             <p>
-              {messages.staysLoadFailed} {error}
+              {messages.staysLoadFailed} {error.message}
             </p>
-            <RetryButton
-              onRetry={() => {
-                setError("");
-                setLoading(true);
-                setAttempt((value) => value + 1);
-              }}
-            />
+            <RetryButton onRetry={() => refetch()} />
           </div>
         ) : highlyRated.length ? (
           <div className="card-grid gap-6 lg:grid-cols-3">
@@ -109,9 +92,7 @@ export default function Home() {
                 key={venue.id}
                 venue={venue}
                 onImageError={(id) =>
-                  setHighlyRated((previous) =>
-                    previous.filter((item) => item.id !== id),
-                  )
+                  setFailedPhotos((previous) => [...previous, id])
                 }
               />
             ))}

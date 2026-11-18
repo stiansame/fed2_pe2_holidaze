@@ -2,8 +2,7 @@ import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
 import Loading from "../components/Loading.jsx";
-import { useCallback } from "react";
-import useAsync from "../hooks/useAsync.js";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { getVenue } from "../api/venues.js";
 import { useAuth } from "../auth/AuthContext.js";
@@ -40,15 +39,18 @@ export default function VenueDetails() {
  */
 function VenueContent({ id }) {
   const { user } = useAuth();
-  const load = useCallback(
-    async (signal) => {
+  const {
+    data: venue,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["venue", id],
+    queryFn: async ({ signal }) => {
       window.scrollTo(0, 0);
       const { data } = await getVenue(id, { signal });
       return data;
     },
-    [id],
-  );
-  const { data: venue, error, retry } = useAsync(load);
+  });
 
   const name = venue?.name?.trim() || "Unnamed stay";
   const isOwner = user?.venueManager && user.name === venue?.owner?.name;
@@ -80,7 +82,7 @@ function VenueContent({ id }) {
             {notFound ? messages.venueNotFoundDescription : error.message}
           </p>
           {!notFound && (
-            <RetryButton className="primary-button" onRetry={retry} />
+            <RetryButton className="primary-button" onRetry={() => refetch()} />
           )}
         </>
       ) : !venue ? (
@@ -180,7 +182,11 @@ function VenueContent({ id }) {
                 </p>
                 {map && (
                   <div className="max-w-155 space-y-2">
-                    <VenueMapBoundary lat={location.lat} lng={location.lng} compact />
+                    <VenueMapBoundary
+                      lat={location.lat}
+                      lng={location.lng}
+                      compact
+                    />
                     <a
                       href={map.full}
                       target="_blank"

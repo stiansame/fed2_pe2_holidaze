@@ -1,5 +1,6 @@
 import { messages } from "../constants/messages.js";
 import { useState } from "react";
+import useSubmit from "../hooks/useSubmit.js";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { apiRequest } from "../api/client.js";
 import { useAuth } from "../auth/AuthContext.js";
@@ -17,8 +18,7 @@ export default function AuthForm({ register = false }) {
   const { user, notice, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
+  const { submit, pending, error } = useSubmit(authenticate);
   const [fieldErrors, setFieldErrors] = useState({});
   const from = location.state?.from;
   const destination =
@@ -30,19 +30,15 @@ export default function AuthForm({ register = false }) {
 
   /**
    * Submits registration or login and displays API field errors beside the form.
-   * @param {import('react').SubmitEvent<HTMLFormElement>} event Form submission event.
+   * @param {HTMLFormElement} form Login or registration form.
    * @returns {Promise<void>}
    */
-  async function submit(event) {
-    event.preventDefault();
-    if (pending) return;
-    const values = new FormData(event.currentTarget);
+  async function authenticate(form) {
+    const values = new FormData(form);
     const credentials = {
       email: values.get("email").trim(),
       password: values.get("password"),
     };
-    setPending(true);
-    setError("");
     setFieldErrors({});
     try {
       if (register) {
@@ -68,7 +64,6 @@ export default function AuthForm({ register = false }) {
         });
       }
     } catch (error) {
-      setError(error.message);
       setFieldErrors(
         Object.fromEntries(
           (error.errors ?? [])
@@ -76,8 +71,7 @@ export default function AuthForm({ register = false }) {
             .map((item) => [item.path[0], item.message]),
         ),
       );
-    } finally {
-      setPending(false);
+      throw error;
     }
   }
 
