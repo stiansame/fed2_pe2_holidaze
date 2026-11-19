@@ -3,7 +3,10 @@ import { expect, test } from "@playwright/test";
 test("unknown routes show a useful 404 page", async ({ page }) => {
   await page.goto("/this-page-does-not-exist");
   await expect(
-    page.getByRole("heading", { name: "Page not found", exact: true }),
+    page.getByRole("heading", {
+      name: "Great sense of adventure. A little off the map...",
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Back to home", exact: true }),

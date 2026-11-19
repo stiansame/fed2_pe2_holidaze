@@ -12,12 +12,10 @@
   --color-tint: #e5f3f1;
   --sunny-coral: #ff9f6b;
   --sunny-coral-hover: #ff8850;
-  --sunny-backdrop: linear-gradient(
-    135deg,
-    #d8efec,
-    var(--color-background) 45%,
-    #fff0bd
-  );
+  --sunny-backdrop: linear-gradient(135deg,
+      #d8efec,
+      var(--color-background) 45%,
+      #fff0bd);
 }
 
 /* Body and UI text keep shared Inter metrics; only headings and branding use Poppins. */
@@ -68,9 +66,11 @@
       center;
   }
 }
+
 [data-theme="sunny"] header {
   background-color: #f0f9f5;
 }
+
 [data-theme="sunny"] footer {
   background-color: #faedcf;
 }
@@ -81,23 +81,18 @@
 }
 
 /* Primary actions use coral with dark text. Selected amenity filters stay petrol. */
-[data-theme="sunny"]
-  :is(
-    button.bg-primary:not(.amenity-pill),
-    .primary-button,
-    a.bg-primary,
-    .booking-action-button
-  ) {
+[data-theme="sunny"] :is(button.bg-primary:not(.amenity-pill),
+  .primary-button,
+  a.bg-primary,
+  .booking-action-button) {
   background-color: var(--sunny-coral);
   color: var(--color-text);
 }
-[data-theme="sunny"]
-  :is(
-    button.bg-primary:not(.amenity-pill),
-    .primary-button,
-    a.bg-primary,
-    .booking-action-button
-  ):hover {
+
+[data-theme="sunny"] :is(button.bg-primary:not(.amenity-pill),
+  .primary-button,
+  a.bg-primary,
+  .booking-action-button):hover {
   background-color: var(--sunny-coral-hover);
 }
 
@@ -105,9 +100,11 @@
 [data-theme="sunny"] .amenity-pill:not([aria-pressed="true"]) {
   background-color: #dff3ef;
 }
+
 [data-theme="sunny"] .guest-pill {
   background-color: #fff1b8;
 }
+
 [data-theme="sunny"] .rating-star {
   color: #a96500;
 }
@@ -116,10 +113,12 @@
 [data-theme="sunny"] .card {
   background-color: #fffdf6;
 }
+
 /* Warm shadows for cards that link as a whole. */
 [data-theme="sunny"] .card-interactive {
   box-shadow: 0 2px 8px rgb(119 78 35 / 10%);
 }
+
 [data-theme="sunny"] .card-interactive:is(:hover, :focus-within) {
   box-shadow:
     0 8px 24px rgb(119 78 35 / 14%),
@@ -135,15 +134,8 @@
 
 /* Reuse one calm, colourful treatment for missing pages and empty lists. */
 [data-theme="sunny"] .empty-state {
-  border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  padding: 1.25rem;
   background: linear-gradient(135deg, #e5f3f1, #fff8eb 65%, #fff1b8);
   color: var(--color-text);
-}
-[data-theme="sunny"] .sunny-state-icon {
-  display: block;
-  color: #a96500;
 }
 
 /* Warm only hero and listing photos, preserving the separate past-booking filter. */
@@ -156,13 +148,16 @@
   .theme-toggle svg {
     transition: transform 250ms ease;
   }
+
   [data-theme="sunny"] .theme-toggle svg {
     transform: rotate(45deg);
   }
+
   /* A smaller lift and slower shadow transition make card hover gentler. */
   [data-theme="sunny"] .card-interactive {
     transition-duration: 300ms;
   }
+
   [data-theme="sunny"] .card-interactive:is(:hover, :focus-within) {
     translate: 0 -2px;
   }

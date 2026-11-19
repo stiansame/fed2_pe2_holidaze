@@ -1,4 +1,5 @@
 import { sameName } from "../utils/account.js";
+import NotFound from "./NotFound.jsx";
 import RetryButton from "../components/RetryButton.jsx";
 import DocumentTitle from "../components/DocumentTitle.jsx";
 import { messages } from "../constants/messages.js";
@@ -42,6 +43,7 @@ export default function VenueDetails() {
   const ownerName = owner?.name?.trim() || "";
   const isOwner = user?.venueManager && sameName(user.name, ownerName);
   const notFound = error && [400, 404].includes(error.status);
+  if (notFound) return <NotFound kind="venue" />;
   const map = venueMapLinks(venue?.location);
   const location = venue?.location;
   const place = formatLocation(location);
@@ -56,21 +58,17 @@ export default function VenueDetails() {
   );
   return (
     <section className="venue-details space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
-      <DocumentTitle>{`Holidaze | ${notFound ? messages.venueNotFound : venue ? name : "Venue details"}`}</DocumentTitle>
+      <DocumentTitle>{`Holidaze | ${venue ? name : "Venue details"}`}</DocumentTitle>
       <div className={venue && !error ? "hidden lg:block" : "block"}>
         <BackLink />
       </div>
       {error ? (
         <>
-          <h1 className="text-h2 font-bold">
-            {notFound ? messages.venueNotFound : messages.venueLoadFailed}
+          <h1 className="text-h3 font-bold sm:text-h2">
+            {messages.venueLoadFailed}
           </h1>
-          <p role="alert">
-            {notFound ? messages.venueNotFoundDescription : error.message}
-          </p>
-          {!notFound && (
-            <RetryButton className="primary-button" onRetry={() => refetch()} />
-          )}
+          <p role="alert">{error.message}</p>
+          <RetryButton className="primary-button" onRetry={() => refetch()} />
         </>
       ) : !venue ? (
         <Loading>Loading stay…</Loading>

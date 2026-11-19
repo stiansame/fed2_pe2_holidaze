@@ -62,13 +62,15 @@ export const messages = {
   incompleteSearchDates: "Choose both check-in and check-out dates.",
   invalidSearchDates: "Choose a future stay with check-out after check-in.",
   pageNotFound: "Page not found",
+  pageNotFoundHeading: "Great sense of adventure.\nA little off the map...",
   pageLoadFailed: "This page couldn’t be displayed",
   pageLoadFailedDescription: "Please try again, or explore venues to continue.",
   pageNotFoundDescription:
-    "This address doesn't lead to a page. Check the link, or explore our places to stay.",
+    "Looks like you took a scenic detour. There’s no page here, but we can point you towards somewhere worth staying.",
   venueNotFound: "Venue not found",
+  venueNotFoundHeading: "Looks like this stay checked out.",
   venueNotFoundDescription:
-    "This stay may have been removed or the link is incorrect.",
+    "Lovely spot. Shame we can’t find it. Let’s check out somewhere else.",
   venueLoadFailed: "Unable to load this stay",
   profileNotFound: "Profile not found",
   profileNotFoundDescription:
