@@ -34,7 +34,7 @@ export default function Layout() {
       <main
         id="main-content"
         tabIndex={-1}
-        className={`mx-auto w-full max-w-360 flex-1 ${isVenueDetails || isAccount || pathname === "/" ? "p-4 md:p-8" : "p-6 md:p-16"}`}
+        className={`mx-auto w-full max-w-360 flex-1 ${isVenueDetails || isAccount || pathname === "/" ? "p-4 md:p-8" : "p-6 md:p-16"} has-[.not-found]:p-6 md:has-[.not-found]:p-16`}
       >
         <PageErrorBoundary key={pathname}>
           <Outlet />
