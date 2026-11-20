@@ -48,11 +48,6 @@ export default function VenueCard({ venue, onImageError, actions }) {
             </span>
             <Rating rating={venue.rating} />
           </div>
-          <div
-            className={`absolute inset-x-0 bottom-0 bg-linear-to-t from-black/45 to-transparent px-3 pt-8 pb-3 ${actions ? "pr-16" : ""}`}
-          >
-            <Amenities meta={venue.meta} />
-          </div>
         </div>
         <div className="grid items-start gap-2 p-4">
           <div className="min-w-0 space-y-2">
@@ -63,6 +58,7 @@ export default function VenueCard({ venue, onImageError, actions }) {
             >
               {name}
             </h2>
+            <Amenities meta={venue.meta} />
             <p
               title={location}
               className="flex min-w-0 items-center gap-2 text-small text-muted"
