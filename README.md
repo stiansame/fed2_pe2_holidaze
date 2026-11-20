@@ -19,9 +19,10 @@ Browse and search accommodation, check availability and manage bookings. Venue m
 [![Zod](https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white)](https://zod.dev/packages/mini)
 [![Netlify](https://img.shields.io/badge/Netlify-0F172A?style=for-the-badge&logo=netlify&logoColor=00C7B7)](https://www.netlify.com/)
 
+TanStack Query handles API reads and caches complete venue lists for two minutes.
+
 Leaflet provides interactive maps, and DOMPurify sanitises HTML descriptions. Hosted on Netlify.
 
-TanStack Query handles API reads and caches complete venue lists for two minutes.
 Zod Mini validates venue and profile forms, with messages beside each invalid field.
 
 ## 🚀 Run locally
@@ -62,7 +63,13 @@ Public venue requests require no credentials. For authenticated requests, set `V
 
 ## 🧪 Automated tests
 
-The test setup keeps one unit-test file and one e2e-test file, the oldest remaining files in Git history. `tests/unit/availability.test.js` uses [Vitest](https://vitest.dev/guide/) for booking dates, prices, overlap and guest-count validation. `tests/e2e/navigation.spec.js` uses [Playwright](https://playwright.dev/docs/intro) for the 404 page and signed-out account access at desktop and mobile widths. Configuration stays in `tests/`.
+The test setup is kept basic for this delivery, containing one unit-test file and one e2e-test file.
+
+- `tests/unit/availability.test.js` uses [Vitest](https://vitest.dev/guide/) for booking dates, prices, overlap and guest-count validation.
+- `tests/e2e/navigation.spec.js` uses [Playwright](https://playwright.dev/docs/intro) for the 404 page and signed-out account access at desktop and mobile widths.
+
+Configuration stays in `tests/`.
+You are encourged to add more tests yourself.
 
 After `npm ci`, install the test browser once:
 
@@ -142,7 +149,7 @@ Set `VITE_NOROFF_API_KEY` in Netlify with the Builds scope and redeploy after ch
 - [x] Provide the hosted application link.
 - [x] Document local setup, startup and instructions for testers in README.
 - [x] Merge all final changes into the default branch before submission.
-- [ ] Submit the required links in Moodle using the delivery template.
+- [x] Submit the required links in Moodle using the delivery template.
 
 ### The Bells & Whistles
 
@@ -156,11 +163,13 @@ Set `VITE_NOROFF_API_KEY` in Netlify with the Builds scope and redeploy after ch
 ✦ **Photo galleries:** swipe through venue images and open a larger gallery with arrows, keyboard navigation and swipe support.  
 ✦ **Profile customisation:** edit the profile bio and banner as well as the required avatar.  
 ✦ **Become a host later:** existing customer accounts can enable venue-manager access without registering again.  
-✦ **Function documentation:** all project functions are described in the local Function reference, including how they relate to one another. Named functions also have English JSDoc in the source code; small inline callbacks are covered by their owning function.
+✦ **Function documentation:** all project functions are described in the [Function reference](documentation/Function%20reference.md), including how they relate to one another. Named functions also have English JSDoc in the source code; small inline callbacks are covered by their owning function.
 
 ## 🎨 Design and resources
 
 - [Design overview](https://www.figma.com/design/LptrPARgLhqR37Q3oRYJDw/Holidaze-Design-overview)
+- [Prototype desktop](https://www.figma.com/proto/LptrPARgLhqR37Q3oRYJDw/Holidaze-%E2%80%94-Design-overview?node-id=4-30&p=f&t=MfHbSGGUrepg5QFI-0&scaling=min-zoom&content-scaling=fixed&page-id=2%3A63&starting-point-node-id=4%3A30&show-proto-sidebar=1)
+- [Prototype mobile](https://www.figma.com/proto/LptrPARgLhqR37Q3oRYJDw/Holidaze-%E2%80%94-Design-overview?node-id=4-1747&p=f&t=MfHbSGGUrepg5QFI-0&scaling=min-zoom&content-scaling=fixed&page-id=2%3A64&starting-point-node-id=4%3A1747&show-proto-sidebar=1)
 - [Sitemap and user flows](https://www.figma.com/board/fbrkKssEjAdOFtDyUkCZSK/Holidaze)
 - [Noroff Holidaze API](https://docs.noroff.dev/docs/v2/holidaze/venues)
 
@@ -170,6 +179,9 @@ Design overview includes the style guide, components, desktop/mobile pages and p
 
 - [Sources](documentation/Sources.md)
 - [Notes on AI](documentation/Notes%20on%20AI.md)
+- [Function reference](documentation/Function%20reference.md)
+- [Function flows](https://www.figma.com/board/oRUWlnFvy8FNYdzgyKaSTk)
+- [Reflections](documentation/Reflections.md)
 
 [![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/stiansame/fed2_pe2_holidaze?utm_source=readme&utm_medium=badge)
 
