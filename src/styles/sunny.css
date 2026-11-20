@@ -96,8 +96,8 @@
   background-color: var(--sunny-coral-hover);
 }
 
-/* Soft aqua amenities and yellow guest pills keep photo overlays readable. */
-[data-theme="sunny"] .amenity-pill:not([aria-pressed="true"]) {
+/* Venue cards share soft aqua amenities; other pills use it only in Sunny Mode. */
+:is(.card, [data-theme="sunny"]) .amenity-pill:not([aria-pressed="true"]) {
   background-color: #dff3ef;
 }
 
