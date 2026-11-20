@@ -50,7 +50,7 @@ export default function ManagerBookingDetails() {
   const address = formatAddress(venue?.location);
   return (
     <section className="min-w-0 space-y-5">
-      <DocumentTitle>Holidaze | Booking details</DocumentTitle>
+      <DocumentTitle>Booking details | Holidaze</DocumentTitle>
       {!booking && <BackLink />}
       <h1 className="text-h3 font-bold sm:text-h2">Booking details</h1>
       {error ? (

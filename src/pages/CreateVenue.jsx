@@ -21,7 +21,7 @@ export default function CreateVenue() {
   }, []);
   return (
     <section className="min-w-0 space-y-5">
-      <DocumentTitle>Holidaze | Create venue</DocumentTitle>
+      <DocumentTitle>Create venue | Holidaze</DocumentTitle>
       <h1 className="text-h3 font-bold sm:text-h2">Create venue</h1>
       <VenueForm
         onCancel={() => navigate(-1)}

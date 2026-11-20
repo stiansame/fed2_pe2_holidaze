@@ -48,7 +48,7 @@ export default function PublicProfile() {
   const profile = data?.profile;
   return (
     <section className="space-y-5">
-      <DocumentTitle>{`Holidaze | ${notFound ? messages.profileNotFound : name}`}</DocumentTitle>
+      <DocumentTitle>{`${notFound ? messages.profileNotFound : name} | Holidaze`}</DocumentTitle>
       {!data && !error && <Loading>Loading host profile…</Loading>}
       {error && (
         <div className="space-y-3">

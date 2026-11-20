@@ -23,7 +23,7 @@ export default function Layout() {
   const title = titles[pathname.replace(/\/+$/, "") || "/"];
   return (
     <div className="site-shell flex min-h-dvh flex-col bg-linear-to-br from-accent/10 via-background to-tint/40">
-      {title && <DocumentTitle>{`Holidaze | ${title}`}</DocumentTitle>}
+      {title && <DocumentTitle>{`${title} | Holidaze`}</DocumentTitle>}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:rounded-lg focus:bg-surface focus:p-4"

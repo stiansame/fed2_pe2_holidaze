@@ -76,7 +76,7 @@ function Review({ id, search }) {
       className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8"
       aria-busy={pending}
     >
-      <DocumentTitle>Holidaze | Review booking</DocumentTitle>
+      <DocumentTitle>Review booking | Holidaze</DocumentTitle>
       <h1 className="text-h3 font-bold">Review your booking</h1>
       {!venue && !error && <Loading>Loading your stay…</Loading>}
       {venue && (

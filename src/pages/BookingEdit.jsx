@@ -37,7 +37,7 @@ export default function BookingEdit() {
 
   return (
     <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-4 sm:p-6">
-      <DocumentTitle>Holidaze | Change booking</DocumentTitle>
+      <DocumentTitle>Change booking | Holidaze</DocumentTitle>
       <h1 className="text-h3 font-bold">Change booking</h1>
       {!data && !error && <Loading>Loading your booking…</Loading>}
       {data && (

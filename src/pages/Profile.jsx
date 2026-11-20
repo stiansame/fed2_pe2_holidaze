@@ -34,7 +34,7 @@ export default function Profile() {
   const profile = <ProfileCard />;
   return (
     <section className="min-w-0 space-y-6">
-      <DocumentTitle>Holidaze | My account</DocumentTitle>
+      <DocumentTitle>My account | Holidaze</DocumentTitle>
       <h1 className="text-h3 font-bold sm:text-h2">My account</h1>
       {user.venueManager ? (
         <ManagerOverview stats={stats}>{profile}</ManagerOverview>

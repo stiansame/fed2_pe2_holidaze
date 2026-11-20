@@ -25,7 +25,7 @@ export default function MyVenues() {
 
   return (
     <section className="min-w-0 space-y-6">
-      <DocumentTitle>Holidaze | My venues</DocumentTitle>
+      <DocumentTitle>My venues | Holidaze</DocumentTitle>
       <div className="space-y-2">
         <SectionHeading
           level="h1"

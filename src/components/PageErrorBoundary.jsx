@@ -18,7 +18,7 @@ export default class PageErrorBoundary extends Component {
     if (!this.state.failed) return this.props.children;
     return (
       <section role="alert" className="space-y-4">
-        <DocumentTitle>{`Holidaze | ${messages.pageLoadFailed}`}</DocumentTitle>
+        <DocumentTitle>{`${messages.pageLoadFailed} | Holidaze`}</DocumentTitle>
         <h1 className="text-h3 font-bold sm:text-h2">
           {messages.pageLoadFailed}
         </h1>

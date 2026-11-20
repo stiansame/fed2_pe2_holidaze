@@ -24,7 +24,7 @@ export default function VenueBookings() {
     data && venueId && !data.venues.some((venue) => venue.id === venueId);
   return (
     <section className="min-w-0 space-y-6">
-      <DocumentTitle>Holidaze | Venue bookings</DocumentTitle>
+      <DocumentTitle>Venue bookings | Holidaze</DocumentTitle>
       <div className="flex items-center gap-2">
         <h1 className="text-h3 font-bold sm:text-h2">Venue bookings</h1>
         <button

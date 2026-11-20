@@ -14,7 +14,7 @@ export default function MyStays() {
   const { user } = useAuth();
   return (
     <section className="space-y-6">
-      <DocumentTitle>Holidaze | My stays</DocumentTitle>
+      <DocumentTitle>My stays | Holidaze</DocumentTitle>
       <div className="flex items-center gap-2">
         <h1 className="text-h3 font-bold sm:text-h2">My stays</h1>
         <button

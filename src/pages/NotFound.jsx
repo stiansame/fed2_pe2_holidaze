@@ -13,7 +13,7 @@ export default function NotFound({ kind = "page" }) {
   const messageKey = kind === "venue" ? "venueNotFound" : "pageNotFound";
   return (
     <section className="not-found empty-state mx-auto max-w-xl rounded-xl border border-border bg-surface p-6 sm:p-8">
-      <DocumentTitle>{`Holidaze | ${messages[messageKey]}`}</DocumentTitle>
+      <DocumentTitle>{`${messages[messageKey]} | Holidaze`}</DocumentTitle>
       <ErrorAnimation kind={kind} />
       <p className="mb-4 text-6xl leading-none font-bold text-primary">404</p>
       <h1 className="min-h-[3lh] whitespace-pre-line text-h3 font-bold max-[359px]:min-h-[4lh] sm:min-h-[2lh] sm:text-h2">

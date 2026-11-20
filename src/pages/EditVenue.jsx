@@ -36,7 +36,7 @@ export default function EditVenue() {
 
   return (
     <section className="min-w-0 space-y-5">
-      <DocumentTitle>Holidaze | Edit venue</DocumentTitle>
+      <DocumentTitle>Edit venue | Holidaze</DocumentTitle>
       <h1 className="text-h3 font-bold sm:text-h2">Edit venue</h1>
       {error ? (
         <div role="alert" className="space-y-3">

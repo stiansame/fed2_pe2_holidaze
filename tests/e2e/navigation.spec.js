@@ -11,7 +11,7 @@ test("unknown routes show a useful 404 page", async ({ page }) => {
   await expect(
     page.getByRole("link", { name: "Back to home", exact: true }),
   ).toHaveAttribute("href", "/");
-  await expect(page).toHaveTitle("Holidaze | Page not found");
+  await expect(page).toHaveTitle("Page not found | Holidaze");
 });
 
 test("signed-out visitors must log in before opening their account", async ({

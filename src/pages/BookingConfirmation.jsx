@@ -29,7 +29,7 @@ export default function BookingConfirmation() {
 
   return (
     <section className="mx-auto max-w-xl space-y-5 rounded-xl border border-border bg-surface p-5 sm:p-8">
-      <DocumentTitle>Holidaze | Booking confirmation</DocumentTitle>
+      <DocumentTitle>Booking confirmation | Holidaze</DocumentTitle>
       <h1 className="text-h3 font-bold">
         {booking ? "Booking confirmed" : "Booking confirmation"}
       </h1>

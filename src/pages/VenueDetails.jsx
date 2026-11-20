@@ -58,7 +58,7 @@ export default function VenueDetails() {
   );
   return (
     <section className="venue-details space-y-5 rounded-2xl border border-border bg-linear-to-br from-accent/10 via-surface to-tint/40 p-4 sm:p-6 lg:p-8">
-      <DocumentTitle>{`Holidaze | ${venue ? name : "Venue details"}`}</DocumentTitle>
+      <DocumentTitle>{`${venue ? name : "Venue details"} | Holidaze`}</DocumentTitle>
       <div className={venue && !error ? "hidden lg:block" : "block"}>
         <BackLink />
       </div>
